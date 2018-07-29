@@ -1,0 +1,4 @@
+hgabka_kuma_email:
+    messages:
+        send_at_error: Send date must be in the future
+        send_time_required: This field is required

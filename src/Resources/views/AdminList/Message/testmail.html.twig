@@ -1,0 +1,21 @@
+{% extends 'KunstmaanAdminListBundle:Default:add_or_edit.html.twig' %}
+{% block admin_page_title %}
+    <div class="col-sm-6 col-md-8">
+        <h1 class="app__content__header__title">
+            {{ 'hgabka_kuma_email.titles.message.testmail' | trans }}
+        </h1>
+    </div>
+{% endblock %}
+
+{% block actions %}
+    <button type="submit" class="btn btn-primary btn--raise-on-hover">
+        {{ 'hgabka_kuma_email.labels.send' | trans }}
+    </button>
+    <a href="{{ path(adminlistconfigurator.getIndexUrl()["path"], adminlistconfigurator.getIndexUrl()["params"]) }}" class="btn btn-default btn--raise-on-hover">
+        {{ 'kuma_admin_list.form.cancel' | trans }}
+    </a>
+{% endblock %}
+
+{% block form_content %}
+    {{ form_rest(form) }}
+{% endblock %}

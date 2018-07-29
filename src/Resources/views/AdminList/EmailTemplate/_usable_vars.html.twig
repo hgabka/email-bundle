@@ -1,0 +1,11 @@
+{% set vars = mail_builder.getTemplateVars(template) %}
+{% if vars is not empty %}
+    <div class="form-header-block">
+        <h4>{{ 'hgabka_kuma_email.labels.usable_vars' | trans }}</h4>
+        <ul style="list-style-type: none">
+            {% for var, explanation in vars %}
+                <li><span style="display:inline-block;width:150px">{{ var }}</span>:  {{ explanation | trans }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

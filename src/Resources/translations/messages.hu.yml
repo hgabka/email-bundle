@@ -1,0 +1,80 @@
+hgabka_kuma_email:
+    labels:
+        name: Név
+        comment: Leírás
+        slug: Slug
+        is_system: Rendszersablon
+        layout: Keretsablon
+        subject: Tárgy
+        content_text: Szöveges tartalom
+        content_html: Formázott tartalom
+        attachments: Csatolmányok
+        usable_vars: Használható változók
+        no_layout: Keretsablon nélkül
+        from_name: Feladó neve
+        from_email: Feladó email címe
+        status: Állapot
+        send: Küldés
+        save_and_send: Mentés és küldés
+        send_now: Azonnal
+        send_later: Későbbi időpontban
+        send_at: Küldés ideje
+        send_time: Küldési időpont
+        unprepare: Küldés visszavonása
+        email: Email cím
+        locale: Nyelv
+        testmail: Tesztüzenet
+        webversion: Webes változat
+        copy: Duplikálás
+
+    tabs:
+        general: Általános adatok
+        content: Tárgy, tartalom
+        recipients: Levél adatai
+
+    default_param_labels:
+        name: A címzett neve
+        email: A címzett email címe
+        webversion: Webes változat
+        unsubscribe: Leiratkozó URL
+        unsubscribe_link: Leiratkozó link
+
+    fixtures:
+        folder_name: Csatolmányok
+        base_list: Alapértelmezett levelezőlista
+
+    titles:
+        menu: Emailek
+        unsubscribe: Hírlevél leiratkozás
+        message:
+            send: Körlevél küldése
+            list: Körlevelek
+            new: Új körlevél
+            edit: Körlevél szerkesztése
+            testmail: Tesztüzenet küldése
+        email_template:
+            list: Email sablonok
+            new: Új email sablon
+            edit: Email sablon szerkesztése
+        subscriber:
+            list: Feliratkozottak
+            new: Új feliratkozott
+            edit: Feliratkozott szerkesztése
+
+    messages:
+        prepare_success: A körlevél sikeresen küldésre jelölve
+        prepare_error: A körlevél küldésre jelölése sikertelen volt, mert az űrlap hibákat tartalmaz
+        unprepare_success: A körlevél küldése sikeresen visszavonva
+        testmail_success: A levél sikeresen elküldve
+        testmail_error: A levelet nem sikerült elküldeni, mert az űrlap hibákat tartalmaz
+        unsubscribe_success: Sikeresen leiratkozott hírlevelünkről
+        copy_success: Az üzenet sikeresen lemásolva
+
+    statuses:
+        init: Szerkesztés alatt
+        kuldendo: Kiküldésre előjegyezve
+        folyamatban: Kiküldés alatt
+        elkuldve: Kiküldve
+        send_data: '( %recipient% címzett, %success% üzenet kiküldve, %fail% sikertelen )'
+        immidiately: Azonnal
+        send_date: 'Küldés ideje: %date%'

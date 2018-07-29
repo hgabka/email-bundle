@@ -1,0 +1,4 @@
+hgabka_kuma_email:
+    messages:
+        send_at_error: A küldés dátuma nem lehet múltbéli
+        send_time_required: Az időpont megadása kötelező

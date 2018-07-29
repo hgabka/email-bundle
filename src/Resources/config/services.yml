@@ -1,0 +1,154 @@
+parameters:
+    hgabka_kunstmaan_email.mail_builder.class: 'Hgabka\KunstmaanEmailBundle\Helper\MailBuilder'
+    hgabka_kunstmaan_email.message_logger.class: 'Hgabka\KunstmaanEmailBundle\Logger\MessageLogger'
+    hgabka_kunstmaan_email.message_sender.class: 'Hgabka\KunstmaanEmailBundle\Helper\MessageSender'
+    hgabka_kunstmaan_email.queue_manager.class: 'Hgabka\KunstmaanEmailBundle\Helper\QueueManager'
+
+services:
+    hgabka_kunstmaan_email.mail_builder:
+        class: '%hgabka_kunstmaan_email.mail_builder.class%'
+        arguments: ["@doctrine", "@request_stack", "@hgabka_kunstmaan_email.param_substituter", "@translator", "@hgabka_kunstmaan_extension.kuma_utils", "@router"]
+
+    hgabka_kunstmaan_email.message_sender:
+        class: '%hgabka_kunstmaan_email.message_sender.class%'
+        arguments: ["@doctrine", "@mailer", "@hgabka_kunstmaan_email.queue_manager", "@translator", "@hgabka_kunstmaan_extension.kuma_utils", "@hgabka_kunstmaan_email.mail_builder"]
+
+    hgabka_kunstmaan_email.message_logger:
+        class: '%hgabka_kunstmaan_email.message_logger.class%'
+        arguments: ["@logger", '']
+
+    hgabka_kunstmaan_email.email_logger:
+        class: 'Hgabka\KunstmaanEmailBundle\Logger\EmailLogger'
+        arguments: ["@doctrine"]
+
+    hgabka_kunstmaan_email.queue_manager:
+        class: '%hgabka_kunstmaan_email.queue_manager.class%'
+        arguments: ["@doctrine", "@mailer", "@hgabka_kunstmaan_email.message_logger", '', '', '', '', '']
+        calls:
+            - method: setMailBuilder
+              arguments:
+                  - "@hgabka_kunstmaan_email.mail_builder"
+
+    hgabka_kunstmaan_email.param_substituter:
+        class: 'Hgabka\KunstmaanEmailBundle\Helper\ParamSubstituter'
+        arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", []]
+
+    hgabka_kunstmaan_email.email_subscriber:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\EmailSubscriber
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
+    hgabka_kunstmaan_email.mailer_subscriber:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\MailerSubscriber
+        arguments: ["@hgabka_kunstmaan_email.email_logger", '']
+        tags:
+            - { name: kernel.event_subscriber }
+
+    hgabka_kunstmaan_email.mail_logger_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\MessageLoggerPlugin
+        arguments: ["@event_dispatcher"]
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.redirect_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\RedirectPlugin
+        arguments: [""]
+        calls:
+            - method: setKumaUtils
+              arguments:
+                  - "@hgabka_kunstmaan_extension.kuma_utils"
+
+            - method: setDebug
+              arguments:
+                  - "%kernel.debug%"
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+
+    hgabka_kunstmaan_email.add_headers_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddHeadersPlugin
+        arguments: ["@event_dispatcher"]
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.add_recipients_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddRecipientsPlugin
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.add_return_path_plugin:
+        class: Hgabka\KunstmaanEmailBundle\Mailer\AddReturnPathPlugin
+        tags:
+            - { name: "swiftmailer.default.plugin" }
+
+    hgabka_kunstmaan_email.mailbox_reader:
+        class: Hgabka\KunstmaanEmailBundle\Helper\MailboxReader
+        arguments: ["@hgabka_kunstmaan_email.email_parser", '', '', '', '', '', 'INBOX', '']
+
+    hgabka_kunstmaan_email.bounce_checker:
+        class: Hgabka\KunstmaanEmailBundle\Helper\BounceChecker
+        arguments: ["@doctrine", "@hgabka_kunstmaan_email.mailbox_reader"]
+
+    hgabka_kunstmaan_email.email_parser:
+        class: Hgabka\KunstmaanEmailBundle\Helper\EmailParser
+
+    hgabka_kunstmaan_email.menu.adaptor.email:
+        class: Hgabka\KunstmaanEmailBundle\Helper\Menu\EmailMenuAdaptor
+        arguments: ['@security.authorization_checker', "@hgabka_kunstmaan_email.mail_builder", '']
+        tags:
+            -  { name: kunstmaan_admin.menu.adaptor }
+
+    hgabka_kunstmaan_email.email_template_type:
+        class: Hgabka\KunstmaanEmailBundle\Form\EmailTemplateAdminType
+        arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
+        tags:
+            - { name: form.type }
+
+    hgabka_kunstmaan_email.subscriber_type:
+        class: Hgabka\KunstmaanEmailBundle\Form\MessageSubscriberAdminType
+        arguments: ["@doctrine.orm.entity_manager", "@hgabka_kunstmaan_extension.kuma_utils", "@hgabka_kunstmaan_email.subscription_manager", "@security.authorization_checker"]
+        tags:
+            - { name: form.type }
+
+    hgabka_kunstmaan_email.message_type:
+        class: Hgabka\KunstmaanEmailBundle\Form\MessageAdminType
+        arguments: ["@doctrine.orm.entity_manager", "@hgabka_kunstmaan_email.mail_builder", "@security.authorization_checker"]
+        tags:
+            - { name: form.type }
+
+    hgabka_kunstmaan_email.event_listener.entity_load:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\EntityLoadListener
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }
+
+    hgabka_kunstmaan_email.adminlist_subscriber:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\AdminListSubscriber
+        arguments: ["@doctrine"]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    hgabka_kunstmaan_email.email_twig_extension:
+        class: Hgabka\KunstmaanEmailBundle\Twig\EmailTwigExtension
+        arguments: ['@hgabka_kunstmaan_email.mail_builder']
+        public: false
+        tags:
+            - { name: twig.extension }
+
+    hgabka_kunstmaan_email.email_voter:
+        class:  Hgabka\KunstmaanEmailBundle\Security\EmailVoter
+        arguments: ['@security.access.decision_manager', '']
+        tags:
+            - { name: security.voter }
+        public: false
+
+    hgabka_kunstmaan_email.subscription_manager:
+        class: 'Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager'
+        arguments: ["@doctrine", "@hgabka_kunstmaan_extension.kuma_utils", '']
+
+    hgabka_kunstmaan_email.subscriber_subscriber:
+        class: Hgabka\KunstmaanEmailBundle\EventListener\SubscriberSubscriber
+        arguments: ['@hgabka_kunstmaan_email.subscription_manager']
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
+    Hgabka\KunstmaanEmailBundle\Helper\MessageSender: "@hgabka_kunstmaan_email.message_sender"

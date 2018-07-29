@@ -1,0 +1,78 @@
+hgabka_kuma_email:
+    labels:
+        name: Name
+        comment: Description
+        slug: Slug
+        is_system: System template
+        layout: Layout template
+        subject: Subject
+        content_text: Text content
+        content_html: HTML content
+        attachments: Attachments
+        usable_vars: Placeholders
+        no_layout: Without layout
+        from_name: Sender name
+        from_email: Sender email
+        status: Status
+        send: Send
+        save_and_send: Save and send
+        send_now: Send immidiately
+        send_later: Send later
+        send_at: Send time
+        send_time: Time
+        unprepare: Undo sending
+        email: Email
+        locale: Language
+        testmail: Test mail
+        webversion: Web version
+        copy: Duplicate
+
+    tabs:
+        general: General data
+        content: 'Subject, content'
+        recipients: Sender data
+
+    default_param_labels:
+        name: Name of recipient
+        email: Email of recipient
+        webversion: Web version
+        unsubscribe: Unsubscribe URL
+        unsubscribe_link: Unsubscribe link
+
+    fixtures:
+        folder_name: Attachments
+        base_list: Basic mailing list
+
+    titles:
+        menu: Emails
+        message:
+            send: Send messages
+            list: Mass messages
+            new:  New mass message
+            edit: Edit mass message
+            testmail: Sending test mail
+        email_template:
+            list: Email templates
+            new: New email template
+            edit: Edit email template
+        subscriber:
+            list: Subscribers
+            new: New subscriber
+            edit: Edit subscriber
+
+    messages:
+        prepare_success: The message has been prepared for send successfully
+        prepare_error: The preparation for send has not been undone as the form contains errors
+        unprepare_success: The message has been unprepared
+        testmail_success: Mail has been sent successfully
+        testmail_error: The mail has not been sent as the form contains errors
+        copy_success: Message has been copied successfully
+
+    statuses:
+        init: Being edited
+        kuldendo: Prepared for send
+        folyamatban: Being sent
+        elkuldve: Sent out
+        send_data: '( %recipient% recipient(s), %success% message(s) sent, %fail% message(s) failed )'
+        immidiately: At once
+        send_date: 'Send at: %date%'

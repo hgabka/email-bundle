@@ -1,0 +1,10 @@
+{% if item.isUnprepareable() %}
+    {% set url = itemAction.getUrlFor(item) %}
+    {% if url %}
+        <a href="{{ path(url["path"], url[("params")]) }}" class="link--text table__actions__item" title="{{ itemAction.getLabelFor(item) | trans }}">
+            {% if itemAction.getIconFor(item) is not null %}
+                <i class="fa fa-{{ itemAction.getIconFor(item) }}"></i>
+            {% endif %}
+        </a>
+    {% endif %}
+{% endif %}

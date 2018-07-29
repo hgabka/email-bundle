@@ -1,0 +1,6 @@
+{% extends 'KunstmaanAdminListBundle:Default:add_or_edit.html.twig' %}
+
+{% block content %}
+    {% include 'HgabkaKunstmaanEmailBundle:AdminList/EmailTemplate:_usable_vars.html.twig' with { 'template' : entity} %}
+    {{ parent() }}
+{% endblock %}
