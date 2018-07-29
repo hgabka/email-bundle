@@ -1,10 +1,10 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Repository;
+namespace Hgabka\EmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 
 class MessageQueueRepository extends EntityRepository
 {

@@ -1,12 +1,13 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\EventListener;
+namespace Hgabka\EmailBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\AbstractQueue;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\Message;
 
 class EmailSubscriber implements EventSubscriber
 {
@@ -24,11 +25,11 @@ class EmailSubscriber implements EventSubscriber
         $attachments = [];
 
         if ($object instanceof EmailTemplate) {
-            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($object);
+            $attachments = $manager->getRepository(Attachment::class)->getByTemplate($object);
         } elseif ($object instanceof AbstractQueue) {
-            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByQueue($object);
+            $attachments = $manager->getRepository(Attachment::class)->getByQueue($object);
         } elseif ($object instanceof Message) {
-            $attachments = $manager->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($object);
+            $attachments = $manager->getRepository(Attachment::class)->getByMessage($object);
         }
 
         foreach ($attachments as $attachment) {

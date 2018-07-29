@@ -1,12 +1,11 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Entity\TranslatableTrait;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,18 +13,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Email layout.
  *
- * @ORM\Table(name="hg_kuma_email_email_layout")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLayoutRepository")
+ * @ORM\Table(name="hg_email_email_layout")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailLayoutRepository")
  */
-class EmailLayout extends AbstractEntity implements TranslatableInterface
+class EmailLayout implements TranslatableInterface
 {
     use TranslatableTrait;
     use TimestampableEntity;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * @var ArrayCollection|EmailTemplate[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate", cascade={"all"}, mappedBy="layout", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate", cascade={"all"}, mappedBy="layout", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -34,14 +40,14 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
     /**
      * @var ArrayCollection|Message[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message", cascade={"all"}, mappedBy="layout", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\Message", cascade={"all"}, mappedBy="layout", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
     protected $messages;
 
     /**
-     * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayoutTranslation")
+     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailLayoutTranslation")
      */
     protected $translations;
 
@@ -67,6 +73,25 @@ class EmailLayout extends AbstractEntity implements TranslatableInterface
         $this->translations = new ArrayCollection();
         $this->templates = new ArrayCollection();
         $this->messages = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailLayout
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function __toString()

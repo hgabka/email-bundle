@@ -1,8 +1,8 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Mailer;
+namespace Hgabka\EmailBundle\Mailer;
 
-use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
+use Hgabka\EmailBundle\Event\MailerEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class AddHeadersPlugin implements \Swift_Events_SendListener

@@ -1,15 +1,15 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Doctrine\ORM\EntityManager;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
-use Hgabka\KunstmaanEmailBundle\Helper\MailBuilder;
-use Kunstmaan\AdminBundle\Form\WysiwygType;
+use Hgabka\EmailBundle\Entity\EmailLayout;
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageList;
+use Hgabka\EmailBundle\Entity\MessageSendList;
+use Hgabka\EmailBundle\Helper\MailBuilder;
+use Hgabka\UtilsBundle\Form\WysiwygType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;

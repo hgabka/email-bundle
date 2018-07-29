@@ -1,8 +1,8 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
-use Hgabka\KunstmaanExtensionBundle\Form\Type\DateTimepickerType;
+use Hgabka\UtilsBundle\Form\Type\DateTimepickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,16 +17,16 @@ class SendType extends AbstractType
     {
         $builder
             ->add('type', ChoiceType::class, [
-                'label' => 'hgabka_kuma_email.labels.send_at',
+                'label' => 'hg_email.labels.send_at',
                 'choices' => [
-                    'hgabka_kuma_email.labels.send_now' => 'now',
-                    'hgabka_kuma_email.labels.send_later' => 'later',
+                    'hg_email.labels.send_now' => 'now',
+                    'hg_email.labels.send_later' => 'later',
                 ],
             ])
             ->add('time', DateTimepickerType::class, [
-                'label' => 'hgabka_kuma_email.labels.send_time',
+                'label' => 'hg_email.labels.send_time',
                 'constraints' => [
-                    new Range(['min' => 'now', 'minMessage' => 'hgabka_kuma_email.messages.send_at_error']),
+                    new Range(['min' => 'now', 'minMessage' => 'hg_email.messages.send_at_error']),
                 ],
             ])
         ;
@@ -40,7 +40,7 @@ class SendType extends AbstractType
                 new Callback([
                     'callback' => function ($data, ExecutionContextInterface $context) {
                         if ('later' === $data['type'] && empty($data['time'])) {
-                            $context->buildViolation('hgabka_kuma_email.messages.send_time_required')
+                            $context->buildViolation('hg_email.messages.send_time_required')
                                      ->atPath('[time]')
                                      ->addViolation();
                         }

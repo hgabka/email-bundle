@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_email_campaign")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailCampaignRepository")
  */
-class EmailCampaign extends AbstractEntity
+class EmailCampaign
 {
     /**
      * @ORM\Id
@@ -70,6 +70,25 @@ class EmailCampaign extends AbstractEntity
     public function __construct()
     {
         $this->messages = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailCampaign
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Twig;
+namespace Hgabka\EmailBundle\Twig;
 
-use Hgabka\KunstmaanEmailBundle\Helper\MailBuilder;
+use Hgabka\EmailBundle\Helper\MailBuilder;
 
 class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
@@ -31,6 +31,6 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
      */
     public function getName()
     {
-        return 'hgabka_kunstmaanemailbundle_twig_extension';
+        return 'hgabka_emailbundle_twig_extension';
     }
 }

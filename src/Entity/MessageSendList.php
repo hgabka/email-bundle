@@ -1,20 +1,26 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 
 /**
  * MessageSendList.
  *
- * @ORM\Table(name="hg_kuma_email_message_send_list")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSendListRepository")
+ * @ORM\Table(name="hg_email_message_send_list")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageSendListRepository")
  */
-class MessageSendList extends AbstractEntity
+class MessageSendList
 {
     use TimestampableEntity;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
     /**
      * @var MessageList
@@ -31,6 +37,25 @@ class MessageSendList extends AbstractEntity
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $message;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return MessageSendList
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return MessageList

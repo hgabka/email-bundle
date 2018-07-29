@@ -1,11 +1,12 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\EventListener;
+namespace Hgabka\EmailBundle\EventListener;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplateTranslation;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageTranslation;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailTemplateTranslation;
+use Hgabka\EmailBundle\Entity\MessageTranslation;
 
 class EntityLoadListener
 {
@@ -19,7 +20,7 @@ class EntityLoadListener
             $productReflProp->setAccessible(true);
 
             $collection = new ArrayCollection();
-            $attachments = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($obj->getTranslatable(), $obj->getLocale());
+            $attachments = $em->getRepository(Attachment::class)->getByTemplate($obj->getTranslatable(), $obj->getLocale());
             foreach ($attachments as $att) {
                 $collection->add($att);
             }
@@ -32,7 +33,7 @@ class EntityLoadListener
             $productReflProp->setAccessible(true);
 
             $collection = new ArrayCollection();
-            $attachments = $em->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByMessage($obj->getTranslatable(), $obj->getLocale());
+            $attachments = $em->getRepository(Attachment::class)->getByMessage($obj->getTranslatable(), $obj->getLocale());
             foreach ($attachments as $att) {
                 $collection->add($att);
             }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Logger;
+namespace Hgabka\EmailBundle\Logger;
 
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;

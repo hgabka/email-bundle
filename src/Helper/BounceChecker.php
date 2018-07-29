@@ -1,9 +1,9 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Helper;
+namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 
 class BounceChecker
 {
@@ -41,7 +41,7 @@ class BounceChecker
      *
      * @return BounceChecker
      */
-    public function setConfig(array $config): BounceChecker
+    public function setConfig(array $config)
     {
         $this->config = $config;
 

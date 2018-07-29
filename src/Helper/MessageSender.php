@@ -1,14 +1,17 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Helper;
+namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSendList;
-use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
-use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
-use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailQueue;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageQueue;
+use Hgabka\EmailBundle\Entity\MessageSendList;
+use Hgabka\EmailBundle\Enum\MessageStatusEnum;
+use Hgabka\EmailBundle\Enum\QueueStatusEnum;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageSender
@@ -31,8 +34,8 @@ class MessageSender
     /** @var bool */
     protected $forceLog = false;
 
-    /** @var KumaUtils */
-    protected $kumaUtils;
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
 
     /** @var MailBuilder */
     protected $mailBuilder;
@@ -44,7 +47,7 @@ class MessageSender
      * @param \Swift_Mailer       $mailer
      * @param QueueManager        $queueManager
      * @param TranslatorInterface $translator
-     * @param KumaUtils           $kumaUtils    ,
+     * @param HgabkaUtils         $hgabkaUtils    ,
      * @param MailBuilder         $mailBuilder
      */
     public function __construct(
@@ -52,14 +55,14 @@ class MessageSender
         \Swift_Mailer $mailer,
         QueueManager $queueManager,
         TranslatorInterface $translator,
-        KumaUtils $kumaUtils,
+        HgabkaUtils $hgabkaUtils,
         MailBuilder $mailBuilder
     ) {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
         $this->translator = $translator;
         $this->queueManager = $queueManager;
-        $this->kumaUtils = $kumaUtils;
+        $this->hgabkaUtils = $hgabkaUtils;
         $this->mailBuilder = $mailBuilder;
     }
 
@@ -163,7 +166,7 @@ class MessageSender
                 }
 
                 if (!isset($oneRow['culture'])) {
-                    $oneRow['culture'] = $this->kumaUtils->getDefaultLocale();
+                    $oneRow['culture'] = $this->hgabkaUtils->getDefaultLocale();
                 }
 
                 foreach (array_keys($row) as $other) {
@@ -184,7 +187,7 @@ class MessageSender
     public function getRecipientsForMessage($message)
     {
         $recs = [];
-        foreach ($this->kumaUtils->getAvailableLocales() as $culture) {
+        foreach ($this->hgabkaUtils->getAvailableLocales() as $culture) {
             $tos = $this->getTos($message->getTo(), $culture);
             foreach ($tos as $to) {
                 $recs[] = $to;
@@ -237,10 +240,10 @@ class MessageSender
                 }
 
                 if (!in_array($subscriber->getEmail(), $emails, true)) {
-                    $ar = $this->kumaUtils->entityToArray($subscriber, 0);
+                    $ar = $this->hgabkaUtils->entityToArray($subscriber, 0);
                     $recs[] = array_merge($ar, [
                         'to' => [$subscriber->getEmail() => $subscriber->getName()],
-                        'culture' => $subscriber->getLocale() ? $subscriber->getLocale() : $this->kumaUtils->getDefaultLocale(),
+                        'culture' => $subscriber->getLocale() ? $subscriber->getLocale() : $this->hgabkaUtils->getDefaultLocale(),
                     ]);
                     $emails[] = $subscriber->getEmail();
                 }
@@ -269,7 +272,7 @@ class MessageSender
                 continue;
             }
             $to = $rec['to'];
-            $culture = isset($rec['culture']) ? $rec['culture'] : $this->kumaUtils->getDefaultLocale();
+            $culture = isset($rec['culture']) ? $rec['culture'] : $this->hgabkaUtils->getDefaultLocale();
 
             $email = is_array($to) ? key($to) : $to;
 
@@ -408,7 +411,7 @@ class MessageSender
         $toArray = explode("\r\n", trim($tos, "\r\n"));
 
         $recs = [];
-        $culture = $this->kumaUtils->getCurrentLocale($culture);
+        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
         foreach ($toArray as $oneTo) {
             $oneTo = trim($oneTo, "\r\n");
@@ -498,13 +501,13 @@ class MessageSender
      */
     public function enqueueTemplateMessage(EmailTemplate $template, $params = [], $culture = null, $sendAt = null, $campaign = false)
     {
-        $culture = $this->kumaUtils->getCurrentLocale($culture);
+        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
         $message = $this->mailBuilder->createTemplateMessage($template, $params, $culture);
         if (!$message) {
             return false;
         }
-        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($template, $culture);
+        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
 
         return $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
     }
@@ -545,7 +548,7 @@ class MessageSender
     public function getSendDataForMessage(Message $message)
     {
         $data = $this->doctrine
-            ->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')
+            ->getRepository(MessageQueue::class)
             ->getSendDataForMessage($message);
 
         $sum = 0;
@@ -569,16 +572,16 @@ class MessageSender
 
     protected function getQueueRepository()
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue');
+        return $this->doctrine->getRepository(MessageQueue::class);
     }
 
     protected function getEmailQueueRepository()
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue');
+        return $this->doctrine->getRepository(EmailQueue::class);
     }
 
     protected function getMessageRepository()
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Message');
+        return $this->doctrine->getRepository(Message::class);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Logger;
+namespace Hgabka\EmailBundle\Logger;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailLog;
-use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
+use Hgabka\EmailBundle\Entity\EmailLog;
+use Hgabka\EmailBundle\Event\MailerEvent;
 
 class EmailLogger
 {

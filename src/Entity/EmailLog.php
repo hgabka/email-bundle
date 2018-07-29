@@ -1,20 +1,26 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
  * Email log.
  *
- * @ORM\Table(name="hg_kuma_email_email_log")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailLogRepository")
+ * @ORM\Table(name="hg_email_email_log")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailLogRepository")
  */
-class EmailLog extends AbstractEntity
+class EmailLog
 {
     use TimestampableEntity;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
     /**
      * @var string
@@ -78,6 +84,25 @@ class EmailLog extends AbstractEntity
      * @ORM\Column(name="mime", type="string", length=255, nullable=true)
      */
     protected $mime;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailLog
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return string

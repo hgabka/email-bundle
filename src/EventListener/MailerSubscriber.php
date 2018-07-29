@@ -1,9 +1,9 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\EventListener;
+namespace Hgabka\EmailBundle\EventListener;
 
-use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
-use Hgabka\KunstmaanEmailBundle\Logger\EmailLogger;
+use Hgabka\EmailBundle\Event\MailerEvent;
+use Hgabka\EmailBundle\Logger\EmailLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MailerSubscriber implements EventSubscriberInterface

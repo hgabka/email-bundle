@@ -1,11 +1,11 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Doctrine\ORM\EntityManager;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
-use Kunstmaan\AdminBundle\Form\WysiwygType;
+use Hgabka\EmailBundle\Entity\EmailLayout;
+use Hgabka\UtilsBundle\Form\WysiwygType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

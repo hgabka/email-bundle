@@ -1,11 +1,11 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Repository;
+namespace Hgabka\EmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\AbstractQueue;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\Message;
 
 class AttachmentRepository extends EntityRepository
 {

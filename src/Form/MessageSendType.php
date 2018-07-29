@@ -2,7 +2,7 @@
 
 namespace Hgabka\KunstmaanEmailBundle\Form;
 
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\Message;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -35,6 +35,6 @@ class MessageSendType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_message_send_type';
+        return 'hg_email_message_send_type';
     }
 }

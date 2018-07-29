@@ -1,12 +1,13 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Helper;
+namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -30,8 +31,8 @@ class MailBuilder
     /** @var TranslatorInterface */
     protected $translator;
 
-    /** @var KumaUtils */
-    protected $kumaUtils;
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
 
     /** @var RouterInterface */
     protected $router;
@@ -43,7 +44,7 @@ class MailBuilder
      * @param RequestStack        $requestStack
      * @param ParamSubstituter    $paramSubstituter
      * @param TranslatorInterface $translator
-     * @param KumaUtils           $kumaUtils
+     * @param HgabkaUtils         $hgabkaUtils
      * @param RouterInterface     $router
      */
     public function __construct(
@@ -51,21 +52,21 @@ class MailBuilder
         RequestStack $requestStack,
         ParamSubstituter $paramSubstituter,
         TranslatorInterface $translator,
-        KumaUtils $kumaUtils,
+        HgabkaUtils $hgabkaUtils,
         RouterInterface $router
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
         $this->paramSubstituter = $paramSubstituter;
         $this->translator = $translator;
-        $this->kumaUtils = $kumaUtils;
+        $this->hgabkaUtils = $hgabkaUtils;
         $this->router = $router;
     }
 
     /**
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig()
     {
         return $this->config;
     }
@@ -142,7 +143,7 @@ class MailBuilder
             $params['email'] = $email;
         }
 
-        $culture = $this->kumaUtils->getCurrentLocale($culture);
+        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
         $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);
 
@@ -165,7 +166,7 @@ class MailBuilder
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => $name,
                 '%%email%%' => $email,
-                '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
+                '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
             ]);
         } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
@@ -311,7 +312,7 @@ class MailBuilder
      */
     public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])
     {
-        $culture = $this->kumaUtils->getCurrentLocale($culture);
+        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
         $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
         $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -346,7 +347,7 @@ class MailBuilder
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
                 '%%email%%' => isset($params['email']) ? $params['email'] : '',
-                '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
+                '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
             ]);
         } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
@@ -443,7 +444,7 @@ class MailBuilder
      */
     public function getMediaContent($media)
     {
-        return $this->kumaUtils->getMediaContent($media);
+        return $this->hgabkaUtils->getMediaContent($media);
     }
 
     public function getTemplateVars($template)
@@ -453,8 +454,8 @@ class MailBuilder
         }
 
         $params = [
-            'nev' => 'hgabka_kuma_email.default_param_labels.name',
-            'email' => 'hgabka_kuma_email.default_param_labels.email',
+            'nev' => 'hg_email.default_param_labels.name',
+            'email' => 'hg_email.default_param_labels.email',
         ];
 
         if ($template && isset($this->config['mail_template_params'][$template->getSlug()])) {
@@ -467,11 +468,11 @@ class MailBuilder
     public function getMessageVars()
     {
         $params = [
-            'nev' => 'hgabka_kuma_email.default_param_labels.name',
-            'email' => 'hgabka_kuma_email.default_param_labels.email',
-            'webversion' => 'hgabka_kuma_email.default_param_labels.webversion',
-            'unsubscribe' => 'hgabka_kuma_email.default_param_labels.unsubscribe',
-            'unsubscribe_link' => 'hgabka_kuma_email.default_param_labels.unsubscribe_link',
+            'nev' => 'hg_email.default_param_labels.name',
+            'email' => 'hg_email.default_param_labels.email',
+            'webversion' => 'hg_email.default_param_labels.webversion',
+            'unsubscribe' => 'hg_email.default_param_labels.unsubscribe',
+            'unsubscribe_link' => 'hg_email.default_param_labels.unsubscribe_link',
         ];
 
         return $this->paramSubstituter->addVarChars($params);
@@ -502,7 +503,7 @@ class MailBuilder
         }
 
         return strtr($layout, [
-            '%%host%%' => $this->kumaUtils->getSchemeAndHttpHost(),
+            '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
             '%%styles%%' => '',
             '%%title%%' => $subject,
             '%%content%%' => $bodyHtml,
@@ -516,6 +517,6 @@ class MailBuilder
      */
     protected function getSubscriberRepository()
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber');
+        return $this->doctrine->getRepository(MessageSubscriber::class);
     }
 }

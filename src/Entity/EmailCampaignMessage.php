@@ -1,25 +1,31 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
  * Email layout.
  *
- * @ORM\Table(name="hg_kuma_email_email_campaign_message")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailCampaignMessageRepository")
+ * @ORM\Table(name="hg_email_email_campaign_message")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailCampaignMessageRepository")
  */
-class EmailCampaignMessage extends AbstractEntity
+class EmailCampaignMessage
 {
     use TimestampableEntity;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * @var EmailCampaign
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign", inversedBy="messages", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailCampaign", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_campaign_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $campaign;
@@ -27,7 +33,7 @@ class EmailCampaignMessage extends AbstractEntity
     /**
      * @var EmailTemplate
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate", cascade={"persist"})
      * @ORM\JoinColumn(name="email_template_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $template;
@@ -38,6 +44,25 @@ class EmailCampaignMessage extends AbstractEntity
      * @ORM\Column(name="send_after", type="integer")
      */
     protected $sendAfter = 0;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailCampaignMessage
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return EmailCampaign

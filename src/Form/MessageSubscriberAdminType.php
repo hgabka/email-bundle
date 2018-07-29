@@ -1,12 +1,12 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
 use Doctrine\ORM\EntityManager;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber;
-use Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager;
-use Hgabka\KunstmaanExtensionBundle\Form\Type\LocaleType;
-use Hgabka\KunstmaanExtensionBundle\Helper\KumaUtils;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Helper\SubscriptionManager;
+use Hgabka\UtilsBundle\Form\Type\LocaleType;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,8 +26,8 @@ class MessageSubscriberAdminType extends AbstractType
     /** @var SubscriptionManager */
     private $subscriptionManager;
 
-    /** @var KumaUtils */
-    private $kumaUtils;
+    /** @var HgabkaUtils */
+    private $hgabkaUtils;
 
     /**
      * MessageSubscriberAdminType constructor.
@@ -35,12 +35,12 @@ class MessageSubscriberAdminType extends AbstractType
      * @param null|EntityManager        $manager
      * @param null|AuthorizationChecker $authChecker
      */
-    public function __construct(EntityManager $manager, KumaUtils $kumaUtils, SubscriptionManager $subscriptionManager, AuthorizationChecker $authChecker = null)
+    public function __construct(EntityManager $manager, HgabkaUtils $hgabkaUtils, SubscriptionManager $subscriptionManager, AuthorizationChecker $authChecker = null)
     {
         $this->manager = $manager;
         $this->authChecker = $authChecker;
         $this->subscriptionManager = $subscriptionManager;
-        $this->kumaUtils = $kumaUtils;
+        $this->hgabkaUtils = $hgabkaUtils;
     }
 
     /**
@@ -57,18 +57,18 @@ class MessageSubscriberAdminType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $subscriptionManager = $this->subscriptionManager;
-        $kumaUtils = $this->kumaUtils;
+        $hgabkaUtils = $this->hgabkaUtils;
 
         $builder
-            ->add('name', TextType::class, ['label' => 'hgabka_kuma_email.labels.name', 'required' => true])
-            ->add('email', EmailType::class, ['label' => 'hgabka_kuma_email.labels.email', 'required' => true])
-            ->add('locale', LocaleType::class, ['label' => 'hgabka_kuma_email.labels.locale', 'placeholder' => ''])
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($kumaUtils) {
+            ->add('name', TextType::class, ['label' => 'hg_email.labels.name', 'required' => true])
+            ->add('email', EmailType::class, ['label' => 'hg_email.labels.email', 'required' => true])
+            ->add('locale', LocaleType::class, ['label' => 'hg_email.labels.locale', 'placeholder' => ''])
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($hgabkaUtils) {
                 $subscriber = $event->getData();
 
                 if (empty($subscriber->getId())) {
                     $subscriber
-                        ->setLocale($kumaUtils->getDefaultLocale());
+                        ->setLocale($hgabkaUtils->getDefaultLocale());
                 }
             })
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($subscriptionManager) {
@@ -87,6 +87,6 @@ class MessageSubscriberAdminType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_message_subscriber_type';
+        return 'hg_email_message_subscriber_type';
     }
 }

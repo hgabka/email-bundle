@@ -1,27 +1,33 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * MessageList.
  *
- * @ORM\Table(name="hg_kuma_email_message_list")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageListRepository")
+ * @ORM\Table(name="hg_email_message_list")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageListRepository")
  */
-class MessageList extends AbstractEntity
+class MessageList
 {
     use TimestampableEntity;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * @var ArrayCollection|MessageListSubscription[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageListSubscription", cascade={"all"}, mappedBy="list", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageListSubscription", cascade={"all"}, mappedBy="list", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -30,7 +36,7 @@ class MessageList extends AbstractEntity
     /**
      * @var ArrayCollection|MessageSendList[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageSendList", cascade={"all"}, mappedBy="list", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageSendList", cascade={"all"}, mappedBy="list", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -39,7 +45,7 @@ class MessageList extends AbstractEntity
     /**
      * @var ArrayCollection|EmailCampaign[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign", cascade={"all"}, mappedBy="list", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\EmailCampaign", cascade={"all"}, mappedBy="list", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -68,6 +74,25 @@ class MessageList extends AbstractEntity
         $this->listSubscriptions = new ArrayCollection();
         $this->sendLists = new ArrayCollection();
         $this->campaigns = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return MessageList
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

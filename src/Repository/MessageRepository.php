@@ -1,9 +1,9 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Repository;
+namespace Hgabka\EmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
+use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 
 class MessageRepository extends EntityRepository
 {

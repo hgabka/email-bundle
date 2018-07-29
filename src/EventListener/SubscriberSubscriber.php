@@ -1,12 +1,14 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\EventListener;
+namespace Hgabka\EmailBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber;
-use Hgabka\KunstmaanEmailBundle\Helper\QueueManager;
-use Hgabka\KunstmaanEmailBundle\Helper\SubscriptionManager;
+use Hgabka\EmailBundle\Entity\EmailQueue;
+use Hgabka\EmailBundle\Entity\MessageQueue;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Helper\QueueManager;
+use Hgabka\EmailBundle\Helper\SubscriptionManager;
 
 class SubscriberSubscriber implements EventSubscriber
 {
@@ -69,8 +71,8 @@ class SubscriberSubscriber implements EventSubscriber
         }
 
         $em = $args->getObjectManager();
-        $em->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteEmailFromQueue($object->getEmail());
-        $queues = $em->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue')->getQueues();
+        $em->getRepository(MessageQueue::class)->deleteEmailFromQueue($object->getEmail());
+        $queues = $em->getRepository(EmailQueue::class)->getQueues();
         foreach ($queues as $queue) {
             if ($queue->isForEmail($object->getEmail())) {
                 $em->remove($queue);

@@ -1,8 +1,8 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
-use Hgabka\KunstmaanExtensionBundle\Form\Type\LocaleType;
+use Hgabka\UtilsBundle\Form\Type\LocaleType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,6 +34,6 @@ class MessageMailType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_message_mail_type';
+        return 'hg_email_message_mail_type';
     }
 }

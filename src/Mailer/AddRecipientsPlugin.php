@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Mailer;
+namespace Hgabka\EmailBundle\Mailer;
 
 class AddRecipientsPlugin implements \Swift_Events_SendListener
 {

@@ -1,14 +1,15 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Helper;
+namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Hgabka\KunstmaanEmailBundle\Entity\AbstractQueue;
-use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageQueue;
-use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
-use Hgabka\KunstmaanEmailBundle\Logger\MessageLogger;
-use Kunstmaan\MediaBundle\Entity\Media;
+use Hgabka\EmailBundle\Entity\AbstractQueue;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailQueue;
+use Hgabka\EmailBundle\Entity\MessageQueue;
+use Hgabka\EmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Logger\MessageLogger;
+use Hgabka\MediaBundle\Entity\Media;
 
 class QueueManager
 {
@@ -233,7 +234,7 @@ class QueueManager
 
     public function getAttachments(AbstractQueue $queue)
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByQueue($queue);
+        return $this->doctrine->getRepository(Attachment::class)->getByQueue($queue);
     }
 
     public function setError(string $message, AbstractQueue $queue)
@@ -359,7 +360,7 @@ class QueueManager
 
         $count = $sent = $fail = 0;
 
-        $queueRepo = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue');
+        $queueRepo = $this->doctrine->getRepository(EmailQueue::class);
         $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
         foreach ($errorQueues as $queue) {
@@ -430,7 +431,7 @@ class QueueManager
 
         $count = $sent = $fail = 0;
 
-        $queueRepo = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue');
+        $queueRepo = $this->doctrine->getRepository(MessageQueue::class);
         $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
         foreach ($errorQueues as $queue) {

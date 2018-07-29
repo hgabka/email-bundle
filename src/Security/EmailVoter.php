@@ -1,12 +1,11 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Security;
+namespace Hgabka\EmailBundle\Security;
 
-use Hgabka\KunstmaanEmailBundle\Entity\EmailLayout;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate;
-use Hgabka\KunstmaanEmailBundle\Entity\Message;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber;
-use Kunstmaan\AdminBundle\Entity\User;
+use Hgabka\EmailBundle\Entity\EmailLayout;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -48,10 +47,6 @@ class EmailVoter extends Voter
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
         $user = $token->getUser();
-
-        if (!$user instanceof User) {
-            return false;
-        }
 
         switch ($attribute) {
             case self::EDIT:

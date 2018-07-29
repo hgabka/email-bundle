@@ -1,10 +1,10 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Repository;
+namespace Hgabka\EmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageList;
-use Hgabka\KunstmaanEmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Entity\MessageList;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
 
 class MessageListSubscriptionRepository extends EntityRepository
 {

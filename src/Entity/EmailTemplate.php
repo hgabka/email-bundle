@@ -1,12 +1,11 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Entity\TranslatableTrait;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,16 +13,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Email layout.
  *
- * @ORM\Table(name="hg_kuma_email_email_template")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\EmailTemplateRepository")
+ * @ORM\Table(name="hg_email_email_template")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailTemplateRepository")
  */
-class EmailTemplate extends AbstractEntity implements TranslatableInterface
+class EmailTemplate implements TranslatableInterface
 {
     use TranslatableTrait;
     use TimestampableEntity;
 
     /**
-     * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplateTranslation")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation")
      */
     protected $translations;
 
@@ -53,7 +59,7 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
     /**
      * @var EmailLayout
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayout", inversedBy="templates", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout", inversedBy="templates", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
     protected $layout;
@@ -64,6 +70,25 @@ class EmailTemplate extends AbstractEntity implements TranslatableInterface
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailTemplate
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

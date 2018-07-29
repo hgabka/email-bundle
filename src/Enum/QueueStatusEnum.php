@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Enum;
+namespace Hgabka\EmailBundle\Enum;
 
 abstract class QueueStatusEnum
 {

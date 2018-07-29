@@ -1,14 +1,16 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Mailer;
+namespace Hgabka\EmailBundle\Mailer;
+
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 
 class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 {
     /** @var array $redirectConfig */
     protected $redirectConfig;
 
-    /** @var KumaUtils */
-    protected $kumaUtils;
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
 
     /** @var bool */
     protected $debug;
@@ -40,21 +42,21 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     }
 
     /**
-     * @return KumaUtils
+     * @return HgabkaUtils
      */
-    public function getKumaUtils(): KumaUtils
+    public function getHgabkaUtils(): HgabkaUtils
     {
-        return $this->kumaUtils;
+        return $this->hgabkaUtils;
     }
 
     /**
-     * @param KumaUtils $kumaUtils
+     * @param HgabkaUtils $hgabkaUtils
      *
      * @return RedirectPlugin
      */
-    public function setKumaUtils($kumaUtils)
+    public function setHgabkaUtils($hgabkaUtils)
     {
-        $this->kumaUtils = $kumaUtils;
+        $this->hgabkaUtils = $hgabkaUtils;
 
         return $this;
     }
@@ -179,7 +181,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $redirectConfig = $this->redirectConfig;
         $hosts = isset($redirectConfig['hosts']) ? (!is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
-        $ch = $this->kumaUtils->getHost();
+        $ch = $this->hgabkaUtils->getHost();
 
         $currentHost = strtolower($ch);
 

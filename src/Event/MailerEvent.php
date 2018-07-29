@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Event;
+namespace Hgabka\EmailBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 

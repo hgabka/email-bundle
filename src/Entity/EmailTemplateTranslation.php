@@ -1,27 +1,33 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
 use Prezent\Doctrine\Translatable\TranslationInterface;
 
 /**
- * @ORM\Table(name="hg_kuma_email_email_template_translation")
+ * @ORM\Table(name="hg_email_email_template_translation")
  * @ORM\Entity
  */
-class EmailTemplateTranslation extends AbstractEntity implements TranslationInterface
+class EmailTemplateTranslation implements TranslationInterface
 {
     use TranslationTrait;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
     /** @var ArrayCollection |Attachment[] */
     protected $attachments;
 
     /**
-     * @Prezent\Translatable(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailTemplate")
+     * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate")
      */
     protected $translatable;
 
@@ -46,6 +52,25 @@ class EmailTemplateTranslation extends AbstractEntity implements TranslationInte
     public function __construct()
     {
         $this->attachments = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return EmailTemplateTranslation
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

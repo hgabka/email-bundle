@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Enum;
+namespace Hgabka\EmailBundle\Enum;
 
 abstract class MessageStatusEnum
 {
@@ -11,10 +11,10 @@ abstract class MessageStatusEnum
 
     /** @var array user friendly named type */
     protected static $statusName = [
-        self::STATUS_INIT => 'hgabka_kuma_email.statuses.init',
-        self::STATUS_KULDENDO => 'hgabka_kuma_email.statuses.kuldendo',
-        self::STATUS_FOLYAMATBAN => 'hgabka_kuma_email.statuses.folyamatban',
-        self::STATUS_ELKULDVE => 'hgabka_kuma_email.statuses.elkuldve',
+        self::STATUS_INIT => 'hgabka_email.statuses.init',
+        self::STATUS_KULDENDO => 'hgabka_email.statuses.kuldendo',
+        self::STATUS_FOLYAMATBAN => 'hgabka_email.statuses.folyamatban',
+        self::STATUS_ELKULDVE => 'hgabka_email.statuses.elkuldve',
     ];
 
     /**
@@ -53,7 +53,7 @@ abstract class MessageStatusEnum
         $res = [];
 
         foreach (self::getAvailableStatuses() as $status) {
-            $res[$status] = 'hgabka_kuma_email.statuses.'.$status;
+            $res[$status] = 'hgabka_email.statuses.'.$status;
         }
 
         return $res;

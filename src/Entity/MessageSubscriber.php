@@ -1,29 +1,35 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Subscriber.
  *
- * @ORM\Table(name="hg_kuma_email_message_subscriber")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageSubscriberRepository")
+ * @ORM\Table(name="hg_email_message_subscriber")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageSubscriberRepository")
  * @UniqueEntity("email")
  */
-class MessageSubscriber extends AbstractEntity
+class MessageSubscriber
 {
     use TimestampableEntity;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * @var ArrayCollection|MessageListSubscription[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageListSubscription", cascade={"all"}, mappedBy="subscriber", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageListSubscription", cascade={"all"}, mappedBy="subscriber", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -57,6 +63,25 @@ class MessageSubscriber extends AbstractEntity
     public function __construct()
     {
         $this->listSubscriptions = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return MessageSubscriber
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

@@ -48,7 +48,7 @@ class Attachment extends AbstractEntity
     /**
      * @var Media
      *
-     * @ORM\ManyToOne(targetEntity="Kunstmaan\MediaBundle\Entity\Media")
+     * @ORM\ManyToOne(targetEntity="Hgabka\MediaBundle\Entity\Media")
      * @ORM\JoinColumn(name="media_id", referencedColumnName="id")
      * @Assert\NotNull()
      */
@@ -74,6 +74,25 @@ class Attachment extends AbstractEntity
      * @ORM\Column(name="content", type="text", nullable=true)
      */
     protected $content;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return Attachment
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return string

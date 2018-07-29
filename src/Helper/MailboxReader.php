@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Helper;
+namespace Hgabka\EmailBundle\Helper;
 
 class MailboxReader
 {

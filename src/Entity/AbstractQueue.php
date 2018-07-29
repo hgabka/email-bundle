@@ -32,6 +32,25 @@ class AbstractQueue
     protected $status = QueueStatusEnum::STATUS_INIT;
 
     /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return AbstractQueue
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getRetries()

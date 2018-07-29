@@ -1,13 +1,12 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanEmailBundle\Enum\MessageStatusEnum;
-use Hgabka\KunstmaanExtensionBundle\Entity\TranslatableTrait;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
-use Kunstmaan\AdminBundle\Entity\AbstractEntity;
+use Hgabka\EmailBundle\Enum\MessageStatusEnum;
+use Hgabka\UtilsBundle\Entity\TranslatableTrait;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,23 +14,30 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Email layout.
  *
- * @ORM\Table(name="hg_kuma_email_message")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageRepository")
+ * @ORM\Table(name="hg_email_message")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageRepository")
  */
-class Message extends AbstractEntity implements TranslatableInterface
+class Message implements TranslatableInterface
 {
     use TranslatableTrait;
     use TimestampableEntity;
 
     /**
-     * @Prezent\Translations(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageTranslation")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageTranslation")
      */
     protected $translations;
 
     /**
      * @var ArrayCollection|MessageSendList[]
      *
-     * @ORM\OneToMany(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageSendList", cascade={"all"}, mappedBy="message", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageSendList", cascade={"all"}, mappedBy="message", orphanRemoval=true)
      *
      * @Assert\Valid()
      */
@@ -90,7 +96,7 @@ class Message extends AbstractEntity implements TranslatableInterface
     /**
      * @var EmailLayout
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\EmailLayout", inversedBy="messages", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
     protected $layout;
@@ -131,6 +137,25 @@ class Message extends AbstractEntity implements TranslatableInterface
     {
         $this->translations = new ArrayCollection();
         $this->sendLists = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return Message
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

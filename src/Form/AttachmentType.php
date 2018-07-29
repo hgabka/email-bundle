@@ -1,9 +1,9 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
-use Hgabka\KunstmaanEmailBundle\Entity\Attachment;
-use Kunstmaan\MediaBundle\Form\Type\MediaType;
+use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\MediaBundle\Form\Type\MediaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -47,6 +47,6 @@ class AttachmentType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_attachment_type';
+        return 'hg_email_attachment_type';
     }
 }

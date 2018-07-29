@@ -1,15 +1,15 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Entity;
+namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
  * MessageQueue.
  *
- * @ORM\Table(name="hg_kuma_email_message_queue")
- * @ORM\Entity(repositoryClass="Hgabka\KunstmaanEmailBundle\Repository\MessageQueueRepository")
+ * @ORM\Table(name="hg_email_message_queue")
+ * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageQueueRepository")
  */
 class MessageQueue extends AbstractQueue
 {
@@ -39,7 +39,7 @@ class MessageQueue extends AbstractQueue
     /**
      * @var Message
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message")
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\Message")
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $message;
