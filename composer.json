@@ -1,0 +1,42 @@
+{
+    "name": "hgabka/email-bundle",
+    "type": "symfony-bundle",
+    "description": "Email sending bundle with administratable templates",
+    "keywords": [
+    ],
+    "homepage": "https://github.com/hgabka/email-bundle",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Gabe",
+            "email": "hgabka@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : "~7.0",
+        "symfony/symfony": "~3.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "mockery/mockery": "^0.9.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hgabka\\EmailBundle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hgabka\\EmailBundle\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
