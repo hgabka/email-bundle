@@ -21,6 +21,11 @@ class EmailTemplateAdmin extends AbstractAdmin
         $this->builder = $builder;
     }
 
+    public function getBatchActions()
+    {
+        return [];
+    }
+
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
@@ -49,7 +54,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     public function hasAccess($action, $object = null)
     {
         if ('edit' === $action) {
-            return $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hgabka_email.editor_role'));
+            return $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
         }
 
         return parent::hasAccess($action, $object);
@@ -57,7 +62,7 @@ class EmailTemplateAdmin extends AbstractAdmin
 
     protected function configureRoutes(RouteCollection $collection)
     {
-        $collection->clearExcept(['edit', 'list']);
+        $collection->clearExcept(['edit', 'list', 'delete']);
     }
 
     protected function configureListFields(ListMapper $listMapper)
@@ -68,6 +73,12 @@ class EmailTemplateAdmin extends AbstractAdmin
             ])
             ->add('comment', null, [
                 'label' => 'hg_email.label.comment',
+            ])
+            ->add('_action', null, [
+                'actions' => [
+                    'edit' => [],
+                    'delete' => [],
+                ],
             ])
         ;
     }
