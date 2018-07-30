@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
 use Prezent\Doctrine\Translatable\TranslationInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="hg_email_email_template_translation")
@@ -30,6 +31,18 @@ class EmailTemplateTranslation implements TranslationInterface
      * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate")
      */
     protected $translatable;
+
+    /**
+     * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
+     */
+    protected $name;
+
+    /**
+     * @ORM\Column(name="comment", type="text")
+     * @Assert\NotBlank()
+     */
+    protected $comment;
 
     /**
      * @ORM\Column(name="subject", type="string", length=255)
@@ -64,6 +77,7 @@ class EmailTemplateTranslation implements TranslationInterface
 
     /**
      * @param mixed $id
+     *
      * @return EmailTemplateTranslation
      */
     public function setId($id)
@@ -129,6 +143,46 @@ class EmailTemplateTranslation implements TranslationInterface
     public function setContentHtml($contentHtml)
     {
         $this->contentHtml = $contentHtml;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     *
+     * @return EmailTemplateTranslation
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param mixed $comment
+     *
+     * @return EmailTemplateTranslation
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
 
         return $this;
     }

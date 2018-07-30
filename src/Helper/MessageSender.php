@@ -5,12 +5,12 @@ namespace Hgabka\EmailBundle\Helper;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailQueue;
-use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Entity\MessageSendList;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -47,7 +47,7 @@ class MessageSender
      * @param \Swift_Mailer       $mailer
      * @param QueueManager        $queueManager
      * @param TranslatorInterface $translator
-     * @param HgabkaUtils         $hgabkaUtils    ,
+     * @param HgabkaUtils         $hgabkaUtils  ,
      * @param MailBuilder         $mailBuilder
      */
     public function __construct(
@@ -491,19 +491,19 @@ class MessageSender
     }
 
     /**
-     * @param EmailTemplate $template
-     * @param array         $params
-     * @param null          $culture
-     * @param null          $sendAt
-     * @param bool          $campaign
+     * @param EmailTemplateTypeInterface|string $class
+     * @param array                             $params
+     * @param null                              $culture
+     * @param null                              $sendAt
+     * @param bool                              $campaign
      *
      * @return bool|mixed
      */
-    public function enqueueTemplateMessage(EmailTemplate $template, $params = [], $culture = null, $sendAt = null, $campaign = false)
+    public function enqueueTemplateMessage($class, $params = [], $culture = null, $sendAt = null, $campaign = false)
     {
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
-        $message = $this->mailBuilder->createTemplateMessage($template, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($class, $params, $culture);
         if (!$message) {
             return false;
         }
@@ -513,36 +513,25 @@ class MessageSender
     }
 
     /**
-     * @param EmailTemplate $template
-     * @param array         $params
-     * @param null          $culture
+     * @param EmailTemplateTypeInterface|string $class
+     * @param array                             $params
+     * @param null                              $culture
      *
      * @return bool|int|mixed
      */
-    public function sendTemplateMessage(EmailTemplate $template, $params = [], $culture = null)
+    public function sendTemplateMail($class, $params = [], $culture = null)
     {
         if ($this->config['force_queueing']) {
-            return $this->enqueueTemplateMessage($template, $params, $culture, null);
+            return $this->enqueueTemplateMessage($class, $params, $culture, null);
         }
 
-        $message = $this->mailBuilder->createTemplateMessage($template, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($class, $params, $culture);
 
         if (!$message) {
             return false;
         }
 
         return $this->mailer->send($message);
-    }
-
-    public function sendTemplateMail($name, $params = [], $culture = null)
-    {
-        $template = $this->mailBuilder->getTemplate($name);
-
-        if (!$template) {
-            return false;
-        }
-
-        return $this->sendTemplateMessage($template, $params, $culture);
     }
 
     public function getSendDataForMessage(Message $message)

@@ -75,6 +75,7 @@ class MessageSubscriber
 
     /**
      * @param mixed $id
+     *
      * @return MessageSubscriber
      */
     public function setId($id)

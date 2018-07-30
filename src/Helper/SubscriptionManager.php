@@ -22,9 +22,9 @@ class SubscriptionManager
     /**
      * SubscriptionManager constructor.
      *
-     * @param Registry  $doctrine
+     * @param Registry    $doctrine
      * @param HgabkaUtils $hgabkaUtils
-     * @param bool      $editableLists
+     * @param bool        $editableLists
      */
     public function __construct(Registry $doctrine, HgabkaUtils $hgabkaUtils, bool $editableLists)
     {

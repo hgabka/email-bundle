@@ -86,6 +86,7 @@ class MessageList
 
     /**
      * @param mixed $id
+     *
      * @return MessageList
      */
     public function setId($id)

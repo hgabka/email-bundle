@@ -3,7 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\KunstmaanExtensionBundle\Traits\TimestampableEntity;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
  * MessageSendList.
@@ -25,7 +25,7 @@ class MessageSendList
     /**
      * @var MessageList
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\MessageList", inversedBy="sendLists", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageList", inversedBy="sendLists", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $list;
@@ -33,7 +33,7 @@ class MessageSendList
     /**
      * @var Message
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\KunstmaanEmailBundle\Entity\Message", inversedBy="sendLists", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\Message", inversedBy="sendLists", cascade={"persist"})
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $message;
@@ -48,6 +48,7 @@ class MessageSendList
 
     /**
      * @param mixed $id
+     *
      * @return MessageSendList
      */
     public function setId($id)

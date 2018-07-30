@@ -94,7 +94,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
      *
      * @return RedirectPlugin
      */
-    public function setDebug($debug): RedirectPlugin
+    public function setDebug($debug): self
     {
         $this->debug = $debug;
 
@@ -114,7 +114,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
      *
      * @return RedirectPlugin
      */
-    public function setRedirectConfig(array $redirectConfig): RedirectPlugin
+    public function setRedirectConfig(array $redirectConfig): self
     {
         $this->redirectConfig = $redirectConfig;
 

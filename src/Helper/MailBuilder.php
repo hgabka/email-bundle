@@ -7,9 +7,11 @@ use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
-use Kunstmaan\MediaBundle\Entity\Media;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -36,6 +38,9 @@ class MailBuilder
 
     /** @var RouterInterface */
     protected $router;
+
+    /** @var array|EmailTemplateTypeInterface[] */
+    protected $templateTypes = [];
 
     /**
      * MailBuilder constructor.
@@ -116,32 +121,52 @@ class MailBuilder
     }
 
     /**
-     * @param EmailTemplate $template
-     * @param array         $parameters
-     * @param null          $culture
+     * @param EmailTemplateTypeInterface|string $class
+     * @param array                             $parameters
+     * @param null                              $culture
      *
      * @return bool|\Swift_Message
      */
-    public function createTemplateMessage(EmailTemplate $template, $parameters = [], $culture = null)
+    public function createTemplateMessage($class, $parameters = [], $culture = null)
     {
+        if ($class instanceof EmailTemplateTypeInterface) {
+            $templateType = $class;
+        } elseif (!$templateType = $this->getTemplateType($class)) {
+            throw new \InvalidArgumentException('Invalid template type: '.$class);
+        }
+
+        $template = $this->getTemplateEntity($templateType);
         $parameters['from'] = empty($parameters['from']) ? $this->getDefaultFrom() : $parameters['from'];
         $parameters['to'] = empty($parameters['to']) ? $this->getDefaultTo() : $parameters['to'];
 
         if (empty($parameters['from']) || empty($parameters['to'])) {
             return false;
         }
-        $params = $this->paramSubstituter->normalizeParams(empty($parameters['params']) ? [] : $parameters['params']);
-        $to = $this->translateEmailAddress($parameters['to']);
 
-        $name = is_array($to) ? current($to) : '';
-        $email = is_array($to) ? key($to) : $to;
-        if (!isset($params['nev'])) {
-            $params['nev'] = $name;
+        if (!empty($parameters['params'])) {
+            $accessor =
+                PropertyAccess::createPropertyAccessorBuilder()
+                              ->enableExceptionOnInvalidIndex()
+                              ->getPropertyAccessor()
+            ;
+            foreach ($parameters['params'] as $key => $value) {
+                $accessor->setValue($templateType, $key, $value);
+            }
         }
 
-        if (!isset($params['email'])) {
-            $params['email'] = $email;
+        $params = [];
+        foreach ($templateType->getVariables() as $placeholder => $data) {
+            $params[$placeholder] = [
+                'value' => $data['value'],
+            ];
+
+            if (isset($data['type'])) {
+                $params[$placeholder]['type'] = $data['type'];
+            }
         }
+
+        $params = $this->paramSubstituter->normalizeParams($params);
+        list('name' => $name, 'email' => $email) = $this->addDefaultParams($parameters, $params);
 
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
@@ -195,7 +220,7 @@ class MailBuilder
             $mail->addPart($bodyHtml, 'text/html');
         }
 
-        $attachments = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:Attachment')->getByTemplate($template, $culture);
+        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
 
         foreach ($attachments as $attachment) {
             /** @var Attachment $attachment */
@@ -268,7 +293,7 @@ class MailBuilder
             return null;
         }
 
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['name' => $name]);
+        return $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['name' => $name]);
     }
 
     /**
@@ -282,7 +307,7 @@ class MailBuilder
             return null;
         }
 
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailTemplate')->findOneBy(['slug' => $slug]);
+        return $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['slug' => $slug]);
     }
 
     /**
@@ -303,10 +328,10 @@ class MailBuilder
 
     /**
      * @param Message $message
-     * @param $to
-     * @param null  $culture
-     * @param bool  $addCcs
-     * @param array $parameters
+     * @param         $to
+     * @param null    $culture
+     * @param bool    $addCcs
+     * @param array   $parameters
      *
      * @return \Swift_Message
      */
@@ -315,12 +340,12 @@ class MailBuilder
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
         $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
-        $params['webversion'] = $this->router->generate('hgabka_kunstmaan_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
-        $unsubscribeUrl = $this->router->generate('hgabka_kunstmaan_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
-        $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hgabka_kunstmaan_email.message_unsubscribe_default_text').'</a>';
+        $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hg_email.message_unsubscribe_default_text').'</a>';
         $params['unsubscribe'] = $unsubscribeUrl;
         $params['unsubscribe_link'] = $unsubscribeLink;
 
@@ -377,7 +402,7 @@ class MailBuilder
 
         $attachments = $this
             ->doctrine
-            ->getRepository('HgabkaKunstmaanEmailBundle:Attachment')
+            ->getRepository(Attachment::class)
             ->getByMessage($message, $culture)
         ;
 
@@ -478,6 +503,71 @@ class MailBuilder
         return $this->paramSubstituter->addVarChars($params);
     }
 
+    public function addTemplateType(EmailTemplateTypeInterface $templateType)
+    {
+        $alias = get_class($templateType);
+
+        $this->templateTypes[$alias] = $templateType;
+    }
+
+    public function getTemplateType($class)
+    {
+        return $this->templateTypes[$class] ?? null;
+    }
+
+    public function getTemplateTypeEntities()
+    {
+        foreach ($this->templateTypes as $class => $type) {
+            $this->getTemplateEntity($type);
+        }
+    }
+
+    /**
+     * @return array|EmailTemplateTypeInterface[]
+     */
+    public function getTemplateTypes()
+    {
+        return $this->templateTypes;
+    }
+
+    protected function addDefaultParams($parameters, &$params)
+    {
+        $to = $this->translateEmailAddress($parameters['to']);
+        $from = $this->translateEmailAddress($parameters['from']);
+
+        $toName = is_array($to) ? current($to) : $to;
+
+        $toEmail = is_array($to) ? key($to) : $to;
+        $fromName = is_array($from) ? current($from) : $from;
+        $fromEmail = is_array($from) ? key($from) : $from;
+
+        $toNameLabel = $this->translator->trans('hg_email.variables.to').'.'.$this->translator->trans('hg_email.variables.name');
+        $toEmailLabel = $this->translator->trans('hg_email.variables.to').'.'.$this->translator->trans('hg_email.variables.name');
+        $fromNameLabel = $this->translator->trans('hg_email.variables.from').'.'.$this->translator->trans('hg_email.variables.name');
+        $fromEmailLabel = $this->translator->trans('hg_email.variables.from').'.'.$this->translator->trans('hg_email.variables.name');
+
+        if (!isset($params[$toNameLabel])) {
+            $params[$toNameLabel] = $toName;
+        }
+
+        if (!isset($params[$toEmailLabel])) {
+            $params[$toEmailLabel] = $toEmail;
+        }
+
+        if (!isset($params[$fromNameLabel])) {
+            $params[$fromNameLabel] = $fromName;
+        }
+
+        if (!isset($params[$fromEmailLabel])) {
+            $params[$fromEmailLabel] = $fromEmail;
+        }
+
+        return [
+            'name' => is_array($to) ? current($to) : '',
+            'email' => $toEmail,
+        ];
+    }
+
     protected function createSwiftAttachment(Media $media)
     {
         $content = $this->getMediaContent($media);
@@ -518,5 +608,34 @@ class MailBuilder
     protected function getSubscriberRepository()
     {
         return $this->doctrine->getRepository(MessageSubscriber::class);
+    }
+
+    protected function getTemplateEntity(EmailTemplateTypeInterface $templateType)
+    {
+        if (empty($templateType->getEntity())) {
+            $template = $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['type' => get_class($templateType)]);
+            if (!$template) {
+                $template = new EmailTemplate();
+                $template
+                    ->setType(get_class($templateType));
+
+                foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
+                    $template->translate($locale)
+                             ->setName($this->translator->trans($templateType->getName(), [], 'messages', $locale))
+                             ->setComment($this->translator->trans($templateType->getComment(), [], 'messages', $locale))
+                             ->setSubject($this->translator->trans($templateType->getDefaultSubject(), [], 'messages', $locale))
+                             ->setContentText($this->translator->trans($templateType->getDefaultTextContent(), [], 'messages', $locale))
+                             ->setContentHtml($this->translator->trans($templateType->getDefaultHtmlContent(), [], 'messages', $locale))
+                    ;
+                }
+                $template->setCurrentLocale($this->hgabkaUtils->getCurrentLocale());
+                $this->doctrine->getManager()->persist($template);
+                $this->doctrine->getManager()->flush();
+            }
+
+            $templateType->setEntity($template);
+        }
+
+        return $templateType->getEntity();
     }
 }

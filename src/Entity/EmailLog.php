@@ -95,6 +95,7 @@ class EmailLog
 
     /**
      * @param mixed $id
+     *
      * @return EmailLog
      */
     public function setId($id)

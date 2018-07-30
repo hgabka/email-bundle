@@ -149,6 +149,7 @@ class Message implements TranslatableInterface
 
     /**
      * @param mixed $id
+     *
      * @return Message
      */
     public function setId($id)

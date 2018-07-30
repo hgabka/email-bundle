@@ -75,6 +75,11 @@ class EmailLayout implements TranslatableInterface
         $this->messages = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
     /**
      * @return mixed
      */
@@ -85,6 +90,7 @@ class EmailLayout implements TranslatableInterface
 
     /**
      * @param mixed $id
+     *
      * @return EmailLayout
      */
     public function setId($id)
@@ -92,11 +98,6 @@ class EmailLayout implements TranslatableInterface
         $this->id = $id;
 
         return $this;
-    }
-
-    public function __toString()
-    {
-        return $this->getName();
     }
 
     /**

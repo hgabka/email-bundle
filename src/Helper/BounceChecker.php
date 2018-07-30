@@ -3,6 +3,8 @@
 namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Hgabka\EmailBundle\Entity\EmailQueue;
+use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 
 class BounceChecker
@@ -65,7 +67,7 @@ class BounceChecker
             $config = $this->config;
             $action = isset($config['after_process']) ? $config['after_process'] : 'leave_as_is';
             if (isset($headers['Hg-Message-Id'])) {
-                $queue = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->find($headers['Hg-Message-Id']);
+                $queue = $this->doctrine->getRepository(MessageQueue::class)->find($headers['Hg-Message-Id']);
 
                 if ($queue) {
                     $queue->setStatus(QueueStatusEnum::STATUS_VISSZAPATTANT);
@@ -75,7 +77,7 @@ class BounceChecker
             }
 
             if (isset($headers['Hg-Email-Id'])) {
-                $queue = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue')->find($headers['Hg-Email-Id']);
+                $queue = $this->doctrine->getRepository(EmailQueue::class)->find($headers['Hg-Email-Id']);
 
                 if ($queue) {
                     $queue->setStatus(QueueStatusEnum::STATUS_VISSZAPATTANT);

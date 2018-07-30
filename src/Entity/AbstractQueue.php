@@ -41,6 +41,7 @@ class AbstractQueue
 
     /**
      * @param mixed $id
+     *
      * @return AbstractQueue
      */
     public function setId($id)

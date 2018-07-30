@@ -113,12 +113,12 @@ class MessageAdminType extends AbstractType
                 // Egyelőre csak a default listára
                 /** @var MessageList $list */
                 $list = $this->manager
-                    ->getRepository('HgabkaKunstmaanEmailBundle:MessageList')
+                    ->getRepository(MessageList::class)
                     ->getDefaultList()
                 ;
                 if ($message->getId()) {
                     $messageList = $this->manager
-                        ->getRepository('HgabkaKunstmaanEmailBundle:MessageSendList')
+                        ->getRepository(MessageSendList::class)
                         ->findForMessageAndList($message, $list)
                     ;
                 }
@@ -141,6 +141,6 @@ class MessageAdminType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_message_type';
+        return 'hg_email_message_type';
     }
 }

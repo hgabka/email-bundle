@@ -55,6 +55,7 @@ class EmailCampaignMessage
 
     /**
      * @param mixed $id
+     *
      * @return EmailCampaignMessage
      */
     public function setId($id)

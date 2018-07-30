@@ -1,56 +1,65 @@
 parameters:
-    hgabka_email.mail_builder.class: 'Hgabka\EmailBundle\Helper\MailBuilder'
-    hgabka_email.message_logger.class: 'Hgabka\EmailBundle\Logger\MessageLogger'
-    hgabka_email.message_sender.class: 'Hgabka\EmailBundle\Helper\MessageSender'
-    hgabka_email.queue_manager.class: 'Hgabka\KunstmaanEmailBundle\Helper\QueueManager'
+    hg_email.mail_builder.class: 'Hgabka\EmailBundle\Helper\MailBuilder'
+    hg_email.message_logger.class: 'Hgabka\EmailBundle\Logger\MessageLogger'
+    hg_email.message_sender.class: 'Hgabka\EmailBundle\Helper\MessageSender'
+    hg_email.queue_manager.class: 'Hgabka\EmailBundle\Helper\QueueManager'
 
 services:
-    hgabka_email.mail_builder:
-        class: '%hgabka_email.mail_builder.class%'
-        arguments: ["@doctrine", "@request_stack", "@hgabka_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router"]
+    hg_email.admin.email_template:
+        class: Hgabka\EmailBundle\Admin\EmailTemplateAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.email_template.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+        arguments: [null, Hgabka\EmailBundle\Entity\EmailTemplate, HgabkaEmailBundle:EmailTemplateAdmin]
+        calls:
+          - [setBuilder, ["@hg_email.mail_builder"]]
+          - [setAuthChecker, ["@security.authorization_checker"]]
 
-    hgabka_email.message_sender:
-        class: '%hgabka_email.message_sender.class%'
-        arguments: ["@doctrine", "@mailer", "@hgabka_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hgabka_email.mail_builder"]
+    hg_email.mail_builder:
+        class: '%hg_email.mail_builder.class%'
+        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router"]
 
-    hgabka_email.message_logger:
-        class: '%hgabka_email.message_logger.class%'
+    hg_email.message_sender:
+        class: '%hg_email.message_sender.class%'
+        arguments: ["@doctrine", "@mailer", "@hg_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hg_email.mail_builder"]
+
+    hg_email.message_logger:
+        class: '%hg_email.message_logger.class%'
         arguments: ["@logger", '']
 
-    hgabka_email.email_logger:
+    hg_email.email_logger:
         class: 'Hgabka\EmailBundle\Logger\EmailLogger'
         arguments: ["@doctrine"]
 
-    hgabka_email.queue_manager:
-        class: '%hgabka_email.queue_manager.class%'
-        arguments: ["@doctrine", "@mailer", "@hgabka_email.message_logger", '', '', '', '', '']
+    hg_email.queue_manager:
+        class: '%hg_email.queue_manager.class%'
+        arguments: ["@doctrine", "@mailer", "@hg_email.message_logger", '', '', '', '', '']
         calls:
             - method: setMailBuilder
               arguments:
-                  - "@hgabka_email.mail_builder"
+                  - "@hg_email.mail_builder"
 
-    hgabka_email.param_substituter:
+    hg_email.param_substituter:
         class: 'Hgabka\EmailBundle\Helper\ParamSubstituter'
         arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", []]
 
-    hgabka_email.email_subscriber:
+    hg_email.email_subscriber:
         class: Hgabka\EmailBundle\EventListener\EmailSubscriber
         tags:
             - { name: doctrine.event_subscriber, connection: default }
 
-    hgabka_email.mailer_subscriber:
+    hg_email.mailer_subscriber:
         class: Hgabka\EmailBundle\EventListener\MailerSubscriber
-        arguments: ["@hgabka_email.email_logger", '']
+        arguments: ["@hg_email.email_logger", '']
         tags:
             - { name: kernel.event_subscriber }
 
-    hgabka_email.mail_logger_plugin:
+    hg_email.mail_logger_plugin:
         class: Hgabka\EmailBundle\Mailer\MessageLoggerPlugin
         arguments: ["@event_dispatcher"]
         tags:
             - { name: "swiftmailer.default.plugin" }
 
-    hgabka_email.redirect_plugin:
+    hg_email.redirect_plugin:
         class: Hgabka\EmailBundle\Mailer\RedirectPlugin
         arguments: [""]
         calls:
@@ -65,85 +74,79 @@ services:
             - { name: "swiftmailer.default.plugin" }
 
 
-    hgabka_kunstmaan_email.add_headers_plugin:
+    hg_email.add_headers_plugin:
         class: Hgabka\EmailBundle\Mailer\AddHeadersPlugin
         arguments: ["@event_dispatcher"]
         tags:
             - { name: "swiftmailer.default.plugin" }
 
-    hgabka_email.add_recipients_plugin:
+    hg_email.add_recipients_plugin:
         class: Hgabka\EmailBundle\Mailer\AddRecipientsPlugin
         tags:
             - { name: "swiftmailer.default.plugin" }
 
-    hgabka_email.add_return_path_plugin:
+    hg_email.add_return_path_plugin:
         class: Hgabka\EmailBundle\Mailer\AddReturnPathPlugin
         tags:
             - { name: "swiftmailer.default.plugin" }
 
-    hgabka_email.mailbox_reader:
+    hg_email.mailbox_reader:
         class: Hgabka\EmailBundle\Helper\MailboxReader
-        arguments: ["@hgabka_email.email_parser", '', '', '', '', '', 'INBOX', '']
+        arguments: ["@hg_email.email_parser", '', '', '', '', '', 'INBOX', '']
 
-    hgabka_email.bounce_checker:
+    hg_email.bounce_checker:
         class: Hgabka\EmailBundle\Helper\BounceChecker
-        arguments: ["@doctrine", "@hgabka_email.mailbox_reader"]
+        arguments: ["@doctrine", "@hg_email.mailbox_reader"]
 
-    hgabka_email.email_parser:
+    hg_email.email_parser:
         class: Hgabka\EmailBundle\Helper\EmailParser
 
-    hgabka_email.email_template_type:
+    hg_email.email_template_type:
         class: Hgabka\EmailBundle\Form\EmailTemplateAdminType
         arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
         tags:
             - { name: form.type }
 
-    hgabka_email.subscriber_type:
+    hg_email.subscriber_type:
         class: Hgabka\EmailBundle\Form\MessageSubscriberAdminType
-        arguments: ["@doctrine.orm.entity_manager", "@hgabka_utils.hgabka_utils", "@hgabka_email.subscription_manager", "@security.authorization_checker"]
+        arguments: ["@doctrine.orm.entity_manager", "@hgabka_utils.hgabka_utils", "@hg_email.subscription_manager", "@security.authorization_checker"]
         tags:
             - { name: form.type }
 
-    hgabka_email.message_type:
+    hg_email.message_type:
         class: Hgabka\EmailBundle\Form\MessageAdminType
-        arguments: ["@doctrine.orm.entity_manager", "@hgabka_email.mail_builder", "@security.authorization_checker"]
+        arguments: ["@doctrine.orm.entity_manager", "@hg_email.mail_builder", "@security.authorization_checker"]
         tags:
             - { name: form.type }
 
-    hgabka_email.event_listener.entity_load:
+    hg_email.event_listener.entity_load:
         class: Hgabka\EmailBundle\EventListener\EntityLoadListener
         tags:
             - { name: doctrine.event_listener, event: postLoad }
 
-    hgabka_email.adminlist_subscriber:
-        class: Hgabka\EmailBundle\EventListener\AdminListSubscriber
-        arguments: ["@doctrine"]
-        tags:
-            - { name: kernel.event_subscriber }
-
-    hgabka_email.email_twig_extension:
+    hg_email.email_twig_extension:
         class: Hgabka\EmailBundle\Twig\EmailTwigExtension
-        arguments: ['@hgabka_email.mail_builder']
+        arguments: ['@hg_email.mail_builder']
         public: false
         tags:
             - { name: twig.extension }
 
-    hgabka_email.email_voter:
+    hg_email.email_voter:
         class:  Hgabka\EmailBundle\Security\EmailVoter
         arguments: ['@security.access.decision_manager', '']
         tags:
             - { name: security.voter }
         public: false
 
-    hgabka_email.subscription_manager:
+    hg_email.subscription_manager:
         class: 'Hgabka\EmailBundle\Helper\SubscriptionManager'
         arguments: ["@doctrine", "@hgabka_utils.hgabka_utils", '']
 
-    hgabka_email.subscriber_subscriber:
+    hg_email.subscriber_subscriber:
         class: Hgabka\EmailBundle\EventListener\SubscriberSubscriber
-        arguments: ['@hgabka_kunstmaan_email.subscription_manager']
+        arguments: ['@hg_email.subscription_manager']
         tags:
             - { name: doctrine.event_subscriber, connection: default }
 
-    Hgabka\EmailBundle\Helper\MessageSender: "@hgabka_email.message_sender"
-    Hgabka\EmailBundle\Helper\MailBuilder: "@hgabka_email.mail_builder"
+    Hgabka\EmailBundle\Helper\MessageSender: "@hg_email.message_sender"
+    Hgabka\EmailBundle\Helper\MailBuilder: "@hg_email.mail_builder"

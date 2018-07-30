@@ -3,8 +3,8 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Hgabka\MediaBundle\Entity\Media;
+use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_attachment")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\AttachmentRepository")
  */
-class Attachment extends AbstractEntity
+class Attachment
 {
     use TimestampableEntity;
 
@@ -85,6 +85,7 @@ class Attachment extends AbstractEntity
 
     /**
      * @param mixed $id
+     *
      * @return Attachment
      */
     public function setId($id)

@@ -1,5 +1,16 @@
+breadcrumb:
+    link_email_template_list: Email sablonok
+
 hg_email:
-    labels:
+    variables:
+        to: cimzett
+        name: nev
+        email: email
+    group: Üzenetek
+    admin:
+        email_template:
+            label: Email sablonok
+    label:
         name: Név
         comment: Leírás
         slug: Slug

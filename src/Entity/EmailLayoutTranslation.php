@@ -44,6 +44,7 @@ class EmailLayoutTranslation implements TranslationInterface
 
     /**
      * @param mixed $id
+     *
      * @return EmailLayoutTranslation
      */
     public function setId($id)

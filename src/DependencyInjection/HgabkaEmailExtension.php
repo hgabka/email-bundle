@@ -2,12 +2,16 @@
 
 namespace Hgabka\EmailBundle\DependencyInjection;
 
+use Hgabka\EmailBundle\Helper\MailBuilder;
+use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class HgabkaKunstmaanEmailExtension extends Extension
+class HgabkaEmailExtension extends Extension implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
@@ -20,41 +24,41 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $builderDefinition = $container->getDefinition('hgabka_email.mail_builder');
+        $builderDefinition = $container->getDefinition('hg_email.mail_builder');
         $builderDefinition->addMethodCall('setConfig', [$config]);
 
-        $senderDefinition = $container->getDefinition('hgabka_email.message_sender');
+        $senderDefinition = $container->getDefinition('hg_email.message_sender');
         $senderDefinition->addMethodCall('setConfig', [$config]);
 
-        $loggerDefinition = $container->getDefinition('hgabka_email.message_logger');
+        $loggerDefinition = $container->getDefinition('hg_email.message_logger');
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
-        $queueDefinition = $container->getDefinition('hgabka_email.queue_manager');
+        $queueDefinition = $container->getDefinition('hg_email.queue_manager');
         $queueDefinition->replaceArgument(3, $config['bounce_checking']);
         $queueDefinition->replaceArgument(4, $config['max_retries']);
         $queueDefinition->replaceArgument(5, $config['send_limit']);
         $queueDefinition->replaceArgument(6, $config['message_logging']);
         $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
 
-        $substituterDefinition = $container->getDefinition('hgabka_email.param_substituter');
+        $substituterDefinition = $container->getDefinition('hg_email.param_substituter');
         $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
 
-        $mailerSubscriberDefinition = $container->getDefinition('hgabka_email.mailer_subscriber');
+        $mailerSubscriberDefinition = $container->getDefinition('hg_email.mailer_subscriber');
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
 
-        $redirectPluginDefinition = $container->getDefinition('hgabka_email.redirect_plugin');
+        $redirectPluginDefinition = $container->getDefinition('hg_email.redirect_plugin');
         $redirectPluginDefinition->replaceArgument(0, $config['redirect']['recipients'] ?? []);
         $redirectPluginDefinition->addMethodCall('setRedirectConfig', [$config['redirect']]);
-        $addHeadersPluginDefinition = $container->getDefinition('hgabka_email.add_headers_plugin');
+        $addHeadersPluginDefinition = $container->getDefinition('hg_email.add_headers_plugin');
         $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_headers']]);
 
-        $addHeadersPluginDefinition = $container->getDefinition('hgabka_email.add_recipients_plugin');
+        $addHeadersPluginDefinition = $container->getDefinition('hg_email.add_recipients_plugin');
         $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_recipients']]);
 
-        $addReturnPathPluginDefinition = $container->getDefinition('hgabka_email.add_return_path_plugin');
+        $addReturnPathPluginDefinition = $container->getDefinition('hg_email.add_return_path_plugin');
         $addReturnPathPluginDefinition->addMethodCall('setConfig', [$config['return_path']]);
 
-        $mailReaderDefinition = $container->getDefinition('hgabka_email.mailbox_reader');
+        $mailReaderDefinition = $container->getDefinition('hg_email.mailbox_reader');
         $bcConfig = $config['bounce_checking'];
         $mailReaderDefinition->replaceArgument(1, $bcConfig['host'] ?? null);
         $mailReaderDefinition->replaceArgument(2, $bcConfig['port'] ?? null);
@@ -62,15 +66,42 @@ class HgabkaKunstmaanEmailExtension extends Extension
         $mailReaderDefinition->replaceArgument(4, $bcConfig['pass'] ?? null);
         $mailReaderDefinition->replaceArgument(6, $bcConfig['type'] ?? null);
 
-        $bounceCheckerDefinition = $container->getDefinition('hgabka_email.bounce_checker');
+        $bounceCheckerDefinition = $container->getDefinition('hg_email.bounce_checker');
         $bounceCheckerDefinition->addMethodCall('setConfig', [$bcConfig]);
 
-        $voterDefinition = $container->getDefinition('hgabka_email.email_voter');
+        $voterDefinition = $container->getDefinition('hg_email.email_voter');
         $voterDefinition->replaceArgument(1, $config['editor_role']);
 
-        $subscriptionManagerDefinition = $container->getDefinition('hgabka_email.subscription_manager');
+        $subscriptionManagerDefinition = $container->getDefinition('hg_email.subscription_manager');
         $subscriptionManagerDefinition->replaceArgument(2, $config['editable_lists']);
 
-        $container->setParameter('hgabka_email.editor_role', $config['editor_role']);
+        $container->setParameter('hg_email.editor_role', $config['editor_role']);
+
+        $container
+            ->registerForAutoconfiguration(EmailTemplateTypeInterface::class)
+            ->addTag('hg_email.email_template_type')
+        ;
+    }
+
+    public function process(ContainerBuilder $container)
+    {
+        // always first check if the primary service is defined
+        if (!$container->has(MailBuilder::class)) {
+            return;
+        }
+
+        $definition = $container->findDefinition(MailBuilder::class);
+
+        // find all service IDs with the app.mail_transport tag
+        $taggedServices = $container->findTaggedServiceIds('hg_email.email_template_type');
+
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                $type = new Reference($id);
+                $definition->addMethodCall('addTemplateType', [
+                    $type,
+                ]);
+            }
+        }
     }
 }

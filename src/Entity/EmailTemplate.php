@@ -8,7 +8,6 @@ use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Prezent\Doctrine\Translatable\Annotation as Prezent;
 use Prezent\Doctrine\Translatable\TranslatableInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Email layout.
@@ -34,27 +33,9 @@ class EmailTemplate implements TranslatableInterface
     protected $translations;
 
     /**
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
+     * @ORM\Column(name="type", type="text", nullable=true)
      */
-    protected $name;
-
-    /**
-     * @ORM\Column(name="slug", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    protected $slug;
-
-    /**
-     * @ORM\Column(name="comment", type="text")
-     * @Assert\NotBlank()
-     */
-    protected $comment;
-
-    /**
-     * @ORM\Column(name="is_system", type="boolean")
-     */
-    protected $isSystem = false;
+    protected $type;
 
     /**
      * @var EmailLayout
@@ -82,6 +63,7 @@ class EmailTemplate implements TranslatableInterface
 
     /**
      * @param mixed $id
+     *
      * @return EmailTemplate
      */
     public function setId($id)
@@ -96,17 +78,18 @@ class EmailTemplate implements TranslatableInterface
      */
     public function getName()
     {
-        return $this->name;
+        return $this->translate()->getName();
     }
 
     /**
-     * @param string $name
+     * @param string     $name
+     * @param null|mixed $locale
      *
      * @return EmailTemplate
      */
-    public function setName($name)
+    public function setName($name, $locale = null)
     {
-        $this->name = $name;
+        $this->translate($locale)->setName($name);
 
         return $this;
     }
@@ -116,7 +99,7 @@ class EmailTemplate implements TranslatableInterface
      */
     public function getComment()
     {
-        return $this->comment;
+        return $this->translate()->getComment();
     }
 
     /**
@@ -126,27 +109,27 @@ class EmailTemplate implements TranslatableInterface
      */
     public function setComment($comment)
     {
-        $this->comment = $comment;
+        $this->translate($locale)->setComment($comment);
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getSlug()
+    public function getType()
     {
-        return $this->slug;
+        return $this->type;
     }
 
     /**
-     * @param string $slug
+     * @param mixed $type
      *
      * @return EmailTemplate
      */
-    public function setSlug($slug)
+    public function setType($type)
     {
-        $this->slug = $slug;
+        $this->type = $type;
 
         return $this;
     }
@@ -174,21 +157,9 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getisSystem()
+    public function isSystem()
     {
-        return $this->isSystem;
-    }
-
-    /**
-     * @param mixed $isSystem
-     *
-     * @return EmailTemplate
-     */
-    public function setIsSystem($isSystem)
-    {
-        $this->isSystem = $isSystem;
-
-        return $this;
+        return !empty($this->type);
     }
 
     public static function getTranslationEntityClass()

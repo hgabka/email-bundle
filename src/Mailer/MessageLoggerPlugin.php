@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Mailer;
 
-use Hgabka\KunstmaanEmailBundle\Event\MailerEvent;
+use Hgabka\EmailBundle\Event\MailerEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MessageLoggerPlugin implements \Swift_Events_SendListener

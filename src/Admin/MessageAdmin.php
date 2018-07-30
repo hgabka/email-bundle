@@ -6,5 +6,4 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 
 class MessageAdmin extends AbstractAdmin
 {
-
 }

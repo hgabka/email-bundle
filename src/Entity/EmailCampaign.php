@@ -20,7 +20,7 @@ class EmailCampaign
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-	
+
     /**
      * @var MessageList
      *
@@ -82,6 +82,7 @@ class EmailCampaign
 
     /**
      * @param mixed $id
+     *
      * @return EmailCampaign
      */
     public function setId($id)

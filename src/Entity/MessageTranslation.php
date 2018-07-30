@@ -64,6 +64,7 @@ class MessageTranslation implements TranslationInterface
 
     /**
      * @param mixed $id
+     *
      * @return MessageTranslation
      */
     public function setId($id)

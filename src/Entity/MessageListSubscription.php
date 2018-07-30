@@ -48,6 +48,7 @@ class MessageListSubscription
 
     /**
      * @param mixed $id
+     *
      * @return MessageListSubscription
      */
     public function setId($id)

@@ -95,6 +95,6 @@ class EmailTemplateAdminType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'hgabka_kunstmaanemail_email_template_type';
+        return 'hg_email_email_template_type';
     }
 }

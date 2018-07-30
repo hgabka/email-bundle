@@ -1,6 +1,6 @@
 <?php
 
-namespace Hgabka\KunstmaanEmailBundle\Form;
+namespace Hgabka\EmailBundle\Form;
 
 use Hgabka\EmailBundle\Entity\Message;
 use Symfony\Component\Form\AbstractType;

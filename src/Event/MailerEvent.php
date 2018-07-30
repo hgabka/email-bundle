@@ -32,7 +32,7 @@ class MailerEvent extends Event
      *
      * @return MailerEvent
      */
-    public function setMessage(\Swift_Message $message): MailerEvent
+    public function setMessage(\Swift_Message $message): self
     {
         $this->message = $message;
 

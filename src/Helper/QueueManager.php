@@ -482,19 +482,19 @@ class QueueManager
             return;
         }
 
-        $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteMessageFromQueue($message);
+        $this->doctrine->getRepository(MessageQueue::class)->deleteMessageFromQueue($message);
     }
 
     public function deleteEmailFromQueue($email)
     {
-        $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->deleteEmailFromQueue($email);
+        $this->doctrine->getRepository(MessageQueue::class)->deleteEmailFromQueue($email);
     }
 
     public function deleteEmailFromEmailQueue($email, EmailCampaign $campaign = null, $withFlush = true)
     {
         $em = $this->doctrine->getManager();
 
-        $queues = $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:EmailQueue')->getQueues($campaign);
+        $queues = $this->doctrine->getRepository(EmailQueue::class)->getQueues($campaign);
         foreach ($queues as $queue) {
             if ($queue->isForEmail($email)) {
                 $em->remove($queue);
@@ -508,6 +508,6 @@ class QueueManager
 
     public function clearMessageQueue()
     {
-        return $this->doctrine->getRepository('HgabkaKunstmaanEmailBundle:MessageQueue')->clearQueue($this->deleteSentMessagesAfter);
+        return $this->doctrine->getRepository(MessageQueue::class)->clearQueue($this->deleteSentMessagesAfter);
     }
 }
