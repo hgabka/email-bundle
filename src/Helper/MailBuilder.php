@@ -638,4 +638,12 @@ class MailBuilder
 
         return $templateType->getEntity();
     }
+
+    /**
+     * @return array
+     */
+    public function getTemplateTypeClasses()
+    {
+        return array_keys($this->getTemplateTypes());
+    }
 }

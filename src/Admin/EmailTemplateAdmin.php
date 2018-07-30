@@ -29,8 +29,21 @@ class EmailTemplateAdmin extends AbstractAdmin
     public function createQuery($context = 'list')
     {
         $this->builder->getTemplateTypeEntities();
+        $types = $this->builder->getTemplateTypeClasses();
 
-        return parent::createQuery($context);
+        $query = parent::createQuery($context);
+        $alias = current($query->getRootAliases());
+
+        $orx = $query->expr()->orX();
+        $orx->add($alias.'.type IS NULL');
+
+        if (!empty($types)) {
+            $orx->add($query->expr()->in($alias.'.type', $types));
+        }
+
+        $query->andWhere($orx);
+
+        return $query;
     }
 
     public function hasAccess($action, $object = null)
