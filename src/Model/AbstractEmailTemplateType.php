@@ -8,13 +8,13 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     protected $entity;
 
     /** @var string */
-    protected $name;
+    protected $name = '';
 
     /** @var string */
-    protected $comment;
+    protected $comment = '';
 
     /** @var string */
-    protected $subject;
+    protected $subject = '';
 
     /** @var array */
     protected $variables = [];
