@@ -1,16 +1,18 @@
-<div class="col-md-12 usable-vars">
-    <div class="box box-primary">
-        <div class="box-header">
-            <h4 class="box-title">
-                {{ 'hg_email.title.usable_vars'|trans }}
-            </h4>
-        </div>
-        <div class="box-body">
-            <ul>
-                {% for placeholder, label in vars %}
-                    <li><span class="var-placeholder">{{ placeholder }}</span> <span class="var-label">{{ label }}</span></li>
-                {% endfor %}
-            </ul>
+<div class="row">
+    <div class="col-md-12 usable-vars">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h4 class="box-title">
+                    {{ 'hg_email.title.usable_vars'|trans }}
+                </h4>
+            </div>
+            <div class="box-body">
+                <ul>
+                    {% for placeholder, label in vars %}
+                        <li><a href="#" title="{{ 'hg_email.title.copy_to_clipboard'|trans }}" data-clipboard-text="{{ placeholder }}" class="var-placeholder"><span>{{ placeholder }}</span></a> <span class="var-label">{{ label }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>

@@ -131,3 +131,8 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('bundles/hgabkaemail/css/template_edit.css') }}">
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('build/hgabkaemail.js') }}"></script>
+{% endblock %}

@@ -4,6 +4,7 @@ breadcrumb:
 hg_email:
     title:
         usable_vars: Használható változók
+        copy_to_clipboard: Másolás a vágólapra
     help:
         from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
         from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
