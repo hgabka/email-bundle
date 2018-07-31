@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\Events;
 use Hgabka\EmailBundle\Entity\AbstractQueue;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
@@ -14,7 +15,7 @@ class EmailSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            'preRemove',
+            Events::preRemove,
         ];
     }
 

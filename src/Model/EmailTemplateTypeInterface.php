@@ -4,8 +4,6 @@ namespace Hgabka\EmailBundle\Model;
 
 interface EmailTemplateTypeInterface
 {
-    public function getName();
-
     public function getComment();
 
     public function getDefaultSubject();
@@ -15,4 +13,10 @@ interface EmailTemplateTypeInterface
     public function getDefaultHtmlContent();
 
     public function getVariables();
+
+    public function getDefaultFromName();
+
+    public function getDefaultFromEmail();
+
+    public function getTitle();
 }

@@ -33,10 +33,14 @@ class EmailTemplateTranslation implements TranslationInterface
     protected $translatable;
 
     /**
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
+     * @ORM\Column(name="from_name", type="text", nullable=true)
      */
-    protected $name;
+    protected $fromName;
+
+    /**
+     * @ORM\Column(name="from_email", type="text", nullable=true)
+     */
+    protected $fromEmail;
 
     /**
      * @ORM\Column(name="comment", type="text")
@@ -83,6 +87,46 @@ class EmailTemplateTranslation implements TranslationInterface
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFromName()
+    {
+        return $this->fromName;
+    }
+
+    /**
+     * @param mixed $fromName
+     *
+     * @return EmailTemplateTranslation
+     */
+    public function setFromName($fromName)
+    {
+        $this->fromName = $fromName;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFromEmail()
+    {
+        return $this->fromEmail;
+    }
+
+    /**
+     * @param mixed $fromEmail
+     *
+     * @return EmailTemplateTranslation
+     */
+    public function setFromEmail($fromEmail)
+    {
+        $this->fromEmail = $fromEmail;
 
         return $this;
     }
@@ -143,26 +187,6 @@ class EmailTemplateTranslation implements TranslationInterface
     public function setContentHtml($contentHtml)
     {
         $this->contentHtml = $contentHtml;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     *
-     * @return EmailTemplateTranslation
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
 
         return $this;
     }

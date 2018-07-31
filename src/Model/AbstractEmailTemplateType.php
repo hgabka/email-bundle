@@ -8,13 +8,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     protected $entity;
 
     /** @var string */
-    protected $name = '';
-
-    /** @var string */
     protected $comment = '';
-
-    /** @var string */
-    protected $subject = '';
 
     /** @var array */
     protected $variables = [];
@@ -27,6 +21,10 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 
     /** @var string */
     protected $defaultHtmlContent = '';
+
+    protected $defaultFromName;
+
+    protected $defaultFromEmail;
 
     /**
      * @return EmailTemplate
@@ -44,26 +42,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function setEntity($entity)
     {
         $this->entity = $entity;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     *
-     * @return AbstractEmailTemplateType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
 
         return $this;
     }
@@ -130,5 +108,50 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function getDefaultHtmlContent(): string
     {
         return $this->defaultHtmlContent;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultFromName()
+    {
+        return $this->defaultFromName;
+    }
+
+    /**
+     * @param mixed $fromName
+     *
+     * @return AbstractEmailTemplateType
+     */
+    public function setDefaultFromName($fromName)
+    {
+        $this->defaultFromName = $fromName;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultFromEmail()
+    {
+        return $this->defaultFromEmail;
+    }
+
+    /**
+     * @param mixed $fromEmail
+     *
+     * @return AbstractEmailTemplateType
+     */
+    public function setDefaultFromEmail($fromEmail)
+    {
+        $this->defaultFromEmail = $fromEmail;
+
+        return $this;
+    }
+
+    public function getTitle()
+    {
+        return '';
     }
 }

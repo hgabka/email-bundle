@@ -53,6 +53,11 @@ class EmailTemplate implements TranslatableInterface
         $this->translations = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return 'Email sablon';
+    }
+
     /**
      * @return mixed
      */
@@ -69,27 +74,6 @@ class EmailTemplate implements TranslatableInterface
     public function setId($id)
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->translate()->getName();
-    }
-
-    /**
-     * @param string     $name
-     * @param null|mixed $locale
-     *
-     * @return EmailTemplate
-     */
-    public function setName($name, $locale = null)
-    {
-        $this->translate($locale)->setName($name);
 
         return $this;
     }

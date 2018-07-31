@@ -2,8 +2,21 @@ breadcrumb:
     link_email_template_list: Email sablonok
 
 hg_email:
+    help:
+        from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
+        from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
+    form_block:
+        content: 'Tárgy, tartalom'
+        general: Általános adatok
+        from_data: Feladó adatai
+        attachments: Csatolmányok
+    tab:
+        general: Általános adatok
+        content: 'Tárgy, tartalom'
+        attachments: Csatolmányok
     variables:
         to: cimzett
+        from: felado
         name: nev
         email: email
     group: Üzenetek

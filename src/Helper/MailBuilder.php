@@ -84,6 +84,20 @@ class MailBuilder
         $this->config = $config;
     }
 
+    public function getDefaultFromName()
+    {
+        $default = $this->getDefaultFrom();
+
+        return is_array($default) ? current($default) : null;
+    }
+
+    public function getDefaultFromEmail()
+    {
+        $default = $this->getDefaultFrom();
+
+        return is_array($default) ? key($default) : $default;
+    }
+
     /**
      * @return array|string
      */
@@ -136,7 +150,7 @@ class MailBuilder
         }
 
         $template = $this->getTemplateEntity($templateType);
-        $parameters['from'] = empty($parameters['from']) ? $this->getDefaultFrom() : $parameters['from'];
+        $parameters['from'] = empty($parameters['from']) ? $this->getFromFromTemplate($template) : $parameters['from'];
         $parameters['to'] = empty($parameters['to']) ? $this->getDefaultTo() : $parameters['to'];
 
         if (empty($parameters['from']) || empty($parameters['to'])) {
@@ -530,6 +544,32 @@ class MailBuilder
         return $this->templateTypes;
     }
 
+    /**
+     * @return array
+     */
+    public function getTemplateTypeClasses()
+    {
+        return array_keys($this->getTemplateTypes());
+    }
+
+    public function getTitleByType($class)
+    {
+        $type = $this->getTemplateType($class);
+
+        return $type ? $type->getTitle() : '';
+    }
+
+    protected function getFromFromTemplate(EmailTemplate $template = null)
+    {
+        $default = $this->getDefaultFrom();
+        $defaultName = $this->getDefaultFromName();
+        $defaultEmail = is_array($default) ? key($default) : $default;
+        $name = $template && $template->getFromName() ?? ($defaultName ?? null);
+        $email = $template && $template->getFromEmail() ?? $defaultEmail;
+
+        return empty($name) ? $email : [$email => $name];
+    }
+
     protected function addDefaultParams($parameters, &$params)
     {
         $to = $this->translateEmailAddress($parameters['to']);
@@ -541,10 +581,10 @@ class MailBuilder
         $fromName = is_array($from) ? current($from) : $from;
         $fromEmail = is_array($from) ? key($from) : $from;
 
-        $toNameLabel = $this->translator->trans('hg_email.variables.to').'.'.$this->translator->trans('hg_email.variables.name');
-        $toEmailLabel = $this->translator->trans('hg_email.variables.to').'.'.$this->translator->trans('hg_email.variables.name');
-        $fromNameLabel = $this->translator->trans('hg_email.variables.from').'.'.$this->translator->trans('hg_email.variables.name');
-        $fromEmailLabel = $this->translator->trans('hg_email.variables.from').'.'.$this->translator->trans('hg_email.variables.name');
+        $toNameLabel = $this->translator->trans('hg_email.variables.to', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
+        $toEmailLabel = $this->translator->trans('hg_email.variables.to', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
+        $fromNameLabel = $this->translator->trans('hg_email.variables.from', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
+        $fromEmailLabel = $this->translator->trans('hg_email.variables.from', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
 
         if (!isset($params[$toNameLabel])) {
             $params[$toNameLabel] = $toName;
@@ -621,9 +661,10 @@ class MailBuilder
 
                 foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
                     $template->translate($locale)
-                             ->setName($this->translator->trans($templateType->getName(), [], 'messages', $locale))
                              ->setComment($this->translator->trans($templateType->getComment(), [], 'messages', $locale))
                              ->setSubject($this->translator->trans($templateType->getDefaultSubject(), [], 'messages', $locale))
+                             ->setFromName($this->translator->trans($templateType->getDefaultFromName(), [], 'messages', $locale))
+                             ->setFromEmail($this->translator->trans($templateType->getDefaultFromEmail(), [], 'messages', $locale))
                              ->setContentText($this->translator->trans($templateType->getDefaultTextContent(), [], 'messages', $locale))
                              ->setContentHtml($this->translator->trans($templateType->getDefaultHtmlContent(), [], 'messages', $locale))
                     ;
@@ -637,13 +678,5 @@ class MailBuilder
         }
 
         return $templateType->getEntity();
-    }
-
-    /**
-     * @return array
-     */
-    public function getTemplateTypeClasses()
-    {
-        return array_keys($this->getTemplateTypes());
     }
 }

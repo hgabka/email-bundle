@@ -13,6 +13,7 @@ services:
         calls:
           - [setBuilder, ["@hg_email.mail_builder"]]
           - [setAuthChecker, ["@security.authorization_checker"]]
+          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/edit.html.twig']]
 
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
