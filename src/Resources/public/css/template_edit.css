@@ -1,0 +1,10 @@
+.usable-vars ul {
+    list-style-type: none;
+    padding-left:0;
+}
+
+.usable-vars ul li span.var-placeholder {
+    min-width:120px;
+    display: inline-block;
+}
+
