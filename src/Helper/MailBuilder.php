@@ -9,6 +9,7 @@ use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\MediaBundle\Entity\Media;
+use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -39,6 +40,9 @@ class MailBuilder
     /** @var RouterInterface */
     protected $router;
 
+    /** @var MediaManager */
+    protected $mediaManager;
+
     /** @var array|EmailTemplateTypeInterface[] */
     protected $templateTypes = [];
 
@@ -58,7 +62,8 @@ class MailBuilder
         ParamSubstituter $paramSubstituter,
         TranslatorInterface $translator,
         HgabkaUtils $hgabkaUtils,
-        RouterInterface $router
+        RouterInterface $router,
+        MediaManager $mediaManager
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -66,6 +71,7 @@ class MailBuilder
         $this->translator = $translator;
         $this->hgabkaUtils = $hgabkaUtils;
         $this->router = $router;
+        $this->mediaManager = $mediaManager;
     }
 
     /**
@@ -150,20 +156,23 @@ class MailBuilder
         }
 
         $template = $this->getTemplateEntity($templateType);
-        $parameters['from'] = empty($parameters['from']) ? $this->getFromFromTemplate($template) : $parameters['from'];
-        $parameters['to'] = empty($parameters['to']) ? $this->getDefaultTo() : $parameters['to'];
+        $paramFrom = empty($parameters['from']) ? $this->getFromFromTemplate($template) : $parameters['from'];
+        $paramTo = empty($parameters['to']) ? $this->getDefaultTo() : $parameters['to'];
+        $paramCc = $parameters['cc'] ?? null;
+        $paramBcc = $parameters['bcc'] ?? null;
 
-        if (empty($parameters['from']) || empty($parameters['to'])) {
+        if (empty($paramFrom) || empty($paramTo)) {
             return false;
         }
+        $paramArray = $parameters['params'] ?? $parameters;
 
-        if (!empty($parameters['params'])) {
+        if (!empty($paramArray)) {
             $accessor =
                 PropertyAccess::createPropertyAccessorBuilder()
                               ->enableExceptionOnInvalidIndex()
                               ->getPropertyAccessor()
             ;
-            foreach ($parameters['params'] as $key => $value) {
+            foreach ($paramArray as $key => $value) {
                 $accessor->setValue($templateType, $key, $value);
             }
         }
@@ -180,7 +189,7 @@ class MailBuilder
         }
 
         $params = $this->paramSubstituter->normalizeParams($params);
-        list('name' => $name, 'email' => $email) = $this->addDefaultParams($parameters, $params);
+        list('name' => $name, 'email' => $email) = $this->addDefaultParams($paramFrom, $paramTo, $params);
 
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
@@ -246,15 +255,15 @@ class MailBuilder
         }
 
         try {
-            $mail->setFrom($this->translateEmailAddress($parameters['from']));
-            $mail->setTo($this->translateEmailAddress($parameters['to']));
+            $mail->setFrom($this->translateEmailAddress($paramFrom));
+            $mail->setTo($this->translateEmailAddress($paramTo));
 
-            if (!empty($parameters['cc'])) {
-                $mail->setCc($this->translateEmailAddress($parameters['cc']));
+            if (!empty($paramCc)) {
+                $mail->setCc($this->translateEmailAddress($paramCc));
             }
 
-            if (!empty($parameters['bcc'])) {
-                $mail->setBcc($this->translateEmailAddress($parameters['bcc']));
+            if (!empty($paramBcc)) {
+                $mail->setBcc($this->translateEmailAddress($paramBcc));
             }
 
             if (!empty($parameters['attachments'])) {
@@ -483,7 +492,7 @@ class MailBuilder
      */
     public function getMediaContent($media)
     {
-        return $this->hgabkaUtils->getMediaContent($media);
+        return $this->mediaManager->getMediaContent($media);
     }
 
     public function getTemplateVars($template)
@@ -559,47 +568,61 @@ class MailBuilder
         return $type ? $type->getTitle() : '';
     }
 
+    public function getFromToParams()
+    {
+        $toNameLabel = $this->translateDefaultVariable('hg_email.variables.to').'_'.$this->translateDefaultVariable('hg_email.variables.name');
+        $toEmailLabel = $this->translateDefaultVariable('hg_email.variables.to').'_'.$this->translateDefaultVariable('hg_email.variables.email');
+
+        $fromNameLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.name');
+        $fromEmailLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.email');
+
+        return [
+            $this->translator->trans('hg_email.variables.labels.to_email') => $toEmailLabel,
+            $this->translator->trans('hg_email.variables.labels.to_name') => $toNameLabel,
+            $this->translator->trans('hg_email.variables.labels.from_email') => $fromEmailLabel,
+            $this->translator->trans('hg_email.variables.labels.from_name') => $fromNameLabel,
+        ];
+    }
+
     protected function getFromFromTemplate(EmailTemplate $template = null)
     {
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = is_array($default) ? key($default) : $default;
-        $name = $template && $template->getFromName() ?? ($defaultName ?? null);
-        $email = $template && $template->getFromEmail() ?? $defaultEmail;
+        $name = ($template ? $template->getFromName() : null) ?? ($defaultName ?? null);
+        $email = ($template ? $template->getFromName() : null) ?? $defaultEmail;
 
         return empty($name) ? $email : [$email => $name];
     }
 
-    protected function addDefaultParams($parameters, &$params)
+    protected function translateDefaultVariable($code)
     {
-        $to = $this->translateEmailAddress($parameters['to']);
-        $from = $this->translateEmailAddress($parameters['from']);
+        return $this->translator->trans($code, [], 'messages', $this->hgabkaUtils->getCurrentLocale());
+    }
+
+    protected function addDefaultParams($paramFrom, $paramTo, &$params)
+    {
+        $to = $this->translateEmailAddress($paramTo);
+        $from = $this->translateEmailAddress($paramFrom);
 
         $toName = is_array($to) ? current($to) : $to;
-
         $toEmail = is_array($to) ? key($to) : $to;
+
         $fromName = is_array($from) ? current($from) : $from;
         $fromEmail = is_array($from) ? key($from) : $from;
 
-        $toNameLabel = $this->translator->trans('hg_email.variables.to', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
-        $toEmailLabel = $this->translator->trans('hg_email.variables.to', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
-        $fromNameLabel = $this->translator->trans('hg_email.variables.from', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
-        $fromEmailLabel = $this->translator->trans('hg_email.variables.from', [], $this->hgabkaUtils->getDefaultLocale()).'.'.$this->translator->trans('hg_email.variables.name', [], $this->hgabkaUtils->getDefaultLocale());
-
-        if (!isset($params[$toNameLabel])) {
-            $params[$toNameLabel] = $toName;
-        }
-
-        if (!isset($params[$toEmailLabel])) {
-            $params[$toEmailLabel] = $toEmail;
-        }
-
-        if (!isset($params[$fromNameLabel])) {
-            $params[$fromNameLabel] = $fromName;
-        }
-
-        if (!isset($params[$fromEmailLabel])) {
-            $params[$fromEmailLabel] = $fromEmail;
+        foreach (array_combine(
+                    array_values($this->getFromToParams()),
+            [
+                     $toEmail,
+                     $toName,
+                     $fromEmail,
+                     $fromName,
+                 ]
+        ) as $fromToParamKey => $fromToParamValue) {
+            if (!isset($params[$fromToParamKey])) {
+                $params[$fromToParamKey] = $fromToParamValue;
+            }
         }
 
         return [
@@ -612,7 +635,7 @@ class MailBuilder
     {
         $content = $this->getMediaContent($media);
         $mime = \Swift_Attachment::newInstance($content, $media->getOriginalFilename(), $media->getContentType());
-        $mime->setSize($this->kumaUtils->getMediaSize($media));
+        $mime->setSize($this->mediaManager->getMediaSize($media));
 
         return $mime;
     }

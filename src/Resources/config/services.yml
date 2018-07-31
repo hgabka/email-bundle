@@ -17,7 +17,7 @@ services:
 
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
-        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router"]
+        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager']
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'
@@ -127,7 +127,7 @@ services:
 
     hg_email.email_twig_extension:
         class: Hgabka\EmailBundle\Twig\EmailTwigExtension
-        arguments: ['@hg_email.mail_builder']
+        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator']
         public: false
         tags:
             - { name: twig.extension }

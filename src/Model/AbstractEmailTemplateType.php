@@ -2,6 +2,8 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+
 class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 {
     /** @var EmailTemplate */
@@ -79,11 +81,27 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     }
 
     /**
+     * @param mixed $onlyNames
+     *
      * @return array
      */
-    public function getVariables(): array
+    public function getVariables($onlyNames = false)
     {
-        return $this->variables;
+        $vars = [];
+        foreach ($this->variables as $key => $varData) {
+            $vars[$key] = $varData;
+            if (!$onlyNames && isset($vars[$key]['value'])) {
+                $v = $vars[$key]['value'];
+                if (is_callable($v)) {
+                    $vars[$key]['value'] = call_user_func($vars[$key]['value']);
+                } else {
+                    $accessor = PropertyAccess::createPropertyAccessor();
+                    $vars[$key]['value'] = $accessor->getValue($this, $vars[$key]['value']);
+                }
+            }
+        }
+
+        return $vars;
     }
 
     /**

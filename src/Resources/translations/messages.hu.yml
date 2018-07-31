@@ -19,6 +19,11 @@ hg_email:
         from: felado
         name: nev
         email: email
+        labels:
+            to_name: Címzett neve
+            to_email: Címzett email címe
+            from_name: Feladó neve
+            from_email: Feladó email címe
     group: Üzenetek
     admin:
         email_template:

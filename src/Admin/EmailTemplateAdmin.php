@@ -206,7 +206,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ->with('hg_email.form_block.from_data')
                 ->end()
             ->end()
-            ->tab('hg_email.tab.content')
+            ->tab('hg_email.tab.content', ['description' => true])
                 ->with('hg_email.form_block.content')
                  ->end()
             ->end()

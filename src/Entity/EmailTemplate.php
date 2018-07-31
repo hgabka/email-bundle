@@ -150,4 +150,14 @@ class EmailTemplate implements TranslatableInterface
     {
         return EmailTemplateTranslation::class;
     }
+
+    public function getFromName($lang = null)
+    {
+        return $this->translate($lang)->getFromName();
+    }
+
+    public function getFromEmail($lang = null)
+    {
+        return $this->translate($lang)->getFromEmail();
+    }
 }

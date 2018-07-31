@@ -12,7 +12,7 @@ interface EmailTemplateTypeInterface
 
     public function getDefaultHtmlContent();
 
-    public function getVariables();
+    public function getVariables($onlyNames = false);
 
     public function getDefaultFromName();
 
