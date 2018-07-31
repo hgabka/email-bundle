@@ -71,6 +71,15 @@ class EmailTemplateAdmin extends AbstractAdmin
         return parent::hasAccess($action, $object);
     }
 
+    public function checkAccess($action, $object = null)
+    {
+        if ('edit' === $action && $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'))) {
+            return;
+        }
+
+        parent::checkAccess($action, $object);
+    }
+
     public function postPersist($object)
     {
         $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
