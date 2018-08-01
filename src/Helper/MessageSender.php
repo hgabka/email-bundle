@@ -499,11 +499,11 @@ class MessageSender
      *
      * @return bool|mixed
      */
-    public function enqueueTemplateMessage($class, $params = [], $culture = null, $sendAt = null, $campaign = false)
+    public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $culture = null, $sendAt = null, $campaign = false)
     {
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
-        $message = $this->mailBuilder->createTemplateMessage($class, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
         if (!$message) {
             return false;
         }
@@ -519,13 +519,13 @@ class MessageSender
      *
      * @return bool|int|mixed
      */
-    public function sendTemplateMail($class, $params = [], $culture = null)
+    public function sendTemplateMail($class, $params = [], $sendParams = [], $culture = null)
     {
         if ($this->config['force_queueing']) {
-            return $this->enqueueTemplateMessage($class, $params, $culture, null);
+            return $this->enqueueTemplateMessage($class, $params, $sendParams, $culture, null);
         }
 
-        $message = $this->mailBuilder->createTemplateMessage($class, $params, $culture);
+        $message = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
 
         if (!$message) {
             return false;

@@ -98,7 +98,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         $vars = [];
         foreach ($this->variables as $key => $varData) {
             $vars[$key] = $varData;
-            if (!$onlyNames && isset($vars[$key]['value'])) {
+            if (isset($vars[$key]['value'])) {
                 $v = $vars[$key]['value'];
                 if (is_callable($v)) {
                     $vars[$key]['value'] = call_user_func($vars[$key]['value']);

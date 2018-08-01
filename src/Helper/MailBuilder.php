@@ -147,7 +147,7 @@ class MailBuilder
      *
      * @return bool|\Swift_Message
      */
-    public function createTemplateMessage($class, $parameters = [], $culture = null)
+    public function createTemplateMessage($class, $parameters = [], $sendParams = [], $culture = null)
     {
         if ($class instanceof EmailTemplateTypeInterface) {
             $templateType = $class;
@@ -156,15 +156,15 @@ class MailBuilder
         }
 
         $template = $this->getTemplateEntity($templateType);
-        $paramFrom = empty($parameters['from']) ? $this->getFromFromTemplate($template) : $parameters['from'];
-        $paramTo = empty($parameters['to']) ? $this->getDefaultTo() : $parameters['to'];
-        $paramCc = $parameters['cc'] ?? null;
-        $paramBcc = $parameters['bcc'] ?? null;
+        $paramFrom = empty($sendParams['from']) ? $this->getFromFromTemplate($template) : $sendParams['from'];
+        $paramTo = empty($sendParams['to']) ? $this->getDefaultTo() : $sendParams['to'];
+        $paramCc = $sendParams['cc'] ?? null;
+        $paramBcc = $sendParams['bcc'] ?? null;
 
         if (empty($paramFrom) || empty($paramTo)) {
             return false;
         }
-        $paramArray = $parameters['params'] ?? $parameters;
+        $paramArray = $parameters;
 
         if (!empty($paramArray)) {
             $accessor =
