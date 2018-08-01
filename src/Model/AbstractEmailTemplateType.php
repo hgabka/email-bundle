@@ -81,11 +81,19 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     }
 
     /**
+     * @return array
+     */
+    public function getVariables()
+    {
+        return $this->variables;
+    }
+
+    /**
      * @param mixed $onlyNames
      *
      * @return array
      */
-    public function getVariables($onlyNames = false)
+    public function getVariableValues()
     {
         $vars = [];
         foreach ($this->variables as $key => $varData) {

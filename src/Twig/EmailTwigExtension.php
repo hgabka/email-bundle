@@ -59,7 +59,7 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
 
         $vars = array_flip($this->mailBuilder->getFromToParams());
 
-        foreach ($type->getVariables(true) as $placeholder => $varData) {
+        foreach ($type->getVariables() as $placeholder => $varData) {
             $vars[$placeholder] = $this->translator->trans($varData['label']);
         }
 

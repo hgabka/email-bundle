@@ -178,7 +178,7 @@ class MailBuilder
         }
 
         $params = [];
-        foreach ($templateType->getVariables() as $placeholder => $data) {
+        foreach ($templateType->getVariableValues() as $placeholder => $data) {
             $params[$placeholder] = [
                 'value' => $data['value'],
             ];
