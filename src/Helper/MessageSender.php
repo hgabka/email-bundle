@@ -496,26 +496,31 @@ class MessageSender
      * @param null                              $culture
      * @param null                              $sendAt
      * @param bool                              $campaign
+     * @param mixed                             $sendParams
      *
      * @return bool|mixed
      */
     public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $culture = null, $sendAt = null, $campaign = false)
     {
-        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
+        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
 
-        $message = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
-        if (!$message) {
+        if (!$messages) {
             return false;
         }
         $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
 
-        return $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
+        foreach ($messages as $message) {
+            $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
+        }
+
+        return $messages;
     }
 
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $params
      * @param null                              $culture
+     * @param mixed                             $sendParams
      *
      * @return bool|int|mixed
      */
@@ -525,13 +530,18 @@ class MessageSender
             return $this->enqueueTemplateMessage($class, $params, $sendParams, $culture, null);
         }
 
-        $message = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
+        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
 
-        if (!$message) {
+        if (!$messages) {
             return false;
         }
 
-        return $this->mailer->send($message);
+        $count = 0;
+        foreach ($messages as $message) {
+            $count += $this->mailer->send($message);
+        }
+
+        return $count;
     }
 
     public function getSendDataForMessage(Message $message)

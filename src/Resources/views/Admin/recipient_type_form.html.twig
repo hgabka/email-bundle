@@ -1,0 +1,16 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
+                {{ form.toData[key].vars.blockTitle|trans }}
+            </a>
+
+            <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
+        </h4>
+    </div>
+    <div id="collapse_{{ key }}" class="panel-collapse collapse in">
+        <div class="panel-body">
+            {{ form_widget(form.toData[key]) }}
+        </div>
+    </div>
+</div>

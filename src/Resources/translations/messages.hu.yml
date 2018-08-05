@@ -2,9 +2,22 @@ breadcrumb:
     link_email_template_list: Email sablonok
 
 hg_email:
+    recipient_type:
+        default:
+            name: 'Alapértelmezett címzett'
+            title: 'Alapértelmezett címzett (%count%)'
+            info: 'Címzettek (%count%): <br /><br />%recipients%'
+        general:
+            label:
+                name: Címzett neve
+                email: Címzett email címe
+                locale: A küldött levél nyelve
+            name: Általános címzett
+            title: 'Általános címzett (%recipient%)'
     title:
         usable_vars: Használható változók
         copy_to_clipboard: Másolás a vágólapra
+        no_recipient: Nincsenek címzettek
     help:
         from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
         from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
@@ -13,6 +26,7 @@ hg_email:
         general: Általános adatok
         from_data: Feladó adatai
         attachments: Csatolmányok
+        to_data: Címzettek
     tab:
         general: Általános adatok
         content: 'Tárgy, tartalom'
@@ -58,6 +72,8 @@ hg_email:
         testmail: Tesztüzenet
         webversion: Webes változat
         copy: Duplikálás
+        choose_recipient_type: Válasszon címzett típust
+        add_recipient: Hozzáadás
 
     tabs:
         general: Általános adatok

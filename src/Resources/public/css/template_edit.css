@@ -8,3 +8,15 @@
     display: inline-block;
 }
 
+.no-recipient, .recipient-selector {
+    display:none;
+}
+
+#accordion .panel h4 a:hover {
+    text-decoration: none;
+}
+
+#accordion .panel h4 a.recipient-remove {
+    color: #ff0039;
+    float:right;
+}

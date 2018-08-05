@@ -1,0 +1,82 @@
+{% block recipients_widget %}
+    <div id="accordion" class="panel-group">
+        {% for key,child in form %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse_{{ key }}">
+                            {{ child.vars.blockTitle|trans }}
+                        </a>
+                        {% if child.vars.removable %}
+                            <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
+                        {% endif %}
+                    </h4>
+                </div>
+                <div id="collapse_{{ key }}" class="panel-collapse collapse{% if not child.vars.valid %} in{% endif %}">
+                    <div class="panel-body">
+                        {{ form_widget(child) }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="no-recipient">
+        <p>{{ 'hg_email.title.no_recipient'|trans }}</p>
+    </div>
+    {% if form.vars.add_button %}
+        <div class="add-recipient">
+            <a href="#" class="btn btn-link recipient-add">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                Címzettek hozzáadása
+            </a>
+            <div class="recipient-selector">
+                <div class="form-group">
+                    <label class="control-label" for="recipient_type">
+                        {{ 'hg_email.label.choose_recipient_type'|trans }}
+                    </label>
+                    {{ render_recipient_selector() }}
+                </div>
+                <div class="form-group">
+                    <a href="#" id="add_recipient_submit" class="btn btn-success">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        {{ 'hg_email.label.add_recipient'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <script>
+        $(function () {
+            $('#accordion').on('click', '.recipient-remove', function (e) {
+                e.preventDefault();
+                $(this).parents('.panel').remove();
+                if ($('#accordion .panel').length === 0) {
+                    $('.no-recipient').show();
+                } else {
+                    $('.no-recipient').hide();
+                }
+            });
+            {% if form.vars.add_button %}
+                $('.add-recipient').on('click', '.recipient-add', function (e) {
+                    e.preventDefault();
+                    $('.recipient-selector').show();
+                    $('.recipient-add').hide();
+                });
+
+                $('#add_recipient_submit').click(function (e) {
+                    e.preventDefault();
+                    if ($('#rectype-select').val().length > 0) {
+                        $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject) }}',
+                                  {type: $('#rectype-select').val(), name: '{{ form.parent.vars.name }}'}, function (data) {
+                                $('#accordion').append(data.html);
+                                $('.recipient-selector').hide();
+                                $('.no-recipient').hide();
+                                $('.recipient-add').show();
+                                $('#rectype-select').val('');
+                            });
+                    }
+                });
+            {% endif %}
+        });
+    </script>
+{% endblock %}

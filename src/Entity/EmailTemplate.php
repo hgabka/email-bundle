@@ -46,6 +46,11 @@ class EmailTemplate implements TranslatableInterface
     protected $layout;
 
     /**
+     * @ORM\Column(name="to_data", type="array", nullable=true)
+     */
+    protected $toData;
+
+    /**
      * constructor.
      */
     public function __construct()
@@ -159,5 +164,25 @@ class EmailTemplate implements TranslatableInterface
     public function getFromEmail($lang = null)
     {
         return $this->translate($lang)->getFromEmail();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToData()
+    {
+        return $this->toData;
+    }
+
+    /**
+     * @param mixed $toData
+     *
+     * @return EmailTemplate
+     */
+    public function setToData($toData)
+    {
+        $this->toData = $toData;
+
+        return $this;
     }
 }

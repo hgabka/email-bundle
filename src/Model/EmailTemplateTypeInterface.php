@@ -21,4 +21,6 @@ interface EmailTemplateTypeInterface
     public function getDefaultFromEmail();
 
     public function getTitle();
+
+    public function getDefaultRecipients();
 }

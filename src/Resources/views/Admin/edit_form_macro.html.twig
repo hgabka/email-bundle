@@ -15,6 +15,11 @@
                         {% if form_group.description %}
                             <p>{{ form_group.description|trans({}, form_group.translation_domain ?: admin.translationDomain) }}</p>
                         {% endif %}
+                        {% if code == 'hg_email.tab.general.hg_email.form_block.to_data' %}
+                            {% for field_name in form_group.fields if form[field_name] is defined %}
+                                {{ form_row(form[field_name])}}
+                            {% endfor %}
+                        {% else %}
                         {% if code == 'hg_email.tab.general.hg_email.form_block.general' %}
                         {% set fields = ['comment'] %}
                         {% elseif code == 'hg_email.tab.general.hg_email.form_block.from_data' %}
@@ -31,6 +36,7 @@
                         {% else %}
                             <em>{{ 'message_form_group_empty'|trans({}, 'SonataAdminBundle') }}</em>
                         {% endif %}
+                            {% endif %}
                     </div>
                 </div>
             </div>

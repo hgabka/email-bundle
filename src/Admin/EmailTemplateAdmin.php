@@ -6,6 +6,7 @@ use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Form\AttachmentType;
+use Hgabka\EmailBundle\Form\RecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
@@ -133,6 +134,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->clearExcept(['edit', 'list', 'delete']);
+        $collection->add('add_recipient', $this->getRouterIdParameter().'/addRecipient');
     }
 
     protected function configureListFields(ListMapper $listMapper)
@@ -213,6 +215,13 @@ class EmailTemplateAdmin extends AbstractAdmin
                    ])
                 ->end()
                 ->with('hg_email.form_block.from_data')
+                ->end()
+                ->with('hg_email.form_block.to_data')
+                    ->add('toData', RecipientsType::class, [
+                        'label' => false,
+                        'template_type' => $this->getSubject()->getType(),
+                        'admin' => $this,
+                    ])
                 ->end()
             ->end()
             ->tab('hg_email.tab.content', ['description' => true])

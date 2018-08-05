@@ -3,16 +3,22 @@
 namespace Hgabka\EmailBundle\DependencyInjection;
 
 use Hgabka\EmailBundle\Helper\MailBuilder;
+use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class HgabkaEmailExtension extends Extension implements CompilerPassInterface
+class HgabkaEmailExtension extends Extension implements PrependExtensionInterface, CompilerPassInterface
 {
+    /** @var string */
+    protected $formTypeTemplate = '@HgabkaEmail/Form/fields.html.twig';
+
     /**
      * {@inheritdoc}
      */
@@ -81,6 +87,20 @@ class HgabkaEmailExtension extends Extension implements CompilerPassInterface
             ->registerForAutoconfiguration(EmailTemplateTypeInterface::class)
             ->addTag('hg_email.email_template_type')
         ;
+        $container
+            ->registerForAutoconfiguration(RecipientTypeInterface::class)
+            ->addTag('hg_email.recipient_type')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $configs = $container->getExtensionConfig($this->getAlias());
+        $this->processConfiguration(new Configuration($container), $configs);
+        $this->configureTwigBundle($container);
     }
 
     public function process(ContainerBuilder $container)
@@ -101,6 +121,35 @@ class HgabkaEmailExtension extends Extension implements CompilerPassInterface
                 $definition->addMethodCall('addTemplateType', [
                     $type,
                 ]);
+            }
+        }
+
+        $definition = $container->findDefinition(RecipientManager::class);
+
+        // find all service IDs with the app.mail_transport tag
+        $taggedServices = $container->findTaggedServiceIds('hg_email.recipient_type');
+
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                $type = new Reference($id);
+                $definition->addMethodCall('addType', [
+                    $type,
+                ]);
+            }
+        }
+    }
+
+    protected function configureTwigBundle(ContainerBuilder $container)
+    {
+        foreach (array_keys($container->getExtensions()) as $name) {
+            switch ($name) {
+                case 'twig':
+                    $container->prependExtensionConfig(
+                        $name,
+                        ['form_themes' => [$this->formTypeTemplate]]
+                    );
+
+                    break;
             }
         }
     }

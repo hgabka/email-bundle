@@ -176,6 +176,11 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return $this;
     }
 
+    public function getDefaultRecipients()
+    {
+        return [];
+    }
+
     public function getTitle()
     {
         return '';

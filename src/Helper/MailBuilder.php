@@ -8,6 +8,7 @@ use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
@@ -43,6 +44,9 @@ class MailBuilder
     /** @var MediaManager */
     protected $mediaManager;
 
+    /** @var RecipientManager */
+    protected $recipientManager;
+
     /** @var array|EmailTemplateTypeInterface[] */
     protected $templateTypes = [];
 
@@ -63,7 +67,8 @@ class MailBuilder
         TranslatorInterface $translator,
         HgabkaUtils $hgabkaUtils,
         RouterInterface $router,
-        MediaManager $mediaManager
+        MediaManager $mediaManager,
+        RecipientManager $recipientManager
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -72,6 +77,7 @@ class MailBuilder
         $this->hgabkaUtils = $hgabkaUtils;
         $this->router = $router;
         $this->mediaManager = $mediaManager;
+        $this->recipientManager = $recipientManager;
     }
 
     /**
@@ -144,6 +150,7 @@ class MailBuilder
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $parameters
      * @param null                              $culture
+     * @param mixed                             $sendParams
      *
      * @return bool|\Swift_Message
      */
@@ -157,13 +164,6 @@ class MailBuilder
 
         $template = $this->getTemplateEntity($templateType);
         $paramFrom = empty($sendParams['from']) ? $this->getFromFromTemplate($template) : $sendParams['from'];
-        $paramTo = empty($sendParams['to']) ? $this->getDefaultTo() : $sendParams['to'];
-        $paramCc = $sendParams['cc'] ?? null;
-        $paramBcc = $sendParams['bcc'] ?? null;
-
-        if (empty($paramFrom) || empty($paramTo)) {
-            return false;
-        }
         $paramArray = $parameters;
 
         if (!empty($paramArray)) {
@@ -189,120 +189,140 @@ class MailBuilder
         }
 
         $params = $this->paramSubstituter->normalizeParams($params);
-        list('name' => $name, 'email' => $email) = $this->addDefaultParams($paramFrom, $paramTo, $params);
 
-        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
-
-        $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);
-
-        $mail = new \Swift_Message($subject);
-
-        $bodyText = $this->paramSubstituter->substituteParams($template->translate($culture)->getContentText(), $params, true);
-        $bodyHtml = $template->translate($culture)->getContentHtml();
-
-        $layout = $template->getLayout();
-
-        if ($layout && strlen($bodyHtml) > 0) {
-            $layoutFile = $this->config['layout_file'];
-            if (false === $layoutFile) {
-                $layoutFile = null;
-            } elseif (empty($layoutFile)) {
-                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
-            }
-
-            $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject, $layoutFile), [
-                '%%tartalom%%' => $bodyHtml,
-                '%%nev%%' => $name,
-                '%%email%%' => $email,
-                '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
-            ]);
-        } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
-            $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
-
-            if (false !== $layoutFile && !is_file($layoutFile)) {
-                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
-            }
-
-            if (!empty($layoutFile)) {
-                $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
-                $html = @file_get_contents($layoutFile);
-            } else {
-                $html = null;
-            }
-            if (!empty($html)) {
-                $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, $name, $email);
-            }
+        $toData = [];
+        if (!empty($sendParams['to'])) {
+            $toData = $sendParams['to'];
+        } else {
+            $toData = $this->recipientManager->getToDataByTemplate($template, $templateType);
         }
+        $paramTos = $this->getTosByData($toData, $culture);
+        $paramCc = $sendParams['cc'] ?? null;
+        $paramBcc = $sendParams['bcc'] ?? null;
 
-        if (strlen($bodyText) > 0) {
-            $mail->addPart($bodyText, 'text/plain');
-        }
-
-        if (strlen($bodyHtml) > 0) {
-            $bodyHtml = $this->paramSubstituter->embedImages($this->paramSubstituter->substituteParams($bodyHtml, $params, true), $mail);
-            $mail->addPart($bodyHtml, 'text/html');
-        }
-
-        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
-
-        foreach ($attachments as $attachment) {
-            /** @var Attachment $attachment */
-            $media = $attachment->getMedia();
-
-            if ($media) {
-                $mail->attach($this->createSwiftAttachment($media));
-            }
-        }
-
-        try {
-            $mail->setFrom($this->translateEmailAddress($paramFrom));
-            $mail->setTo($this->translateEmailAddress($paramTo));
-
-            if (!empty($paramCc)) {
-                $mail->setCc($this->translateEmailAddress($paramCc));
-            }
-
-            if (!empty($paramBcc)) {
-                $mail->setBcc($this->translateEmailAddress($paramBcc));
-            }
-
-            if (!empty($parameters['attachments'])) {
-                $attachments = $parameters['attachments'];
-                if (is_string($attachments)) {
-                    $attachments = [$attachments];
-                }
-
-                foreach ($attachments as $attachment) {
-                    if (is_string($attachment)) {
-                        if (!is_file($attachment)) {
-                            continue;
-                        }
-                        $part = \Swift_Attachment::fromPath($attachment);
-                    } else {
-                        $filename = isset($attachment['path']) ? $attachment['path'] : '';
-                        if (!is_file($filename)) {
-                            continue;
-                        }
-                        $part = \Swift_Attachment::fromPath($filename);
-                        if (isset($attachment['filename'])) {
-                            $part->setFilename($attachment['filename']);
-                        }
-                        if (isset($attachment['mime'])) {
-                            $part->setContentType($attachment['mime']);
-                        }
-                        if (isset($attachment['disposition'])) {
-                            $part->setDisposition($attachment['disposition']);
-                        }
-                    }
-
-                    $mail->attach($part);
-                }
-            }
-
-            return $mail;
-        } catch (\Exception $e) {
+        if (empty($paramFrom) || empty($paramTos)) {
             return false;
         }
+        $messages = [];
+
+        foreach ($paramTos as $paramToRow) {
+            $paramTo = $paramToRow['to'];
+            list('name' => $name, 'email' => $email) = $this->addDefaultParams($paramFrom, $paramTo, $params);
+
+            $culture = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
+
+            $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);
+
+            $bodyText = $this->paramSubstituter->substituteParams($template->translate($culture)->getContentText(), $params, true);
+            $bodyHtml = $template->translate($culture)->getContentHtml();
+            $mail = new \Swift_Message($subject);
+
+            $layout = $template->getLayout();
+
+            if ($layout && strlen($bodyHtml) > 0) {
+                $layoutFile = $this->config['layout_file'];
+                if (false === $layoutFile) {
+                    $layoutFile = null;
+                } elseif (empty($layoutFile)) {
+                    $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
+                }
+
+                $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject, $layoutFile), [
+                    '%%tartalom%%' => $bodyHtml,
+                    '%%nev%%' => $name,
+                    '%%email%%' => $email,
+                    '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
+                ]);
+            } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
+                $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
+
+                if (false !== $layoutFile && !is_file($layoutFile)) {
+                    $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
+                }
+
+                if (!empty($layoutFile)) {
+                    $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+                    $html = @file_get_contents($layoutFile);
+                } else {
+                    $html = null;
+                }
+                if (!empty($html)) {
+                    $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, $name, $email);
+                }
+            }
+
+            if (strlen($bodyText) > 0) {
+                $mail->addPart($bodyText, 'text/plain');
+            }
+
+            if (strlen($bodyHtml) > 0) {
+                $bodyHtml = $this->paramSubstituter->embedImages($this->paramSubstituter->substituteParams($bodyHtml, $params, true), $mail);
+                $mail->addPart($bodyHtml, 'text/html');
+            }
+
+            $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
+
+            foreach ($attachments as $attachment) {
+                /** @var Attachment $attachment */
+                $media = $attachment->getMedia();
+
+                if ($media) {
+                    $mail->attach($this->createSwiftAttachment($media));
+                }
+            }
+
+            try {
+                $mail->setFrom($this->translateEmailAddress($paramFrom));
+                $mail->setTo($this->translateEmailAddress($paramTo));
+
+                if (!empty($paramCc)) {
+                    $mail->setCc($this->translateEmailAddress($paramCc));
+                }
+
+                if (!empty($paramBcc)) {
+                    $mail->setBcc($this->translateEmailAddress($paramBcc));
+                }
+
+                if (!empty($parameters['attachments'])) {
+                    $attachments = $parameters['attachments'];
+                    if (is_string($attachments)) {
+                        $attachments = [$attachments];
+                    }
+
+                    foreach ($attachments as $attachment) {
+                        if (is_string($attachment)) {
+                            if (!is_file($attachment)) {
+                                continue;
+                            }
+                            $part = \Swift_Attachment::fromPath($attachment);
+                        } else {
+                            $filename = isset($attachment['path']) ? $attachment['path'] : '';
+                            if (!is_file($filename)) {
+                                continue;
+                            }
+                            $part = \Swift_Attachment::fromPath($filename);
+                            if (isset($attachment['filename'])) {
+                                $part->setFilename($attachment['filename']);
+                            }
+                            if (isset($attachment['mime'])) {
+                                $part->setContentType($attachment['mime']);
+                            }
+                            if (isset($attachment['disposition'])) {
+                                $part->setDisposition($attachment['disposition']);
+                            }
+                        }
+
+                        $mail->attach($part);
+                    }
+                }
+
+                $messages[] = $mail;
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $messages;
     }
 
     /**
@@ -584,6 +604,80 @@ class MailBuilder
         ];
     }
 
+    protected function getToArray($toData, $culture)
+    {
+        if (empty($toData)) {
+            return false;
+        }
+
+        if (is_string($toData)) {
+            return [
+                ['to' => $toData, 'locale' => $culture],
+            ];
+        }
+
+        if ($toData instanceof RecipientTypeInterface) {
+            return $toData->getRecipients();
+        }
+
+        if (!is_array($toData)) {
+            return false;
+        }
+
+        reset($toData);
+
+        if (isset($toData['to'])) {
+            return [
+                $toData,
+            ];
+        }
+
+        if (isset($toData['type'])) {
+            $type = $this->recipientManager->getType($toData['type']);
+            unset($toData['type']);
+
+            $type->setParams($toData);
+
+            return $type->getRecipients();
+        }
+
+        if (is_string(current($toData))) {
+            return [
+                ['to' => $toData, 'locale' => $culture],
+            ];
+        }
+
+        return null;
+    }
+
+    protected function getTosByData($toData, $culture)
+    {
+        $toArray = $this->getToArray($toData, $culture);
+
+        if (false === $toArray) {
+            return [
+                ['to' => $this->getDefaultTo(), 'locale' => null],
+            ];
+        }
+
+        if (null !== $toArray) {
+            return $toArray;
+        }
+
+        $result = [];
+        foreach ($toData as $data) {
+            $toArray = $this->getToArray($data, $culture);
+
+            if ($toArray) {
+                foreach ($toArray as $to) {
+                    $result[] = $to;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     protected function getFromFromTemplate(EmailTemplate $template = null)
     {
         $default = $this->getDefaultFrom();
@@ -612,17 +706,15 @@ class MailBuilder
         $fromEmail = is_array($from) ? key($from) : $from;
 
         foreach (array_combine(
-                    array_values($this->getFromToParams()),
-            [
-                     $toEmail,
-                     $toName,
-                     $fromEmail,
-                     $fromName,
-                 ]
-        ) as $fromToParamKey => $fromToParamValue) {
-            if (!isset($params[$fromToParamKey])) {
-                $params[$fromToParamKey] = $fromToParamValue;
-            }
+                     array_values($this->getFromToParams()),
+                     [
+                         $toEmail,
+                         $toName,
+                         $fromEmail,
+                         $fromName,
+                     ]
+                 ) as $fromToParamKey => $fromToParamValue) {
+            $params[$fromToParamKey] = $fromToParamValue;
         }
 
         return [

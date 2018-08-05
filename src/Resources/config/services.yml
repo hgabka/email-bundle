@@ -3,6 +3,7 @@ parameters:
     hg_email.message_logger.class: 'Hgabka\EmailBundle\Logger\MessageLogger'
     hg_email.message_sender.class: 'Hgabka\EmailBundle\Helper\MessageSender'
     hg_email.queue_manager.class: 'Hgabka\EmailBundle\Helper\QueueManager'
+    hg_email.recipient_manager.class: 'Hgabka\EmailBundle\Helper\RecipientManager'
 
 services:
     hg_email.admin.email_template:
@@ -15,9 +16,27 @@ services:
           - [setAuthChecker, ["@security.authorization_checker"]]
           - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/edit.html.twig']]
 
+    hg_email.recipient_manager:
+        class: '%hg_email.recipient_manager.class%'
+        arguments: ["@doctrine", "@translator", "@form.factory"]
+
+    hg_email.recipient_type.default:
+        class:  Hgabka\EmailBundle\Recipient\DefaultRecipientType
+        tags:
+        - { name: hg_email.recipient_type }
+        arguments: ["@hg_email.mail_builder", "@translator"]
+        public: false
+
+    hg_email.recipient_type.general:
+        class:  Hgabka\EmailBundle\Recipient\GeneralRecipientType
+        tags:
+        - { name: hg_email.recipient_type }
+        arguments: ["@hgabka_utils.hgabka_utils", "@translator"]
+        public: false
+
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
-        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager']
+        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager', "@hg_email.recipient_manager"]
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'
@@ -102,11 +121,12 @@ services:
     hg_email.email_parser:
         class: Hgabka\EmailBundle\Helper\EmailParser
 
-    hg_email.email_template_type:
-        class: Hgabka\EmailBundle\Form\EmailTemplateAdminType
-        arguments: ["@doctrine.orm.entity_manager", "@security.authorization_checker"]
+    hg_email.recipients_type:
+        class: Hgabka\EmailBundle\Form\RecipientsType
+        arguments: ["@hg_email.recipient_manager", "@hg_email.mail_builder"]
         tags:
             - { name: form.type }
+        public: false
 
     hg_email.subscriber_type:
         class: Hgabka\EmailBundle\Form\MessageSubscriberAdminType
@@ -127,7 +147,7 @@ services:
 
     hg_email.email_twig_extension:
         class: Hgabka\EmailBundle\Twig\EmailTwigExtension
-        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator']
+        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator', "@hg_email.recipient_manager"]
         public: false
         tags:
             - { name: twig.extension }
@@ -151,3 +171,4 @@ services:
 
     Hgabka\EmailBundle\Helper\MessageSender: "@hg_email.message_sender"
     Hgabka\EmailBundle\Helper\MailBuilder: "@hg_email.mail_builder"
+    Hgabka\EmailBundle\Helper\RecipientManager: "@hg_email.recipient_manager"

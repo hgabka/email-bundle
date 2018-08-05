@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Twig;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\ParamSubstituter;
+use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
@@ -18,16 +19,20 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
     /** @var TranslatorInterface */
     protected $translator;
 
+    /** @var RecipientManager */
+    protected $recipientManager;
+
     /**
      * PublicTwigExtension constructor.
      *
      * @param MailBuilder $mailBuilder
      */
-    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator)
+    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager)
     {
         $this->mailBuilder = $mailBuilder;
         $this->paramSubstituter = $paramSubstituter;
         $this->translator = $translator;
+        $this->recipientManager = $recipientManager;
     }
 
     public function getGlobals()
@@ -45,6 +50,11 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
                 'render_usable_vars',
                 [$this, 'renderUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
+            new \Twig_SimpleFunction(
+                'render_recipient_selector',
+                [$this, 'renderRecipientSelector'],
+                ['is_safe' => ['html']]
             ),
         ];
     }
@@ -66,6 +76,20 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         $vars = $this->paramSubstituter->addVarChars($vars);
 
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
+    }
+
+    public function renderRecipientSelector()
+    {
+        $choices = $this->recipientManager->getTypeChoices();
+        $html = '<select id="rectype-select">
+                     <option value=""></option>';
+        foreach ($choices as $label => $type) {
+            $html .= '<option value="'.$type.'">'.$this->translator->trans($label).'</option>';
+        }
+
+        $html .= '</select>';
+
+        return $html;
     }
 
     /**
