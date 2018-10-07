@@ -26,6 +26,9 @@ services:
         - { name: hg_email.recipient_type }
         arguments: ["@hg_email.mail_builder", "@translator"]
         public: false
+        calls:
+        - [setManager, ["@hg_email.recipient_manager"]]
+        - [setTranslator, ["@translator"]]
 
     hg_email.recipient_type.general:
         class:  Hgabka\EmailBundle\Recipient\GeneralRecipientType
@@ -33,6 +36,9 @@ services:
         - { name: hg_email.recipient_type }
         arguments: ["@hgabka_utils.hgabka_utils", "@translator"]
         public: false
+        calls:
+        - [setManager, ["@hg_email.recipient_manager"]]
+        - [setTranslator, ["@translator"]]
 
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
