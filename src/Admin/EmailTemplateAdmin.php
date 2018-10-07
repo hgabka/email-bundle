@@ -67,7 +67,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     {
         if ('edit' === $action) {
             if ($object) {
-                $type = $this->builder->getTemplateType($object->getType);
+                $type = $this->builder->getTemplateType($object->getType());
                 if ($type && !$type->isPublic()) {
                     return false;
                 }
@@ -80,8 +80,21 @@ class EmailTemplateAdmin extends AbstractAdmin
 
     public function checkAccess($action, $object = null)
     {
-        if ('edit' === $action && $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'))) {
-            return;
+        if ('edit' === $action) {
+            $isEditor = $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
+            if ($object) {
+                $type = $this->builder->getTemplateType($object->getType());
+                
+                if ($type && !$type->isPublic()) {
+                    throw new AccessDeniedException($this->trans('hg_email.message.access_denied'));
+                }
+                
+                if ($isEditor) {
+                    return;
+                }
+            } elseif ($isEditor) {
+                return;
+            }
         }
 
         parent::checkAccess($action, $object);
