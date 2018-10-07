@@ -548,7 +548,7 @@ class MailBuilder
 
     public function addTemplateType(EmailTemplateTypeInterface $templateType)
     {
-        $alias = get_class($templateType);       
+        $alias = get_class($templateType);
         $this->templateTypes[$alias] = $templateType;
     }
 
@@ -557,27 +557,41 @@ class MailBuilder
         return $this->templateTypes[$class] ?? null;
     }
 
-    public function getTemplateTypeEntities()
+    public function getTemplateTypeEntities($onlyPublic = false)
     {
+        $res = [];
         foreach ($this->templateTypes as $class => $type) {
-            $this->getTemplateEntity($type);
+            $res[] = $this->getTemplateEntity($type);
         }
+
+        return $res;
     }
 
     /**
      * @return array|EmailTemplateTypeInterface[]
      */
-    public function getTemplateTypes()
+    public function getTemplateTypes($onlyPublic = false)
     {
-        return $this->templateTypes;
+        if (!$onlyPublic) {
+            return $this->templateTypes;
+        }
+
+        $res = [];
+        foreach ($this->templateTypes as $type) {
+            if ($type->isPublic()) {
+                $res[] = $type;
+            }
+        }
+
+        return $res;
     }
 
     /**
      * @return array
      */
-    public function getTemplateTypeClasses()
+    public function getTemplateTypeClasses($onlyPublic = false)
     {
-        return array_keys($this->getTemplateTypes());
+        return array_keys($this->getTemplateTypes($onlyPublic));
     }
 
     public function getTitleByType($class)
