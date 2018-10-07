@@ -577,7 +577,7 @@ class MailBuilder
         }
 
         $res = [];
-        foreach ($this->templateTypes as $type) {
+        foreach ($this->templateTypes as $key => $type) {
             if ($type->isPublic()) {
                 $res[] = $type;
             }
