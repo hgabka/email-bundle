@@ -1,0 +1,5 @@
+hg_email:
+    group:  Messages
+    admin:
+        email_template:
+            model_name: Email template
