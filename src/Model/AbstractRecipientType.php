@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Model;
 
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class AbstractRecipientType implements RecipientTypeInterface
 {
@@ -17,6 +18,17 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
 
     /** @var RecipientManager */
     protected $manager;
+
+    /** @var TranslatorInterface */
+    protected $translator;
+
+    /**
+     * @required
+     */
+    public function setTranslator(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
 
     public function getParams()
     {
