@@ -13,18 +13,14 @@ class DefaultRecipientType extends AbstractRecipientType
     /** @var MailBuilder */
     protected $builder;
 
-    /** @var TranslatorInterface */
-    protected $translator;
-
     /**
      * DefaultRecipientType constructor.
      *
      * @param MailBuilder $builder
      */
-    public function __construct(MailBuilder $builder, TranslatorInterface $translator)
+    public function __construct(MailBuilder $builder)
     {
         $this->builder = $builder;
-        $this->translator = $translator;
     }
 
     public function getName()
