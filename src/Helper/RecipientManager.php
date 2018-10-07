@@ -45,6 +45,10 @@ class RecipientManager
     {
         $alias = get_class($type);
 
+        if (!$type->isPublic()) {
+            return;
+        }
+        
         $this->types[$alias] = $type;
         uasort($this->types, function ($type1, $type2) {
             $p1 = null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority();
