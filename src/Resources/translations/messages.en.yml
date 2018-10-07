@@ -1,31 +1,79 @@
-hgabka_kuma_email:
-    labels:
+breadcrumb:
+    link_email_template_list: Email templates
+
+hg_email:
+    recipient_type:
+        default:
+            name: 'Default recipient'
+            title: 'Default recipient (%count%)'
+            info: 'Recipients (%count%): <br /><br />%recipients%'
+        general:
+            label:
+                name: Recipient name
+                email: Recipient email
+                locale: The language of the message sent
+            name: General sender
+            title: 'General sender (%recipient%)'
+    title:
+        usable_vars: Usable formulas
+        copy_to_clipboard: Copy to clipboard
+        no_recipient: No recipients
+    help:
+        from_name: 'If empty the default name will be used (currently: "%current%")'
+        from_email: 'If empty the default email will be used (currently: "%current%")'
+    form_block:
+        content: 'Subject, content'
+        general: General data
+        from_data: Sender data
+        attachments: Attachments
+        to_data: Recipients
+    tab:
+        general: General data
+        content: 'Subject, content'
+        attachments: Attachments
+    variables:
+        to: recipient
+        from: sender
+        name: name
+        email: email
+        labels:
+            to_name: Recipient name
+            to_email: Recipient email
+            from_name: Sender name
+            from_email: Sender email
+    group: Messages
+    admin:
+        email_template:
+            label: Email templates
+    label:
         name: Name
-        comment: Description
+        comment: Comment
         slug: Slug
         is_system: System template
         layout: Layout template
         subject: Subject
         content_text: Text content
-        content_html: HTML content
+        content_html: Formatted content
         attachments: Attachments
-        usable_vars: Placeholders
-        no_layout: Without layout
+        usable_vars: Usable formulas
+        no_layout: Without layout template
         from_name: Sender name
         from_email: Sender email
         status: Status
         send: Send
         save_and_send: Save and send
-        send_now: Send immidiately
+        send_now: Send now
         send_later: Send later
-        send_at: Send time
-        send_time: Time
-        unprepare: Undo sending
-        email: Email
+        send_at: Send at
+        send_time: Send time
+        unprepare: Unprepare
+        email: Email address
         locale: Language
-        testmail: Test mail
-        webversion: Web version
+        testmail: Teszt message
+        webversion: Webversion
         copy: Duplicate
+        choose_recipient_type: Choose recipient type
+        add_recipient: Add recipient
 
     tabs:
         general: General data
