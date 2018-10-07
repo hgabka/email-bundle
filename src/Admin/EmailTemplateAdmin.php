@@ -87,7 +87,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                 $type = $this->builder->getTemplateType($object->getType());
                 
                 if ($type && !$type->isPublic()) {
-                    throw new AccessDeniedException($this->trans('hg_email.message.access_denied'));
+                    throw new AccessDeniedException($this->trans('hg_email.messages.access_denied'));
                 }
                 
                 if ($isEditor) {
