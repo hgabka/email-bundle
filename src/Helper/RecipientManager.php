@@ -44,10 +44,6 @@ class RecipientManager
     public function addType(RecipientTypeInterface $type)
     {
         $alias = get_class($type);
- 
-        if (!$type->isPublic()) {
-            return;
-        }
         
         $this->types[$alias] = $type;
         uasort($this->types, function ($type1, $type2) {
