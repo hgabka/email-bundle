@@ -549,6 +549,10 @@ class MailBuilder
     public function addTemplateType(EmailTemplateTypeInterface $templateType)
     {
         $alias = get_class($templateType);
+        
+        if (!$templateType->isPublic()) {
+            return;
+        }
 
         $this->templateTypes[$alias] = $templateType;
     }
