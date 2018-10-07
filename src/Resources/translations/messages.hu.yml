@@ -117,6 +117,7 @@ hg_email:
         testmail_error: A levelet nem sikerült elküldeni, mert az űrlap hibákat tartalmaz
         unsubscribe_success: Sikeresen leiratkozott hírlevelünkről
         copy_success: Az üzenet sikeresen lemásolva
+        access_denied: Nincs jogosultsága a szerkesztéshez
 
     statuses:
         init: Szerkesztés alatt
