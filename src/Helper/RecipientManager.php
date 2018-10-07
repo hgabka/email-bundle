@@ -44,8 +44,6 @@ class RecipientManager
     public function addType(RecipientTypeInterface $type)
     {
         $alias = get_class($type);
-        $type->setManager($this);
-        $type->setTranslator($this->translator);
 
         $this->types[$alias] = $type;
         uasort($this->types, function ($type1, $type2) {
