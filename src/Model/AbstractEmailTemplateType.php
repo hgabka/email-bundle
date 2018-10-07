@@ -197,4 +197,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
         return '';
     }
+    
+    public function isPublic()
+    {
+        return true;
+    }
 }
