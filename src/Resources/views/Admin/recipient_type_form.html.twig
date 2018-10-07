@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<div class="panel panel-default" id="panel_{{ key }}">
     <div class="panel-heading">
         <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
@@ -14,3 +14,6 @@
         </div>
     </div>
 </div>
+<script>
+    Admin.setup_select2($('#panel_{{ key }}'));
+</script>
