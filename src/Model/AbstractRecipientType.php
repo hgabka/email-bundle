@@ -40,6 +40,9 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         $this->params = $params;
     }
 
+    /**
+     * @required
+     */
     public function setManager(RecipientManager $manager)
     {
         $this->manager = $manager;
