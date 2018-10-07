@@ -550,6 +550,10 @@ class MailBuilder
     {
         $alias = get_class($templateType);
 
+        if (!$templateType->isPublic()) {
+            return;
+        }
+        
         $this->templateTypes[$alias] = $templateType;
     }
 
