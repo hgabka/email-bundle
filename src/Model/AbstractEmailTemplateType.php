@@ -203,4 +203,3 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return true;
     }
 }
-
