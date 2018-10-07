@@ -16,19 +16,15 @@ class GeneralRecipientType extends AbstractRecipientType
 {
     /** @var HgabkaUtils */
     protected $hgabkaUtils;
-
-    /** @var TranslatorInterface */
-    protected $translator;
-
+    
     /**
      * GeneralRecipientType constructor.
      *
      * @param HgabkaUtils $hgabkaUtils
      */
-    public function __construct(HgabkaUtils $hgabkaUtils, TranslatorInterface $translator)
+    public function __construct(HgabkaUtils $hgabkaUtils)
     {
         $this->hgabkaUtils = $hgabkaUtils;
-        $this->translator = $translator;
     }
 
     public function getName()
