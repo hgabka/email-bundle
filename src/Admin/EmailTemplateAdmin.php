@@ -66,6 +66,12 @@ class EmailTemplateAdmin extends AbstractAdmin
     public function hasAccess($action, $object = null)
     {
         if ('edit' === $action) {
+            if ($object) {
+                $type = $this->builder->getTemplateType($object->getType);
+                if ($type && !$type->isPublic()) {
+                    return false;
+                }
+            }
             return $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
         }
 
