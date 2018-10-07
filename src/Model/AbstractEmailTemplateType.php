@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Model;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 {
@@ -27,6 +28,17 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     protected $defaultFromName;
 
     protected $defaultFromEmail;
+
+    /** @var TranslatorInterface */
+    protected $translator;
+
+    /**
+     * @required
+     */
+    public function setTranslator(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * @return EmailTemplate
