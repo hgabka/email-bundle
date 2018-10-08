@@ -1,5 +1,5 @@
 {% block recipients_widget %}
-    <div id="accordion" class="panel-group">
+    <div id="accordion_{{ form.vars.id }}" class="panel-group">
         {% for key,child in form %}
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -20,11 +20,11 @@
             </div>
         {% endfor %}
     </div>
-    <div class="no-recipient">
+    <div class="no-recipient no-recipient_{{ form.vars.id }}">
         <p>{{ 'hg_email.title.no_recipient'|trans }}</p>
     </div>
     {% if form.vars.add_button %}
-        <div class="add-recipient">
+        <div class="add-recipient add-recipient_{{ form.vars.id }}">
             <a href="#" class="btn btn-link recipient-add">
                 <i class="fa fa-plus-circle" aria-hidden="true"></i>
                 Címzettek hozzáadása
@@ -34,10 +34,10 @@
                     <label class="control-label" for="recipient_type">
                         {{ 'hg_email.label.choose_recipient_type'|trans }}
                     </label>
-                    {{ render_recipient_selector() }}
+                    {{ render_recipient_selector(form.vars.id) }}
                 </div>
                 <div class="form-group">
-                    <a href="#" id="add_recipient_submit" class="btn btn-success">
+                    <a href="#" id="add_recipient_submit_{{ form.vars.id }}" class="btn btn-success">
                         <i class="fa fa-plus" aria-hidden="true"></i>
                         {{ 'hg_email.label.add_recipient'|trans }}
                     </a>
@@ -47,32 +47,32 @@
     {% endif %}
     <script>
         $(function () {
-            $('#accordion').on('click', '.recipient-remove', function (e) {
+            $('#accordion_{{ form.vars.id }}').on('click', '.recipient-remove', function (e) {
                 e.preventDefault();
                 $(this).parents('.panel').remove();
-                if ($('#accordion .panel').length === 0) {
-                    $('.no-recipient').show();
+                if ($('#accordion_{{ form.vars.id }} .panel').length === 0) {
+                    $('.no-recipient_{{ form.vars.id }}').show();
                 } else {
-                    $('.no-recipient').hide();
+                    $('.no-recipient .no-recipient_{{ form.vars.id }}').hide();
                 }
             });
             {% if form.vars.add_button %}
-                $('.add-recipient').on('click', '.recipient-add', function (e) {
+                $('.add-recipient_{{ form.vars.id }}').on('click', '.recipient-add', function (e) {
                     e.preventDefault();
-                    $('.recipient-selector').show();
-                    $('.recipient-add').hide();
+                    $('.add-recipient_{{ form.vars.id }} .recipient-selector').show();
+                    $('.add-recipient_{{ form.vars.id }} .recipient-add').hide();
                 });
 
-                $('#add_recipient_submit').click(function (e) {
+                $('#add_recipient_submit_{{ form.vars.id }}').click(function (e) {
                     e.preventDefault();
-                    if ($('#rectype-select').val().length > 0) {
+                    if ($('#rectype-select_{{ form.vars.id }}').val().length > 0) {
                         $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject) }}',
-                                  {type: $('#rectype-select').val(), name: '{{ form.parent.vars.name }}'}, function (data) {
-                                $('#accordion').append(data.html);
-                                $('.recipient-selector').hide();
-                                $('.no-recipient').hide();
-                                $('.recipient-add').show();
-                                $('#rectype-select').val('');
+                                  {type: $('#rectype-select_{{ form.vars.id }}').val(), name: '{{ form.parent.vars.name }}'}, function (data) {
+                                $('#accordion_{{ form.vars.id }}').append(data.html);
+                                $('.add-recipient_{{ form.vars.id }} .recipient-selector').hide();
+                                $('.no-recipient_{{ form.vars.id }}').hide();
+                                $('.add-recipient_{{ form.vars.id }} .recipient-add').show();
+                                $('#rectype-select_{{ form.vars.id }}').val('');
                             });
                     }
                 });
