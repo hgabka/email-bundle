@@ -47,32 +47,45 @@
     {% endif %}
     <script>
         $(function () {
-            $('#accordion_{{ form.vars.id }}').on('click', '.recipient-remove', function (e) {
+            var $accordion = $('#accordion_{{ form.vars.id }}');
+            var $panel = $('#accordion_{{ form.vars.id }} .panel');
+            var $noRecipient = $('.no-recipient_{{ form.vars.id }}');
+            var $addRecipient = $('.add-recipient_{{ form.vars.id }}');
+            var $selector = $('.add-recipient_{{ form.vars.id }} .recipient-selector');
+            var $recipientAdd = $('.add-recipient_{{ form.vars.id }} .recipient-add');
+            var $rectypeSelect = $('#rectype-select_{{ form.vars.id }}');
+
+            if ($panel.length === 0) {
+                $noRecipient.show();
+            } else {
+                $noRecipient.hide();
+            }
+            $accordion.on('click', '.recipient-remove', function (e) {
                 e.preventDefault();
                 $(this).parents('.panel').remove();
-                if ($('#accordion_{{ form.vars.id }} .panel').length === 0) {
-                    $('.no-recipient_{{ form.vars.id }}').show();
+                if ($panel.length === 0) {
+                    $noRecipient.show();
                 } else {
-                    $('.no-recipient .no-recipient_{{ form.vars.id }}').hide();
+                    $noRecipient.hide();
                 }
             });
             {% if form.vars.add_button %}
-                $('.add-recipient_{{ form.vars.id }}').on('click', '.recipient-add', function (e) {
+                $addRecipient.on('click', '.recipient-add', function (e) {
                     e.preventDefault();
-                    $('.add-recipient_{{ form.vars.id }} .recipient-selector').show();
-                    $('.add-recipient_{{ form.vars.id }} .recipient-add').hide();
+                    $selector.show();
+                    $recipientAdd.hide();
                 });
 
                 $('#add_recipient_submit_{{ form.vars.id }}').click(function (e) {
                     e.preventDefault();
                     if ($('#rectype-select_{{ form.vars.id }}').val().length > 0) {
                         $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject, {fieldType: form.vars.recipientsType}) }}',
-                                  {type: $('#rectype-select_{{ form.vars.id }}').val(), name: '{{ form.parent.vars.name }}'}, function (data) {
-                                $('#accordion_{{ form.vars.id }}').append(data.html);
-                                $('.add-recipient_{{ form.vars.id }} .recipient-selector').hide();
-                                $('.no-recipient_{{ form.vars.id }}').hide();
-                                $('.add-recipient_{{ form.vars.id }} .recipient-add').show();
-                                $('#rectype-select_{{ form.vars.id }}').val('');
+                                  {type: $rectypeSelect.val(), name: '{{ form.parent.vars.name }}'}, function (data) {
+                                $accordion.append(data.html);
+                                $selector.hide();
+                                $noRecipient.hide();
+                                $recipientAdd.show();
+                                $rectypeSelect.val('');
                             });
                     }
                 });
