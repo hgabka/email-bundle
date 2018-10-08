@@ -12,11 +12,11 @@
     display:none;
 }
 
-#accordion .panel h4 a:hover {
+.panel-group .panel h4 a:hover {
     text-decoration: none;
 }
 
-#accordion .panel h4 a.recipient-remove {
+.panel-group .panel h4 a.recipient-remove {
     color: #ff0039;
     float:right;
 }
