@@ -163,7 +163,7 @@ class MailBuilder
         }
 
         $template = $this->getTemplateEntity($templateType);
-        $paramFrom = empty($sendParams['from']) ? $this->getFromFromTemplate($template) : $sendParams['from'];
+        $paramFrom = empty($sendParams['from']) ? $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($culture)) : $sendParams['from'];
         $paramArray = $parameters;
 
         if (!empty($paramArray)) {
@@ -194,11 +194,24 @@ class MailBuilder
         if (!empty($sendParams['to'])) {
             $toData = $sendParams['to'];
         } else {
+            if (!$templateType->isToEditable()) {
+                throw new \InvalidArgumentException('The template type '.\get_class($templateType).' has no recipient set. Provide recipient for the email.');
+            }
+
             $toData = $this->recipientManager->getToDataByTemplate($template, $templateType);
         }
         $paramTos = $this->getTosByData($toData, $culture);
-        $paramCc = $sendParams['cc'] ?? null;
-        $paramBcc = $sendParams['bcc'] ?? null;
+        if (!empty($sendParams['cc'])) {
+            $paramCc = $sendParams['cc'];
+        } elseif ($templateType->isCcEditable()) {
+            $paramCc = $this->composeCc($template->getCcData(), $culture);
+        }
+
+        if (!empty($sendParams['bcc'])) {
+            $paramBcc = $sendParams['bcc'];
+        } elseif ($templateType->isBccEditable()) {
+            $paramBcc = $this->composeCc($template->getBccData(), $culture);
+        }
 
         if (empty($paramFrom) || empty($paramTos)) {
             return false;
@@ -276,11 +289,11 @@ class MailBuilder
                 $mail->setTo($this->translateEmailAddress($paramTo));
 
                 if (!empty($paramCc)) {
-                    $mail->setCc($this->translateEmailAddress($paramCc));
+                    $this->addCcToMail($mail, $paramCc, RecipientManager::RECIPIENT_TYPE_CC);
                 }
 
                 if (!empty($paramBcc)) {
-                    $mail->setBcc($this->translateEmailAddress($paramBcc));
+                    $this->addCcToMail($mail, $paramBcc, RecipientManager::RECIPIENT_TYPE_BCC);
                 }
 
                 if (!empty($parameters['attachments'])) {
@@ -318,6 +331,8 @@ class MailBuilder
 
                 $messages[] = $mail;
             } catch (\Exception $e) {
+                throw $e;
+
                 return false;
             }
         }
@@ -621,6 +636,51 @@ class MailBuilder
         ];
     }
 
+    protected function addCcToMail($mail, $paramCc, $type)
+    {
+        $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'Bcc' : 'Cc';
+        if (\is_string($paramCc)) {
+            $mail->{'set'.$method}($paramCc);
+
+            return;
+        }
+
+        if (\is_array($paramCc)) {
+            reset($paramCc);
+            if (is_numeric(key($paramCc))) {
+                $mail->{'set'.$method}([]);
+                foreach ($paramCc as $cc) {
+                    if (\is_array($cc)) {
+                        $mail->{'add'.$method}(key($cc), current($cc));
+                    } else {
+                        $mail->{'add'.$method}($cc);
+                    }
+                }
+
+                return;
+            }
+        }
+
+        $mail->{'set'.$method}($paramCc);
+    }
+
+    protected function composeCc($ccData, $culture)
+    {
+        $paramCc = [];
+        $ccData = $this->getTosByData($ccData, $culture);
+        foreach ($ccData as $ccRow) {
+            $paramTo = $ccRow['to'];
+            $to = $this->translateEmailAddress($paramTo);
+
+            $toName = \is_array($to) ? current($to) : null;
+            $toEmail = \is_array($to) ? key($to) : $to;
+
+            $paramCc[] = $toName ? [$toEmail => $toName] : $toEmail;
+        }
+
+        return $paramCc;
+    }
+
     protected function getToArray($toData, $culture)
     {
         if (empty($toData)) {
@@ -695,13 +755,13 @@ class MailBuilder
         return $result;
     }
 
-    protected function getFromFromTemplate(EmailTemplate $template = null)
+    protected function getFromFromTemplate(EmailTemplate $template = null, $culture = null)
     {
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = \is_array($default) ? key($default) : $default;
-        $name = ($template ? $template->getFromName() : null) ?? ($defaultName ?? null);
-        $email = ($template ? $template->getFromName() : null) ?? $defaultEmail;
+        $name = ($template ? $template->getFromName($culture) : null) ?? ($defaultName ?? null);
+        $email = ($template ? $template->getFromEmail($culture) : null) ?? $defaultEmail;
 
         return empty($name) ? $email : [$email => $name];
     }
