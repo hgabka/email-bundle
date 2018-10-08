@@ -78,10 +78,10 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderRecipientSelector()
+    public function renderRecipientSelector($id)
     {
         $choices = $this->recipientManager->getTypeChoices();
-        $html = '<select id="rectype-select">
+        $html = '<select id="rectype-select_'.$id.'">
                      <option value=""></option>';
         foreach ($choices as $label => $type) {
             $html .= '<option value="'.$type.'">'.$this->translator->trans($label).'</option>';
