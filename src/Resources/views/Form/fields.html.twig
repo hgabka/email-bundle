@@ -63,7 +63,7 @@
             $accordion.on('click', '.recipient-remove', function (e) {
                 e.preventDefault();
                 $(this).parents('.panel').remove();
-                if ($panel.length === 0) {
+                if ($('#accordion_{{ form.vars.id }} .panel').length === 0) {
                     $noRecipient.show();
                 } else {
                     $noRecipient.hide();
