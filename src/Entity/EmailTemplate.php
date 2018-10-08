@@ -51,6 +51,16 @@ class EmailTemplate implements TranslatableInterface
     protected $toData;
 
     /**
+     * @ORM\Column(name="cc_data", type="array", nullable=true)
+     */
+    protected $ccData;
+
+    /**
+     * @ORM\Column(name="bcc_data", type="array", nullable=true)
+     */
+    protected $bccData;
+
+    /**
      * constructor.
      */
     public function __construct()
@@ -182,6 +192,46 @@ class EmailTemplate implements TranslatableInterface
     public function setToData($toData)
     {
         $this->toData = $toData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcData()
+    {
+        return $this->ccData;
+    }
+
+    /**
+     * @param mixed $ccData
+     *
+     * @return EmailTemplate
+     */
+    public function setCcData($ccData)
+    {
+        $this->ccData = $ccData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBccData()
+    {
+        return $this->bccData;
+    }
+
+    /**
+     * @param mixed $bccData
+     *
+     * @return EmailTemplate
+     */
+    public function setBccData($bccData)
+    {
+        $this->bccData = $bccData;
 
         return $this;
     }

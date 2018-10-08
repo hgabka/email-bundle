@@ -15,6 +15,7 @@ class EmailTemplateAdminController extends CRUDController
             return $this->createNotFoundException();
         }
         $recipientManager = $this->get('hg_email.recipient_manager');
+        $fieldName = $request->get('fieldType').'Data';
 
         $type = $request->get('type');
         $recType = $recipientManager->getType($type);
@@ -22,20 +23,22 @@ class EmailTemplateAdminController extends CRUDController
         $builder = $this
             ->get('form.factory')
             ->createNamedBuilder($request->get('name'))
-            ->add('toData', RecipientsType::class, [
+            ->add($fieldName, RecipientsType::class, [
                 'admin' => $this->admin,
                 'template_type' => $this->admin->getSubject()->getType(),
+                'recipients_type' => $request->get('fieldtype'),
             ])
         ;
 
         $key = uniqid('regtype_');
-        $builder->get('toData')->add($recipientManager->createTypeFormBuilder($key, $type));
+        $builder->get($fieldName)->add($recipientManager->createTypeFormBuilder($key, $type));
 
         $form = $builder->getForm();
 
         $html = $this->renderView('@HgabkaEmail/Admin/recipient_type_form.html.twig', [
             'form' => $form->createView(),
             'key' => $key,
+            'fieldName' => $fieldName,
         ]);
 
         return new JsonResponse([

@@ -8,6 +8,7 @@ use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Form\AttachmentType;
 use Hgabka\EmailBundle\Form\RecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
+use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -73,6 +74,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                     return false;
                 }
             }
+
             return $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
         }
 
@@ -85,11 +87,11 @@ class EmailTemplateAdmin extends AbstractAdmin
             $isEditor = $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
             if ($object) {
                 $type = $this->builder->getTemplateType($object->getType());
-                
+
                 if ($type && !$type->isPublic()) {
                     throw new AccessDeniedException($this->trans('hg_email.messages.access_denied'));
                 }
-                
+
                 if ($isEditor) {
                     return;
                 }
@@ -174,6 +176,8 @@ class EmailTemplateAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form)
     {
+        $mailBuilder = $this->getConfigurationPool()->getContainer()->get(MailBuilder::class);
+        $type = $mailBuilder->getTemplateType($this->getSubject()->getType());
         $form
             ->tab('hg_email.tab.general')
                 ->with('hg_email.form_block.general')
@@ -236,13 +240,45 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ->end()
                 ->with('hg_email.form_block.from_data')
                 ->end()
+            ;
+        if ($type->isToEditable()) {
+            $form
                 ->with('hg_email.form_block.to_data')
                     ->add('toData', RecipientsType::class, [
                         'label' => false,
                         'template_type' => $this->getSubject()->getType(),
                         'admin' => $this,
+                        'recipients_type' => RecipientManager::RECIPIENT_TYPE_TO,
                     ])
                 ->end()
+            ;
+        }
+
+        if ($type->isCcEditable()) {
+            $form
+                ->with('hg_email.form_block.cc_data')
+                    ->add('ccData', RecipientsType::class, [
+                        'label' => false,
+                        'template_type' => $this->getSubject()->getType(),
+                        'admin' => $this,
+                        'recipients_type' => RecipientManager::RECIPIENT_TYPE_CC,
+                    ])
+                ->end()
+            ;
+        }
+        if ($type->isBccEditable()) {
+            $form
+                ->with('hg_email.form_block.bcc_data')
+                    ->add('bccData', RecipientsType::class, [
+                        'label' => false,
+                        'template_type' => $this->getSubject()->getType(),
+                        'admin' => $this,
+                        'recipients_type' => RecipientManager::RECIPIENT_TYPE_BCC,
+                    ])
+                ->end()
+            ;
+        }
+        $form
             ->end()
             ->tab('hg_email.tab.content', ['description' => true])
                 ->with('hg_email.form_block.content')

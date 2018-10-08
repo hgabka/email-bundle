@@ -17,7 +17,7 @@ class AttachmentRepository extends EntityRepository
             ->andWhere('a.ownerId = :queueId')
             ->setParameters(
                 [
-                    'type' => get_class($queue),
+                    'type' => \get_class($queue),
                     'queueId' => $queue->getId(),
                 ]
             )

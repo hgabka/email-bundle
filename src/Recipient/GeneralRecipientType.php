@@ -8,7 +8,6 @@ use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -17,18 +16,14 @@ class GeneralRecipientType extends AbstractRecipientType
     /** @var HgabkaUtils */
     protected $hgabkaUtils;
 
-    /** @var TranslatorInterface */
-    protected $translator;
-
     /**
      * GeneralRecipientType constructor.
      *
      * @param HgabkaUtils $hgabkaUtils
      */
-    public function __construct(HgabkaUtils $hgabkaUtils, TranslatorInterface $translator)
+    public function __construct(HgabkaUtils $hgabkaUtils)
     {
         $this->hgabkaUtils = $hgabkaUtils;
-        $this->translator = $translator;
     }
 
     public function getName()
@@ -59,7 +54,7 @@ class GeneralRecipientType extends AbstractRecipientType
         ;
 
         $locales = $this->hgabkaUtils->getAvailableLocales();
-        if (count($locales) > 1) {
+        if (\count($locales) > 1) {
             $formBuilder
                 ->add('locale', LocaleType::class, [
                     'label' => 'hg_email.recipient_type.general.label.locale',

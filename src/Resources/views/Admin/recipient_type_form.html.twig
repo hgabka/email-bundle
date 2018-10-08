@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
-                {{ form.toData[key].vars.blockTitle|trans }}
+                {{ form[fieldName][key].vars.blockTitle|trans }}
             </a>
 
             <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
@@ -10,10 +10,11 @@
     </div>
     <div id="collapse_{{ key }}" class="panel-collapse collapse in">
         <div class="panel-body">
-            {{ form_widget(form.toData[key]) }}
+            {{ form_widget(form[fieldName][key]) }}
         </div>
     </div>
 </div>
 <script>
     Admin.setup_select2($('#panel_{{ key }}'));
 </script>
+

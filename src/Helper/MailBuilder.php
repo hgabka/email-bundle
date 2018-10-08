@@ -100,14 +100,14 @@ class MailBuilder
     {
         $default = $this->getDefaultFrom();
 
-        return is_array($default) ? current($default) : null;
+        return \is_array($default) ? current($default) : null;
     }
 
     public function getDefaultFromEmail()
     {
         $default = $this->getDefaultFrom();
 
-        return is_array($default) ? key($default) : $default;
+        return \is_array($default) ? key($default) : $default;
     }
 
     /**
@@ -135,11 +135,11 @@ class MailBuilder
      */
     public function translateEmailAddress($address)
     {
-        if (is_string($address) || ((!isset($address['name']) || 0 === strlen($address['name'])) && (!isset($address['email']) || 0 === strlen($address['email'])))) {
+        if (\is_string($address) || ((!isset($address['name']) || 0 === \strlen($address['name'])) && (!isset($address['email']) || 0 === \strlen($address['email'])))) {
             return $address;
         }
 
-        if (isset($address['name']) && strlen($address['name'])) {
+        if (isset($address['name']) && \strlen($address['name'])) {
             return [$address['email'] => $address['name']];
         }
 
@@ -219,7 +219,7 @@ class MailBuilder
 
             $layout = $template->getLayout();
 
-            if ($layout && strlen($bodyHtml) > 0) {
+            if ($layout && \strlen($bodyHtml) > 0) {
                 $layoutFile = $this->config['layout_file'];
                 if (false === $layoutFile) {
                     $layoutFile = null;
@@ -233,7 +233,7 @@ class MailBuilder
                     '%%email%%' => $email,
                     '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
                 ]);
-            } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
+            } elseif (\strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
                 $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
 
                 if (false !== $layoutFile && !is_file($layoutFile)) {
@@ -251,11 +251,11 @@ class MailBuilder
                 }
             }
 
-            if (strlen($bodyText) > 0) {
+            if (\strlen($bodyText) > 0) {
                 $mail->addPart($bodyText, 'text/plain');
             }
 
-            if (strlen($bodyHtml) > 0) {
+            if (\strlen($bodyHtml) > 0) {
                 $bodyHtml = $this->paramSubstituter->embedImages($this->paramSubstituter->substituteParams($bodyHtml, $params, true), $mail);
                 $mail->addPart($bodyHtml, 'text/html');
             }
@@ -285,12 +285,12 @@ class MailBuilder
 
                 if (!empty($parameters['attachments'])) {
                     $attachments = $parameters['attachments'];
-                    if (is_string($attachments)) {
+                    if (\is_string($attachments)) {
                         $attachments = [$attachments];
                     }
 
                     foreach ($attachments as $attachment) {
-                        if (is_string($attachment)) {
+                        if (\is_string($attachment)) {
                             if (!is_file($attachment)) {
                                 continue;
                             }
@@ -382,7 +382,7 @@ class MailBuilder
     {
         $culture = $this->hgabkaUtils->getCurrentLocale($culture);
 
-        $params = is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
+        $params = \is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
         $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
@@ -393,7 +393,7 @@ class MailBuilder
         $params['unsubscribe_link'] = $unsubscribeLink;
 
         foreach ($parameters as $key => $value) {
-            if (!in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link'], true) && is_string($value)) {
+            if (!\in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link'], true) && \is_string($value)) {
                 $params[$key] = $value;
             }
         }
@@ -410,14 +410,14 @@ class MailBuilder
 
         $layout = $message->getLayout();
 
-        if ($layout && strlen($bodyHtml) > 0) {
+        if ($layout && \strlen($bodyHtml) > 0) {
             $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject), [
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
                 '%%email%%' => isset($params['email']) ? $params['email'] : '',
                 '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
             ]);
-        } elseif (strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
+        } elseif (\strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
             $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
 
             if (false !== $layoutFile && !is_file($layoutFile)) {
@@ -435,11 +435,11 @@ class MailBuilder
             }
         }
 
-        if (strlen($bodyText) > 0) {
+        if (\strlen($bodyText) > 0) {
             $mail->addPart($bodyText, 'text/plain');
         }
 
-        if (strlen($bodyHtml) > 0) {
+        if (\strlen($bodyHtml) > 0) {
             $mail->addPart($bodyHtml, 'text/html');
         }
 
@@ -477,7 +477,7 @@ class MailBuilder
                     }
                     $oneCc = $oneCcData['to'];
 
-                    if (is_array($oneCc)) {
+                    if (\is_array($oneCc)) {
                         $mail->addCc(key($oneCc), current($oneCc));
                     } else {
                         $mail->addCc($oneCc);
@@ -493,7 +493,7 @@ class MailBuilder
                         continue;
                     }
                     $oneBcc = $oneBccData['to'];
-                    if (is_array($oneBcc)) {
+                    if (\is_array($oneBcc)) {
                         $mail->addCc(key($oneBcc), current($oneBcc));
                     } else {
                         $mail->addCc($oneBcc);
@@ -548,7 +548,7 @@ class MailBuilder
 
     public function addTemplateType(EmailTemplateTypeInterface $templateType)
     {
-        $alias = get_class($templateType);
+        $alias = \get_class($templateType);
         $this->templateTypes[$alias] = $templateType;
     }
 
@@ -568,6 +568,8 @@ class MailBuilder
     }
 
     /**
+     * @param mixed $onlyPublic
+     *
      * @return array|EmailTemplateTypeInterface[]
      */
     public function getTemplateTypes($onlyPublic = false)
@@ -587,6 +589,8 @@ class MailBuilder
     }
 
     /**
+     * @param mixed $onlyPublic
+     *
      * @return array
      */
     public function getTemplateTypeClasses($onlyPublic = false)
@@ -623,7 +627,7 @@ class MailBuilder
             return false;
         }
 
-        if (is_string($toData)) {
+        if (\is_string($toData)) {
             return [
                 ['to' => $toData, 'locale' => $culture],
             ];
@@ -633,7 +637,7 @@ class MailBuilder
             return $toData->getRecipients();
         }
 
-        if (!is_array($toData)) {
+        if (!\is_array($toData)) {
             return false;
         }
 
@@ -654,7 +658,7 @@ class MailBuilder
             return $type->getRecipients();
         }
 
-        if (is_string(current($toData))) {
+        if (\is_string(current($toData))) {
             return [
                 ['to' => $toData, 'locale' => $culture],
             ];
@@ -695,7 +699,7 @@ class MailBuilder
     {
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
-        $defaultEmail = is_array($default) ? key($default) : $default;
+        $defaultEmail = \is_array($default) ? key($default) : $default;
         $name = ($template ? $template->getFromName() : null) ?? ($defaultName ?? null);
         $email = ($template ? $template->getFromName() : null) ?? $defaultEmail;
 
@@ -712,11 +716,11 @@ class MailBuilder
         $to = $this->translateEmailAddress($paramTo);
         $from = $this->translateEmailAddress($paramFrom);
 
-        $toName = is_array($to) ? current($to) : $to;
-        $toEmail = is_array($to) ? key($to) : $to;
+        $toName = \is_array($to) ? current($to) : $to;
+        $toEmail = \is_array($to) ? key($to) : $to;
 
-        $fromName = is_array($from) ? current($from) : $from;
-        $fromEmail = is_array($from) ? key($from) : $from;
+        $fromName = \is_array($from) ? current($from) : $from;
+        $fromEmail = \is_array($from) ? key($from) : $from;
 
         foreach (array_combine(
                      array_values($this->getFromToParams()),
@@ -731,7 +735,7 @@ class MailBuilder
         }
 
         return [
-            'name' => is_array($to) ? current($to) : '',
+            'name' => \is_array($to) ? current($to) : '',
             'email' => $toEmail,
         ];
     }
@@ -781,11 +785,11 @@ class MailBuilder
     protected function getTemplateEntity(EmailTemplateTypeInterface $templateType)
     {
         if (empty($templateType->getEntity())) {
-            $template = $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['type' => get_class($templateType)]);
+            $template = $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['type' => \get_class($templateType)]);
             if (!$template) {
                 $template = new EmailTemplate();
                 $template
-                    ->setType(get_class($templateType));
+                    ->setType(\get_class($templateType));
 
                 foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
                     $template->translate($locale)

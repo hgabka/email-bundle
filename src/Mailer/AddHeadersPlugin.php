@@ -63,7 +63,7 @@ class AddHeadersPlugin implements \Swift_Events_SendListener
         $this->dispatcher->dispatch(MailerEvent::EVENT_ADD_HEADERS, $event);
         $headers = $event->getReturnValue();
 
-        if (!is_array($headers)) {
+        if (!\is_array($headers)) {
             return;
         }
 

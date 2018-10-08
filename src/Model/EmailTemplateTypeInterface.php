@@ -23,6 +23,12 @@ interface EmailTemplateTypeInterface
     public function getTitle();
 
     public function getDefaultRecipients();
-    
+
     public function isPublic();
+
+    public function isToEditable();
+
+    public function isCcEditable();
+
+    public function isBccEditable();
 }

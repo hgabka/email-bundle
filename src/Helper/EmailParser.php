@@ -36,7 +36,7 @@ class EmailParser
 
         $this->extractHeadersAndRawBody();
 
-        if (function_exists('imap_open')) {
+        if (\function_exists('imap_open')) {
             $this->isImapExtensionAvailable = true;
         }
     }
@@ -85,7 +85,7 @@ class EmailParser
      */
     public function getTo()
     {
-        if ((!isset($this->rawFields['to'])) || (!count($this->rawFields['to']))) {
+        if ((!isset($this->rawFields['to'])) || (!\count($this->rawFields['to']))) {
             throw new Exception("Couldn't find the recipients of the email");
         }
 
@@ -161,8 +161,8 @@ class EmailParser
                 // collecting the actual content until we find the delimiter
 
                 // if the delimited is AAAAA, the line will be --AAAAA  - that's why we use substr
-                if (is_array($boundaries)) {
-                    if (in_array(substr($line, 2), $boundaries, true)) {  // found the delimiter
+                if (\is_array($boundaries)) {
+                    if (\in_array(substr($line, 2), $boundaries, true)) {  // found the delimiter
                         break;
                     }
                 }
@@ -245,7 +245,7 @@ class EmailParser
         $line = str_replace("\r", '', $line);
         $line = str_replace("\n", '', $line);
 
-        return 0 === strlen($line);
+        return 0 === \strlen($line);
     }
 
     private function extractHeadersAndRawBody()
@@ -258,7 +258,7 @@ class EmailParser
         foreach ($lines as $line) {
             if (self::isNewLine($line)) {
                 // end of headers
-                $this->rawBodyLines = array_slice($lines, $i);
+                $this->rawBodyLines = \array_slice($lines, $i);
 
                 break;
             }

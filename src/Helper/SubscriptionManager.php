@@ -125,17 +125,17 @@ class SubscriptionManager
             ];
         }
 
-        if (is_int($lists)) {
+        if (\is_int($lists)) {
             $lists = [
                 $repo->find($lists),
             ];
         }
-        if (!is_array($lists)) {
+        if (!\is_array($lists)) {
             $lists = [$lists];
         }
 
         foreach ($lists as $key => $list) {
-            if (is_int($list)) {
+            if (\is_int($list)) {
                 $lists[$key] = $repo->find($list);
             }
 

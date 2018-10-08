@@ -16,7 +16,7 @@ class EntityLoadListener
         $em = $eventArgs->getEntityManager();
 
         if ($obj instanceof EmailTemplateTranslation) {
-            $productReflProp = $em->getClassMetadata(get_class($obj))->reflClass->getProperty('attachments');
+            $productReflProp = $em->getClassMetadata(\get_class($obj))->reflClass->getProperty('attachments');
             $productReflProp->setAccessible(true);
 
             $collection = new ArrayCollection();
@@ -29,7 +29,7 @@ class EntityLoadListener
         }
 
         if ($obj instanceof MessageTranslation) {
-            $productReflProp = $em->getClassMetadata(get_class($obj))->reflClass->getProperty('attachments');
+            $productReflProp = $em->getClassMetadata(\get_class($obj))->reflClass->getProperty('attachments');
             $productReflProp->setAccessible(true);
 
             $collection = new ArrayCollection();

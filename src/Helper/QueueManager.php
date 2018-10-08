@@ -189,7 +189,7 @@ class QueueManager
             $this->lastError = 'Hianyzo uzenet';
         }
 
-        if (in_array($queue->getStatus(), [QueueStatusEnum::STATUS_SIKERTELEN, QueueStatusEnum::STATUS_VISSZAPATTANT], true)) {
+        if (\in_array($queue->getStatus(), [QueueStatusEnum::STATUS_SIKERTELEN, QueueStatusEnum::STATUS_VISSZAPATTANT], true)) {
             return false;
         }
 
@@ -271,7 +271,7 @@ class QueueManager
 
             $queue = new MessageQueue();
             $queue->setMessage($message);
-            if (is_array($to)) {
+            if (\is_array($to)) {
                 $queue->setToEmail(key($to));
                 $queue->setToName(current($to));
             } else {
@@ -320,7 +320,7 @@ class QueueManager
 
         foreach ($attachments as $attachment) {
             $newAttachment = new Attachment();
-            $newAttachment->setType(get_class($queue));
+            $newAttachment->setType(\get_class($queue));
             $newAttachment->setOwnerId($queue->getId());
             /** @var Media $media */
             $media = $attachment->getMedia();
@@ -367,7 +367,7 @@ class QueueManager
             ++$count;
             $to = unserialize($queue->getTo());
 
-            $email = is_array($to) ? key($to) : $to;
+            $email = \is_array($to) ? key($to) : $to;
 
             if ($this->sendEmailQueue($queue)) {
                 $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
@@ -391,7 +391,7 @@ class QueueManager
             ++$count;
             $to = unserialize($queue->getTo());
 
-            $email = is_array($to) ? key($to) : $to;
+            $email = \is_array($to) ? key($to) : $to;
             if ($this->send($queue)) {
                 $this->log('Email kuldese sikeres. Email: '.$email);
 

@@ -234,7 +234,7 @@ class Message implements TranslatableInterface
      */
     public function setType($status)
     {
-        if (!in_array($status, MessageStatusEnum::getAvailableStatuses(), true)) {
+        if (!\in_array($status, MessageStatusEnum::getAvailableStatuses(), true)) {
             throw new \InvalidArgumentException('Invalid type');
         }
 
@@ -523,12 +523,12 @@ class Message implements TranslatableInterface
 
     public function isUnprepareable()
     {
-        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
+        return \in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
     public function isBeingSent()
     {
-        return in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
+        return \in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
     public function isPrepared()

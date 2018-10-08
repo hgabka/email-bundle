@@ -139,13 +139,13 @@ class MessageSender
         foreach ($lists as $list) {
             $config = $recipientsConfig[$list];
 
-            if (!isset($config['data']) || !is_callable($config['data'])) {
+            if (!isset($config['data']) || !\is_callable($config['data'])) {
                 continue;
             }
 
-            $data = call_user_func($config['data']);
+            $data = \call_user_func($config['data']);
 
-            if (!is_array($data)) {
+            if (!\is_array($data)) {
                 continue;
             }
             $realData = [];
@@ -170,7 +170,7 @@ class MessageSender
                 }
 
                 foreach (array_keys($row) as $other) {
-                    if (!in_array($other, ['to', 'culture', 'email', 'name'], true)) {
+                    if (!\in_array($other, ['to', 'culture', 'email', 'name'], true)) {
                         $oneRow[$other] = $row[$other];
                     }
                 }
@@ -239,7 +239,7 @@ class MessageSender
                     continue;
                 }
 
-                if (!in_array($subscriber->getEmail(), $emails, true)) {
+                if (!\in_array($subscriber->getEmail(), $emails, true)) {
                     $ar = $this->hgabkaUtils->entityToArray($subscriber, 0);
                     $recs[] = array_merge($ar, [
                         'to' => [$subscriber->getEmail() => $subscriber->getName()],
@@ -274,7 +274,7 @@ class MessageSender
             $to = $rec['to'];
             $culture = isset($rec['culture']) ? $rec['culture'] : $this->hgabkaUtils->getDefaultLocale();
 
-            $email = is_array($to) ? key($to) : $to;
+            $email = \is_array($to) ? key($to) : $to;
 
             try {
                 $mail = $this->mailBuilder->createMessageMail($message, $to, $culture, true, $rec);
@@ -437,7 +437,7 @@ class MessageSender
         $recipientsConfig = $this->config['pre_defined_message_recipients'];
         $lists = explode("\r\n", $lists);
 
-        if (empty($recipientsConfig) || !is_array($recipientsConfig) || empty($lists)) {
+        if (empty($recipientsConfig) || !\is_array($recipientsConfig) || empty($lists)) {
             return [];
         }
 
@@ -478,7 +478,7 @@ class MessageSender
     {
         $recipientsConfig = $this->config['pre_defined_message_recipients'];
 
-        if (empty($recipientsConfig) || !is_array($recipientsConfig)) {
+        if (empty($recipientsConfig) || !\is_array($recipientsConfig)) {
             return [];
         }
 

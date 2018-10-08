@@ -267,15 +267,15 @@ class EmailQueue extends AbstractQueue
         }
 
         $to = unserialize($to);
-        if (!is_array($to)) {
+        if (!\is_array($to)) {
             return $to === $email;
         }
 
         foreach ($to as $mail => $name) {
-            if (!is_array($name) && $mail === $email) {
+            if (!\is_array($name) && $mail === $email) {
                 return true;
-            } elseif (is_array($name)) {
-                if (in_array($email, $name, true) || array_key_exists($email, $name)) {
+            } elseif (\is_array($name)) {
+                if (\in_array($email, $name, true) || array_key_exists($email, $name)) {
                     return true;
                 }
             }
