@@ -56,7 +56,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         if (null === $this->recipients) {
             $recipients = $this->calcRecipients();
             if (!empty($recipients)) {
-                if (!is_array($recipients) || !is_int(key($recipients))) {
+                if (!\is_array($recipients) || !\is_int(key($recipients))) {
                     if (isset($recipients['to'])) {
                         return [$recipients];
                     }
@@ -81,7 +81,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     {
         $recipients = $this->getRecipients();
 
-        return !is_array($recipients) ? 0 : count($recipients);
+        return !\is_array($recipients) ? 0 : \count($recipients);
     }
 
     public function addFormFields(FormBuilderInterface $formBuilder)
@@ -125,13 +125,13 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
 
     protected function getRecipientDisplay($recipient)
     {
-        if (!is_array($recipient)) {
+        if (!\is_array($recipient)) {
             return $recipient;
         }
 
         if (array_key_exists('to', $recipient)) {
             $recipient = $recipient['to'];
-            if (!is_array($recipient)) {
+            if (!\is_array($recipient)) {
                 return $recipient;
             }
         }

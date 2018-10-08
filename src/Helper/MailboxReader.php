@@ -92,7 +92,7 @@ class MailboxReader
 
     public function getHeaderInfo($message)
     {
-        $header = is_string($message) || !is_numeric($message) ? $message : imap_fetchheader($this->handle, $message);
+        $header = \is_string($message) || !is_numeric($message) ? $message : imap_fetchheader($this->handle, $message);
 
         return imap_rfc822_parse_headers($header);
     }
@@ -110,7 +110,7 @@ class MailboxReader
                 $thisFrom = [$address => imap_utf8($from->personal)];
             }
 
-            if (1 === count($headerInfo->from)) {
+            if (1 === \count($headerInfo->from)) {
                 return $thisFrom;
             }
 
@@ -133,7 +133,7 @@ class MailboxReader
                 $thisTo = [$address => imap_utf8($to->personal)];
             }
 
-            if (1 === count($headerInfo->to)) {
+            if (1 === \count($headerInfo->to)) {
                 return $thisTo;
             }
 
@@ -261,8 +261,8 @@ class MailboxReader
         $structure = imap_fetchstructure($this->handle, $message);
 
         $attachments = [];
-        if (isset($structure->parts) && count($structure->parts)) {
-            for ($i = 0; $i < count($structure->parts); ++$i) {
+        if (isset($structure->parts) && \count($structure->parts)) {
+            for ($i = 0; $i < \count($structure->parts); ++$i) {
                 $attachments[$i] = [
                     'is_attachment' => false,
                     'filename' => '',

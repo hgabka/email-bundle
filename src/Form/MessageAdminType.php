@@ -102,8 +102,8 @@ class MessageAdminType extends AbstractType
                     $from = $mailBuilder->getDefaultFrom();
 
                     $message
-                        ->setFromName(is_array($from) ? reset($from) : null)
-                        ->setFromEmail(is_array($from) ? key($from) : $from);
+                        ->setFromName(\is_array($from) ? reset($from) : null)
+                        ->setFromEmail(\is_array($from) ? key($from) : $from);
                 }
             })
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

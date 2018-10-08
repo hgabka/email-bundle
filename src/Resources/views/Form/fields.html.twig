@@ -66,7 +66,7 @@
                 $('#add_recipient_submit_{{ form.vars.id }}').click(function (e) {
                     e.preventDefault();
                     if ($('#rectype-select_{{ form.vars.id }}').val().length > 0) {
-                        $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject) }}',
+                        $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject, {fieldType: form.vars.recipientsType}) }}',
                                   {type: $('#rectype-select_{{ form.vars.id }}').val(), name: '{{ form.parent.vars.name }}'}, function (data) {
                                 $('#accordion_{{ form.vars.id }}').append(data.html);
                                 $('.add-recipient_{{ form.vars.id }} .recipient-selector').hide();

@@ -112,8 +112,8 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             $vars[$key] = $varData;
             if (isset($vars[$key]['value'])) {
                 $v = $vars[$key]['value'];
-                if (is_callable($v)) {
-                    $vars[$key]['value'] = call_user_func($vars[$key]['value']);
+                if (\is_callable($v)) {
+                    $vars[$key]['value'] = \call_user_func($vars[$key]['value']);
                 } else {
                     $accessor = PropertyAccess::createPropertyAccessor();
                     $vars[$key]['value'] = $accessor->getValue($this, $vars[$key]['value']);
@@ -197,8 +197,23 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
         return '';
     }
-    
+
     public function isPublic()
+    {
+        return true;
+    }
+
+    public function isToEditable()
+    {
+        return true;
+    }
+
+    public function isCcEditable()
+    {
+        return true;
+    }
+
+    public function isBccEditable()
     {
         return true;
     }

@@ -42,11 +42,11 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
         }
 
         if (isset($recipients['cc']) && $recipients['cc']) {
-            if (is_string($recipients['cc'])) {
+            if (\is_string($recipients['cc'])) {
                 $message->addCc($recipients['cc']);
             }
 
-            if (is_array($recipients['cc'])) {
+            if (\is_array($recipients['cc'])) {
                 foreach ($recipients['cc'] as $to) {
                     $message->addCc($to);
                 }
@@ -54,11 +54,11 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
         }
 
         if (isset($recipients['bcc']) && $recipients['bcc']) {
-            if (is_string($recipients['bcc'])) {
+            if (\is_string($recipients['bcc'])) {
                 $message->addBcc($recipients['bcc']);
             }
 
-            if (is_array($recipients['bcc'])) {
+            if (\is_array($recipients['bcc'])) {
                 foreach ($recipients['bcc'] as $to) {
                     $message->addBcc($to);
                 }

@@ -323,7 +323,7 @@ class EmailLog
             return '';
         }
 
-        if (is_string($addr)) {
+        if (\is_string($addr)) {
             return $addr;
         }
 

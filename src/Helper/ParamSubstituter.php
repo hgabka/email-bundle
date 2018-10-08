@@ -42,10 +42,10 @@ class ParamSubstituter
         $params = $this->addVarChars($params);
 
         foreach ($params as $key => $param) {
-            if (is_string($param)) {
+            if (\is_string($param)) {
                 $text = strtr($text, [$key => $param]);
             } else {
-                if (!isset($param['value']) || !is_string($param['value'])) {
+                if (!isset($param['value']) || !\is_string($param['value'])) {
                     continue;
                 }
 
@@ -112,7 +112,7 @@ class ParamSubstituter
         if (empty($varChars)) {
             return ['prefix' => '%%', 'postfix' => '%%'];
         }
-        if (is_string($varChars)) {
+        if (\is_string($varChars)) {
             return ['prefix' => $varChars, 'postfix' => $varChars];
         }
 
@@ -124,7 +124,7 @@ class ParamSubstituter
         $normalized = [];
 
         foreach ($this->removeVarChars($params) as $key => $value) {
-            if (is_object($value)) {
+            if (\is_object($value)) {
                 foreach (get_object_vars($value) as $field => $val) {
                     if (!isset($normalized[$key.'.'.strtolower($field)])) {
                         $normalized[$key.'.'.strtolower($field)] = (string) $val;
@@ -144,7 +144,7 @@ class ParamSubstituter
 
     public function removeVarChars($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return $this->removeVarCharsFromString($data);
         }
         if (empty($data)) {
@@ -161,7 +161,7 @@ class ParamSubstituter
 
     public function addVarChars($data)
     {
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return $this->addVarCharsToString($data);
         }
         if (empty($data)) {
@@ -244,7 +244,7 @@ class ParamSubstituter
 
     protected function removeVarCharsFromString($string)
     {
-        if (!is_string($string)) {
+        if (!\is_string($string)) {
             return $string;
         }
         $varChars = $this->getVarChars();
@@ -268,7 +268,7 @@ class ParamSubstituter
 
     protected function addVarCharsToString($string)
     {
-        if (!is_string($string)) {
+        if (!\is_string($string)) {
             return $string;
         }
         $string = $this->removeVarCharsFromString($string);

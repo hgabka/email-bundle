@@ -33,7 +33,7 @@ class EmailVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        if (!in_array($attribute, [self::EDIT], true)) {
+        if (!\in_array($attribute, [self::EDIT], true)) {
             return false;
         }
 

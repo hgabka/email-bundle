@@ -46,12 +46,12 @@ class RecipientsType extends AbstractType
                     }
                 }
 
-                if (0 === count($form)) {
+                if (0 === \count($form)) {
                     $templateType = $this->builder->getTemplateType($options['template_type']);
 
                     if ($templateType) {
                         if (empty($data)) {
-                            if (!empty($templateType->getDefaultRecipients())) {
+                            if (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type'] && !empty($templateType->getDefaultRecipients())) {
                                 $recipients = $templateType->getDefaultRecipients();
                                 if (array_key_exists('type', $recipients)) {
                                     $recipients = [$recipients];
@@ -59,14 +59,16 @@ class RecipientsType extends AbstractType
 
                                 foreach ($recipients as $recTypeData) {
                                     if (!empty($recTypeData['type'])) {
-                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, false);
+                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type']);
                                     }
                                 }
                             } else {
-                                $this->addRecipientType(null, $form, DefaultRecipientType::class);
+                                if (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type']) {
+                                    $this->addRecipientType(null, $form, DefaultRecipientType::class);
+                                }
                             }
                         } else {
-                            $removable = empty($templateType->getDefaultRecipients());
+                            $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
                             foreach ($data as $name => $typeData) {
                                 $this->addRecipientType($name, $form, $typeData['type'], $typeData, $removable);
                             }
@@ -82,9 +84,9 @@ class RecipientsType extends AbstractType
                 }
                 $templateType = $this->builder->getTemplateType($options['template_type']);
 
-                $removable = empty($templateType->getDefaultRecipients());
+                $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
 
-                if (0 === count($form) && !empty($data)) {
+                if (0 === \count($form) && !empty($data)) {
                     foreach ($data as $name => $typeData) {
                         $this->addRecipientType($name, $form, $typeData['type'] ?? null, $typeData, $removable);
                     }
@@ -99,6 +101,7 @@ class RecipientsType extends AbstractType
     {
         $resolver
             ->setDefaults([
+                'recipients_type' => RecipientManager::RECIPIENT_TYPE_TO,
                 'template_type' => null,
                 'admin' => null,
             ])
@@ -108,8 +111,9 @@ class RecipientsType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['admin'] = $options['admin'];
+        $view->vars['recipientsType'] = $options['recipients_type'];
         $tplType = $this->builder->getTemplateType($options['template_type']);
-        $view->vars['add_button'] = $tplType && empty($tplType->getDefaultRecipients());
+        $view->vars['add_button'] = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || ($tplType && empty($tplType->getDefaultRecipients()));
     }
 
     public function getBlockPrefix()
@@ -128,7 +132,7 @@ class RecipientsType extends AbstractType
             $recType->setParams($params);
         }
 
-        $builder = $this->manager->createTypeFormBuilder($name ?? uniqid('regtype_'), $type, $removable);
+        $builder = $this->manager->createTypeFormBuilder($name ?? uniqid('rectype_'), $type, $removable);
         if ($builder) {
             $form
                 ->add($builder->getForm())

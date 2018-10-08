@@ -179,7 +179,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
     protected function checkHost(): bool
     {
         $redirectConfig = $this->redirectConfig;
-        $hosts = isset($redirectConfig['hosts']) ? (!is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
+        $hosts = isset($redirectConfig['hosts']) ? (!\is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
         $ch = $this->hgabkaUtils->getHost();
 
@@ -268,7 +268,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $result = [];
 
         foreach ($recipient as $mail => $name) {
-            if (strlen($name)) {
+            if (\strlen($name)) {
                 $result[] = $name.' <'.$mail.'>';
             } else {
                 $result[] = $mail;

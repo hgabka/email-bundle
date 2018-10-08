@@ -15,7 +15,7 @@
                         {% if form_group.description %}
                             <p>{{ form_group.description|trans({}, form_group.translation_domain ?: admin.translationDomain) }}</p>
                         {% endif %}
-                        {% if code == 'hg_email.tab.general.hg_email.form_block.to_data' %}
+                        {% if code == 'hg_email.tab.general.hg_email.form_block.to_data' or code == 'hg_email.tab.general.hg_email.form_block.cc_data' or code == 'hg_email.tab.general.hg_email.form_block.bcc_data' %}
                             {% for field_name in form_group.fields if form[field_name] is defined %}
                                 {{ form_row(form[field_name])}}
                             {% endfor %}

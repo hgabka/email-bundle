@@ -6,7 +6,6 @@ use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Model\AbstractRecipientType;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class DefaultRecipientType extends AbstractRecipientType
 {

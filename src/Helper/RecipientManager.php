@@ -12,6 +12,10 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class RecipientManager
 {
+    const RECIPIENT_TYPE_TO = 'to';
+    const RECIPIENT_TYPE_CC = 'cc';
+    const RECIPIENT_TYPE_BCC = 'bcc';
+
     /** @var ManagerRegistry */
     protected $doctrine;
 
@@ -43,8 +47,8 @@ class RecipientManager
      */
     public function addType(RecipientTypeInterface $type)
     {
-        $alias = get_class($type);
-        
+        $alias = \get_class($type);
+
         $this->types[$alias] = $type;
         uasort($this->types, function ($type1, $type2) {
             $p1 = null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority();
@@ -71,7 +75,7 @@ class RecipientManager
         $type = clone $this->getType($type);
 
         $params = $type->getParams();
-        $params['type'] = get_class($type);
+        $params['type'] = \get_class($type);
 
         if ($type) {
             $builder = $this->formFactory->createNamedBuilder($name, RecipientFormType::class, $params, [

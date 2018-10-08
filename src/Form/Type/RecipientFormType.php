@@ -20,7 +20,7 @@ class RecipientFormType extends AbstractType
             $builder->add('type', HiddenType::class);
             $builder->get('type')
                 ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
-                    $event->setData(get_class($options['recipient_type']));
+                    $event->setData(\get_class($options['recipient_type']));
                 })
             ;
         }
