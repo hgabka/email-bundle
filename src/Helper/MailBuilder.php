@@ -163,7 +163,15 @@ class MailBuilder
         }
 
         $template = $this->getTemplateEntity($templateType);
-        $paramFrom = empty($sendParams['from']) ? $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($culture)) : $sendParams['from'];
+        if (!empty($sendParams['from'])) {
+            $paramFrom = $sendParams['from'];
+        } else {
+            if (!$templateType->isSenderEditable()) {
+                throw new \InvalidArgumentException('The template type '.\get_class($templateType).' has no sender set. Provide sender for the email.');
+            }
+
+            $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($culture));
+        }
         $paramArray = $parameters;
 
         if (!empty($paramArray)) {
