@@ -217,4 +217,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
         return true;
     }
+    
+    public function isSenderEditable()
+    {
+        return true;
+    }
 }
