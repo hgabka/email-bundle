@@ -20,3 +20,7 @@
     color: #ff0039;
     float:right;
 }
+
+.form-group[id$="_fromText"] {
+    margin-bottom:0;
+}
