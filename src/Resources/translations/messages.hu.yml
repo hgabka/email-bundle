@@ -25,6 +25,7 @@ hg_email:
         content: 'Tárgy, tartalom'
         general: Általános adatok
         from_data: Feladó adatai
+        from_data_static: Feladó
         attachments: Csatolmányok
         to_data: Címzettek
         cc_data: Másolat címzettek
