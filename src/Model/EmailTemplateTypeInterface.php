@@ -31,6 +31,8 @@ interface EmailTemplateTypeInterface
     public function isCcEditable();
 
     public function isBccEditable();
-    
+
     public function isSenderEditable();
+
+    public function getSenderText();
 }
