@@ -25,6 +25,7 @@ hg_email:
         content: 'Subject, content'
         general: General data
         from_data: Sender data
+        from_data_static: Sender
         attachments: Attachments
         to_data: Recipients
         cc_data: Carbon copy recipients
