@@ -9,6 +9,7 @@ use Hgabka\EmailBundle\Form\AttachmentType;
 use Hgabka\EmailBundle\Form\RecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -238,7 +239,6 @@ class EmailTemplateAdmin extends AbstractAdmin
                     'nested_sortable' => false,
                 ],
             ],
-
         ]);
         $options = [
             'label' => false,
@@ -259,8 +259,29 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ->with('hg_email.form_block.from_data')
                 ->end()
             ;
+        } else {
+            $form
+                ->with('hg_email.form_block.from_data_static')
+                    ->add('fromText', StaticControlType::class, [
+                        'label' => false,
+                        'html' => '
+                            <div class="panel-group">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a>
+                                                 '.$this->trans($type->getSenderText()).'
+                                            </a>
+                                         </h4>
+                                     </div>
+                
+                                </div>
+                            </div>',
+                        'mapped' => false,
+                    ])
+                ->end()
+            ;
         }
-
         if ($type->isToEditable()) {
             $form
                 ->with('hg_email.form_block.to_data')
