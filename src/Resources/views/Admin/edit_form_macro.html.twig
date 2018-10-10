@@ -1,46 +1,49 @@
 {% macro render_groups(admin, form, groups, has_tab) %}
     <div class="row">
-    {% for code in groups if admin.formgroups[code] is defined %}
-        {% set form_group = admin.formgroups[code] %}
+        {% for code in groups if admin.formgroups[code] is defined %}
+            {% set form_group = admin.formgroups[code] %}
 
-        <div class="{{ form_group.class|default('col-md-12') }}">
-            <div class="{{ form_group.box_class }}">
-                <div class="box-header">
-                    <h4 class="box-title">
-                        {{ form_group.label|trans({}, form_group.translation_domain ?: admin.translationDomain) }}
-                    </h4>
-                </div>
-                <div class="box-body">
-                    <div class="sonata-ba-collapsed-fields">
-                        {% if form_group.description %}
-                            <p>{{ form_group.description|trans({}, form_group.translation_domain ?: admin.translationDomain) }}</p>
-                        {% endif %}
-                        {% if code == 'hg_email.tab.general.hg_email.form_block.to_data' or code == 'hg_email.tab.general.hg_email.form_block.cc_data' or code == 'hg_email.tab.general.hg_email.form_block.bcc_data' %}
-                            {% for field_name in form_group.fields if form[field_name] is defined %}
-                                {{ form_row(form[field_name])}}
-                            {% endfor %}
-                        {% else %}
-                        {% if code == 'hg_email.tab.general.hg_email.form_block.general' %}
-                        {% set fields = ['comment'] %}
-                        {% elseif code == 'hg_email.tab.general.hg_email.form_block.from_data' %}
-                            {% set fields = ['fromName', 'fromEmail'] %}
-                        {% elseif code == 'hg_email.tab.attachments.hg_email.form_block.attachments' %}
-                            {% set fields = ['attachments'] %}
-                        {% else %}
-                            {% set fields = ['subject', 'contentText', 'contentHtml'] %}
-                        {% endif %}
-                        {% set field_name = 'translations' %}
-                        {% if form[field_name] is defined %}
-                            {% include '@HgabkaEmail/Admin/translation_fields.html.twig' with {form: form['translations'], fields: fields} %}
-
-                        {% else %}
-                            <em>{{ 'message_form_group_empty'|trans({}, 'SonataAdminBundle') }}</em>
-                        {% endif %}
+            <div class="{{ form_group.class|default('col-md-12') }}">
+                <div class="{{ form_group.box_class }}">
+                    <div class="box-header">
+                        <h4 class="box-title">
+                            {{ form_group.label|trans({}, form_group.translation_domain ?: admin.translationDomain) }}
+                        </h4>
+                    </div>
+                    <div class="box-body">
+                        <div class="sonata-ba-collapsed-fields">
+                            {% if form_group.description %}
+                                <p>{{ form_group.description|trans({}, form_group.translation_domain ?: admin.translationDomain) }}</p>
                             {% endif %}
+                            {% if code == 'hg_email.tab.general.hg_email.form_block.to_data'
+                                or code == 'hg_email.tab.general.hg_email.form_block.from_data_static'
+                                or code == 'hg_email.tab.general.hg_email.form_block.cc_data'
+                                or code == 'hg_email.tab.general.hg_email.form_block.bcc_data' %}
+                                {% for field_name in form_group.fields if form[field_name] is defined %}
+                                    {{ form_row(form[field_name]) }}
+                                {% endfor %}
+                            {% else %}
+                                {% if code == 'hg_email.tab.general.hg_email.form_block.general' %}
+                                    {% set fields = ['comment'] %}
+                                {% elseif code == 'hg_email.tab.general.hg_email.form_block.from_data' %}
+                                    {% set fields = ['fromName', 'fromEmail'] %}
+                                {% elseif code == 'hg_email.tab.attachments.hg_email.form_block.attachments' %}
+                                    {% set fields = ['attachments'] %}
+                                {% else %}
+                                    {% set fields = ['subject', 'contentText', 'contentHtml'] %}
+                                {% endif %}
+                                {% set field_name = 'translations' %}
+                                {% if form[field_name] is defined %}
+                                    {% include '@HgabkaEmail/Admin/translation_fields.html.twig' with {form: form['translations'], fields: fields} %}
+
+                                {% else %}
+                                    <em>{{ 'message_form_group_empty'|trans({}, 'SonataAdminBundle') }}</em>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
     </div>
 {% endmacro %}
