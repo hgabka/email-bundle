@@ -2,6 +2,8 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Doctrine\Common\Annotations\Reader;
+use Hgabka\EmailBundle\Annotation\TemplateVar;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -32,12 +34,25 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /** @var TranslatorInterface */
     protected $translator;
 
+    /** @var Reader */
+    protected $annotationReader;
+
+    protected $variableCache;
+
     /**
      * @required
      */
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
+    }
+
+    /**
+     * @required
+     */
+    public function setAnnotationReader(Reader $annotationReader)
+    {
+        $this->annotationReader = $annotationReader;
     }
 
     /**
@@ -97,7 +112,24 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      */
     public function getVariables()
     {
-        return $this->variables;
+        if (empty($this->variableCache)) {
+            $variables = [];
+            $refl = new \ReflectionObject($this);
+            foreach ($refl->getProperties() as $property) {
+                $annotation = $this->annotationReader->getPropertyAnnotation($property, TemplateVar::class);
+                if ($annotation) {
+                    $placeholder = $annotation->getPlaceholder() ?: $property->getName();
+                    $variables[$placeholder] = [
+                        'label' => $annotation->getLabel(),
+                        'value' => $property->getName(),
+                    ];
+                }
+            }
+
+            $this->variableCache = empty($this->variables) ? $variables : array_merge($variables, $this->variables);
+        }
+
+        return $this->variableCache;
     }
 
     /**
@@ -108,7 +140,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function getVariableValues()
     {
         $vars = [];
-        foreach ($this->variables as $key => $varData) {
+        foreach ($this->getVariables() as $key => $varData) {
             $vars[$key] = $varData;
             if (isset($vars[$key]['value'])) {
                 $v = $vars[$key]['value'];
