@@ -82,6 +82,7 @@ class RecipientsType extends AbstractType
                 foreach ($form->all() as $name => $field) {
                     $form->remove($name);
                 }
+
                 $templateType = $this->builder->getTemplateType($options['template_type']);
 
                 $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
@@ -91,6 +92,8 @@ class RecipientsType extends AbstractType
                         $this->addRecipientType($name, $form, $typeData['type'] ?? null, $typeData, $removable);
                     }
 
+                    $form->setData($data);
+                } elseif (RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] && $removable && empty($data)) {
                     $form->setData($data);
                 }
             })

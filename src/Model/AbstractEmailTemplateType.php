@@ -119,11 +119,38 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             foreach ($refl->getProperties() as $property) {
                 $annotation = $this->annotationReader->getPropertyAnnotation($property, TemplateVar::class);
                 if ($annotation) {
-                    $placeholder = $annotation->getPlaceholder() ?: Container::underscore($property->getName());
-                    $variables[$placeholder] = [
-                        'label' => $annotation->getLabel(),
+                    $usName = Container::underscore($property->getName());
+                    $placeholder = $annotation->getPlaceholder() ?: $usName;
+                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.'.$usName;
+                    $params = [
+                        'label' => $label,
                         'value' => $property->getName(),
                     ];
+
+                    if ('block' === $annotation->getType()) {
+                        $params['type'] = 'block';
+                    }
+
+                    $variables[$placeholder] = $params;
+                }
+            }
+
+            foreach ($refl->getMethods() as $method) {
+                $annotation = $this->annotationReader->getMethodAnnotation($method, TemplateVar::class);
+                if ($annotation) {
+                    $usName = Container::underscore(str_replace('get', '', $method->getName()));
+                    $placeholder = $annotation->getPlaceholder() ?: $usName;
+                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.'.$usName;
+                    $params = [
+                        'label' => $label,
+                        'value' => [$this, $method->getName()],
+                    ];
+
+                    if ('block' === $annotation->getType()) {
+                        $params['type'] = 'block';
+                    }
+
+                    $variables[$placeholder] = $params;
                 }
             }
 
@@ -256,5 +283,13 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function getSenderText()
     {
         return null;
+    }
+
+    protected function getKey()
+    {
+        $fcqn = explode('\\', static::class);
+        $class = array_pop($fcqn);
+
+        return Container::underscore(str_replace(['Email', 'Template', 'Type'], '', $class));
     }
 }

@@ -58,9 +58,9 @@ class RecipientManager
         });
     }
 
-    public function getType(string $type)
+    public function getType(string $type = null)
     {
-        return $this->types[$type] ?? null;
+        return !empty($type) ? ($this->types[$type] ?? null) : null;
     }
 
     /**
