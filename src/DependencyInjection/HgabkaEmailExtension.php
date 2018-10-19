@@ -27,8 +27,6 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $configuration = new Configuration($container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('hg_email.email_config', $config);
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
