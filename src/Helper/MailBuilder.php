@@ -7,11 +7,15 @@ use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Event\MailBuilderEvents;
+use Hgabka\EmailBundle\Event\MailRecipientEvent;
+use Hgabka\EmailBundle\Event\MailSenderEvent;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -47,6 +51,9 @@ class MailBuilder
     /** @var RecipientManager */
     protected $recipientManager;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /** @var array|EmailTemplateTypeInterface[] */
     protected $templateTypes = [];
 
@@ -68,7 +75,8 @@ class MailBuilder
         HgabkaUtils $hgabkaUtils,
         RouterInterface $router,
         MediaManager $mediaManager,
-        RecipientManager $recipientManager
+        RecipientManager $recipientManager,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -78,6 +86,7 @@ class MailBuilder
         $this->router = $router;
         $this->mediaManager = $mediaManager;
         $this->recipientManager = $recipientManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -115,7 +124,13 @@ class MailBuilder
      */
     public function getDefaultFrom()
     {
-        return $this->translateEmailAddress($this->config['default_sender']);
+        $senderData = $this->config['default_sender'];
+        $event = new MailSenderEvent($this);
+        $event->setSenderData($senderData);
+
+        $this->eventDispatcher->dispatch(MailBuilderEvents::SET_DEFAULT_SENDER, $event);
+
+        return $this->translateEmailAddress($event->getSenderData());
     }
 
     /**
@@ -123,7 +138,18 @@ class MailBuilder
      */
     public function getDefaultTo()
     {
-        return $this->translateEmailAddress($this->config['default_recipient']);
+        $recipientData = [];
+        $recipientData['to'] = $this->translateEmailAddress($this->config['default_recipient']);
+        $recipientData['locale'] = $this->config['default_recipient']['locale'] ?? null;
+        $event = new MailRecipientEvent($this);
+        $event->setRecipientData($recipientData);
+
+        $this->eventDispatcher->dispatch(MailBuilderEvents::SET_DEFAULT_RECIPIENT, $event);
+
+        $recipientData = $event->getRecipientData();
+        $recipientData['locale'] = $recipientData['locale'] ?? null;
+
+        return $recipientData;
     }
 
     /**
@@ -740,9 +766,7 @@ class MailBuilder
         $toArray = $this->getToArray($toData, $culture);
 
         if (false === $toArray) {
-            return [
-                ['to' => $this->getDefaultTo(), 'locale' => null],
-            ];
+            return $this->getDefaultTo();
         }
 
         if (null !== $toArray) {
