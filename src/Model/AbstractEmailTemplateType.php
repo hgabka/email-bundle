@@ -141,16 +141,13 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function getVariableValues()
     {
         $vars = [];
+        $accessor = PropertyAccess::createPropertyAccessor();
+
         foreach ($this->getVariables() as $key => $varData) {
             $vars[$key] = $varData;
             if (isset($vars[$key]['value'])) {
                 $v = $vars[$key]['value'];
-                if (\is_callable($v)) {
-                    $vars[$key]['value'] = \call_user_func($vars[$key]['value']);
-                } else {
-                    $accessor = PropertyAccess::createPropertyAccessor();
-                    $vars[$key]['value'] = $accessor->getValue($this, $vars[$key]['value']);
-                }
+                $vars[$key]['value'] = \is_callable($v) ? \call_user_func($v) : $accessor->getValue($this, $v);
             }
         }
 
