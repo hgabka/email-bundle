@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Model;
 
 use Doctrine\Common\Annotations\Reader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -118,7 +119,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             foreach ($refl->getProperties() as $property) {
                 $annotation = $this->annotationReader->getPropertyAnnotation($property, TemplateVar::class);
                 if ($annotation) {
-                    $placeholder = $annotation->getPlaceholder() ?: $property->getName();
+                    $placeholder = $annotation->getPlaceholder() ?: Container::underscore($property->getName());
                     $variables[$placeholder] = [
                         'label' => $annotation->getLabel(),
                         'value' => $property->getName(),

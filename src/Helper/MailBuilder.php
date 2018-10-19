@@ -228,7 +228,7 @@ class MailBuilder
 
         foreach ($paramTos as $paramToRow) {
             $paramTo = $paramToRow['to'];
-            list('name' => $name, 'email' => $email) = $this->addDefaultParams($paramFrom, $paramTo, $params);
+            ['name' => $name, 'email' => $email] = $this->addDefaultParams($paramFrom, $paramTo, $params);
 
             $culture = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
 
