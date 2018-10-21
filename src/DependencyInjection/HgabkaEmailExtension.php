@@ -2,8 +2,8 @@
 
 namespace Hgabka\EmailBundle\DependencyInjection;
 
-use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Config\FileLocator;
@@ -106,11 +106,11 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
     public function process(ContainerBuilder $container)
     {
         // always first check if the primary service is defined
-        if (!$container->has(MailBuilder::class)) {
+        if (!$container->has(TemplateTypeManager::class)) {
             return;
         }
 
-        $definition = $container->findDefinition(MailBuilder::class);
+        $definition = $container->findDefinition(TemplateTypeManager::class);
 
         // find all service IDs with the app.mail_transport tag
         $taggedServices = $container->findTaggedServiceIds('hg_email.email_template_type');
