@@ -2,8 +2,8 @@
 
 namespace Hgabka\EmailBundle\Form;
 
-use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Hgabka\EmailBundle\Recipient\DefaultRecipientType;
 use Symfony\Component\Form\AbstractType;
@@ -19,18 +19,18 @@ class RecipientsType extends AbstractType
     /** @var RecipientManager */
     protected $manager;
 
-    /** @var MailBuilder */
-    protected $builder;
+    /** @var TemplateTypeManager */
+    protected $templateTypeManager;
 
     /**
      * RecipientsType constructor.
      *
      * @param RecipientManager $manager
      */
-    public function __construct(RecipientManager $manager, MailBuilder $builder)
+    public function __construct(RecipientManager $manager, TemplateTypeManager $templateTypeManager)
     {
         $this->manager = $manager;
-        $this->builder = $builder;
+        $this->templateTypeManager = $templateTypeManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -47,7 +47,7 @@ class RecipientsType extends AbstractType
                 }
 
                 if (0 === \count($form)) {
-                    $templateType = $this->builder->getTemplateType($options['template_type']);
+                    $templateType = $this->templateTypeManager->getTemplateType($options['template_type']);
 
                     if ($templateType) {
                         if (empty($data)) {
@@ -83,7 +83,7 @@ class RecipientsType extends AbstractType
                     $form->remove($name);
                 }
 
-                $templateType = $this->builder->getTemplateType($options['template_type']);
+                $templateType = $this->templateTypeManager->getTemplateType($options['template_type']);
 
                 $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
 
@@ -115,7 +115,7 @@ class RecipientsType extends AbstractType
     {
         $view->vars['admin'] = $options['admin'];
         $view->vars['recipientsType'] = $options['recipients_type'];
-        $tplType = $this->builder->getTemplateType($options['template_type']);
+        $tplType = $this->templateTypeManager->getTemplateType($options['template_type']);
         $view->vars['add_button'] = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || ($tplType && empty($tplType->getDefaultRecipients()));
     }
 

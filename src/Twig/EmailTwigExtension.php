@@ -6,6 +6,7 @@ use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\ParamSubstituter;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
@@ -22,22 +23,29 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
     /** @var RecipientManager */
     protected $recipientManager;
 
+    /** @var TemplateTypeManager */
+    protected $templateTypeManager;
+
     /**
      * PublicTwigExtension constructor.
      *
      * @param MailBuilder $mailBuilder
      */
-    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager)
+    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager)
     {
         $this->mailBuilder = $mailBuilder;
         $this->paramSubstituter = $paramSubstituter;
         $this->translator = $translator;
         $this->recipientManager = $recipientManager;
+        $this->templateTypeManager = $templateTypeManager;
     }
 
     public function getGlobals()
     {
-        return ['mail_builder' => $this->mailBuilder];
+        return [
+            'mail_builder' => $this->mailBuilder,
+            'template_type_manager' => $this->templateTypeManager,
+        ];
     }
 
     /**
@@ -61,7 +69,7 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
 
     public function renderUsableVars(\Twig_Environment $environment, EmailTemplate $template)
     {
-        $type = $this->mailBuilder->getTemplateType($template->getType());
+        $type = $this->templateTypeManager->getTemplateType($template->getType());
 
         if (empty($type)) {
             return '';

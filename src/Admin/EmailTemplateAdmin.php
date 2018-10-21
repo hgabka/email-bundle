@@ -9,6 +9,7 @@ use Hgabka\EmailBundle\Form\AttachmentType;
 use Hgabka\EmailBundle\Form\RecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
@@ -31,9 +32,17 @@ class EmailTemplateAdmin extends AbstractAdmin
     /** @var AuthorizationCheckerInterface */
     private $authChecker;
 
+    /** @var TemplateTypeManager $templateTypeManager */
+    private $templateTypeManager;
+
     public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
+    }
+
+    public function setTemplateTypeManager(TemplateTypeManager $templateTypeManager)
+    {
+        $this->templateTypeManager = $templateTypeManager;
     }
 
     public function getBatchActions()
@@ -48,8 +57,8 @@ class EmailTemplateAdmin extends AbstractAdmin
 
     public function createQuery($context = 'list')
     {
-        $this->builder->getTemplateTypeEntities(true);
-        $types = $this->builder->getTemplateTypeClasses(true);
+        $this->templateTypeManager->getTemplateTypeEntities(true);
+        $types = $this->templateTypeManager->getTemplateTypeClasses(true);
 
         $query = parent::createQuery($context);
         $alias = current($query->getRootAliases());
@@ -70,7 +79,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     {
         if ('edit' === $action) {
             if ($object) {
-                $type = $this->builder->getTemplateType($object->getType());
+                $type = $this->templateTypeManager->getTemplateType($object->getType());
                 if ($type && !$type->isPublic()) {
                     return false;
                 }
@@ -87,7 +96,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         if ('edit' === $action) {
             $isEditor = $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
             if ($object) {
-                $type = $this->builder->getTemplateType($object->getType());
+                $type = $this->templateTypeManager->getTemplateType($object->getType());
 
                 if ($type && !$type->isPublic()) {
                     throw new AccessDeniedException($this->trans('hg_email.messages.access_denied'));
@@ -151,7 +160,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     {
         $type = $object->getType();
 
-        return $type ? $this->builder->getTitleByType($type) : $template->getComment();
+        return $type ? $this->templateTypeManager->getTitleByType($type) : $template->getComment();
     }
 
     protected function configureRoutes(RouteCollection $collection)
@@ -177,8 +186,7 @@ class EmailTemplateAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form)
     {
-        $mailBuilder = $this->getConfigurationPool()->getContainer()->get(MailBuilder::class);
-        $type = $mailBuilder->getTemplateType($this->getSubject()->getType());
+        $type = $this->templateTypeManager->getTemplateType($this->getSubject()->getType());
         $transFields = [
             'comment' => [
                 'field_type' => TextType::class,

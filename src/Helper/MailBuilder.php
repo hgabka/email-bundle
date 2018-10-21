@@ -10,8 +10,6 @@ use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
-use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
-use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
@@ -54,8 +52,8 @@ class MailBuilder
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
-    /** @var array|EmailTemplateTypeInterface[] */
-    protected $templateTypes = [];
+    /** @var TemplateTypeManager */
+    protected $templateTypeManager;
 
     /**
      * MailBuilder constructor.
@@ -76,7 +74,8 @@ class MailBuilder
         RouterInterface $router,
         MediaManager $mediaManager,
         RecipientManager $recipientManager,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        TemplateTypeManager $templateTypeManager
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -87,6 +86,7 @@ class MailBuilder
         $this->mediaManager = $mediaManager;
         $this->recipientManager = $recipientManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->templateTypeManager = $templateTypeManager;
     }
 
     /**
@@ -161,15 +161,7 @@ class MailBuilder
      */
     public function translateEmailAddress($address)
     {
-        if (\is_string($address) || ((!isset($address['name']) || 0 === \strlen($address['name'])) && (!isset($address['email']) || 0 === \strlen($address['email'])))) {
-            return $address;
-        }
-
-        if (isset($address['name']) && \strlen($address['name'])) {
-            return [$address['email'] => $address['name']];
-        }
-
-        return $address['email'];
+        return $this->recipientManager->translateEmailAddress($address);
     }
 
     /**
@@ -184,11 +176,11 @@ class MailBuilder
     {
         if ($class instanceof EmailTemplateTypeInterface) {
             $templateType = $class;
-        } elseif (!$templateType = $this->getTemplateType($class)) {
+        } elseif (!$templateType = $this->templateTypeManager->getTemplateType($class)) {
             throw new \InvalidArgumentException('Invalid template type: '.$class);
         }
 
-        $template = $this->getTemplateEntity($templateType);
+        $template = $this->templateTypeManager->getTemplateEntity($templateType);
         if (!empty($sendParams['from'])) {
             $paramFrom = $sendParams['from'];
         } else {
@@ -223,28 +215,18 @@ class MailBuilder
         }
 
         $params = $this->paramSubstituter->normalizeParams($params);
+        $paramTos = $this->recipientManager->getParamTos($sendParams, $template, $culture, $this->getDefaultTo());
 
-        $toData = [];
-        if (!empty($sendParams['to'])) {
-            $toData = $sendParams['to'];
-        } else {
-            if (!$templateType->isToEditable()) {
-                throw new \InvalidArgumentException('The template type '.\get_class($templateType).' has no recipient set. Provide recipient for the email.');
-            }
-
-            $toData = $this->recipientManager->getToDataByTemplate($template, $templateType);
-        }
-        $paramTos = $this->getTosByData($toData, $culture);
         if (!empty($sendParams['cc'])) {
             $paramCc = $sendParams['cc'];
         } elseif ($templateType->isCcEditable()) {
-            $paramCc = $this->composeCc($template->getCcData(), $culture);
+            $paramCc = $this->recipientManager->composeCc($template->getCcData(), $culture, $this->getDefaultTo());
         }
 
         if (!empty($sendParams['bcc'])) {
             $paramBcc = $sendParams['bcc'];
         } elseif ($templateType->isBccEditable()) {
-            $paramBcc = $this->composeCc($template->getBccData(), $culture);
+            $paramBcc = $this->recipientManager->composeCc($template->getBccData(), $culture, $this->getDefaultTo());
         }
 
         if (empty($paramFrom) || empty($paramTos)) {
@@ -372,50 +354,6 @@ class MailBuilder
         }
 
         return $messages;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return null|EmailTemplate
-     */
-    public function getTemplateByName(string $name)
-    {
-        if (empty($name)) {
-            return null;
-        }
-
-        return $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['name' => $name]);
-    }
-
-    /**
-     * @param $slug
-     *
-     * @return null|EmailTemplate
-     */
-    public function getTemplateBySlug(string $slug)
-    {
-        if (empty($slug)) {
-            return null;
-        }
-
-        return $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['slug' => $slug]);
-    }
-
-    /**
-     * @param $name
-     *
-     * @return null|EmailTemplate
-     */
-    public function getTemplate($name)
-    {
-        $template = $this->getTemplateBySlug($name);
-
-        if (!$template) {
-            $template = $this->getTemplateByName($name);
-        }
-
-        return $template;
     }
 
     /**
@@ -564,24 +502,6 @@ class MailBuilder
         return $this->mediaManager->getMediaContent($media);
     }
 
-    public function getTemplateVars($template)
-    {
-        if (!$template instanceof EmailTemplate) {
-            $template = $this->getTemplate($template);
-        }
-
-        $params = [
-            'nev' => 'hg_email.default_param_labels.name',
-            'email' => 'hg_email.default_param_labels.email',
-        ];
-
-        if ($template && isset($this->config['mail_template_params'][$template->getSlug()])) {
-            $params = array_merge($params, $this->config['mail_template_params'][$template->getSlug()]);
-        }
-
-        return $this->paramSubstituter->addVarChars($params);
-    }
-
     public function getMessageVars()
     {
         $params = [
@@ -593,65 +513,6 @@ class MailBuilder
         ];
 
         return $this->paramSubstituter->addVarChars($params);
-    }
-
-    public function addTemplateType(EmailTemplateTypeInterface $templateType)
-    {
-        $alias = \get_class($templateType);
-        $this->templateTypes[$alias] = $templateType;
-    }
-
-    public function getTemplateType($class)
-    {
-        return $this->templateTypes[$class] ?? null;
-    }
-
-    public function getTemplateTypeEntities($onlyPublic = false)
-    {
-        $res = [];
-        foreach ($this->templateTypes as $class => $type) {
-            $res[] = $this->getTemplateEntity($type);
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param mixed $onlyPublic
-     *
-     * @return array|EmailTemplateTypeInterface[]
-     */
-    public function getTemplateTypes($onlyPublic = false)
-    {
-        if (!$onlyPublic) {
-            return $this->templateTypes;
-        }
-
-        $res = [];
-        foreach ($this->templateTypes as $key => $type) {
-            if ($type->isPublic()) {
-                $res[] = $type;
-            }
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param mixed $onlyPublic
-     *
-     * @return array
-     */
-    public function getTemplateTypeClasses($onlyPublic = false)
-    {
-        return array_keys($this->getTemplateTypes($onlyPublic));
-    }
-
-    public function getTitleByType($class)
-    {
-        $type = $this->getTemplateType($class);
-
-        return $type ? $type->getTitle() : '';
     }
 
     public function getFromToParams()
@@ -696,95 +557,6 @@ class MailBuilder
         }
 
         $mail->{'set'.$method}($paramCc);
-    }
-
-    protected function composeCc($ccData, $culture)
-    {
-        $paramCc = [];
-        $ccData = $this->getTosByData($ccData, $culture);
-        foreach ($ccData as $ccRow) {
-            $paramTo = $ccRow['to'];
-            $to = $this->translateEmailAddress($paramTo);
-
-            $toName = \is_array($to) ? current($to) : null;
-            $toEmail = \is_array($to) ? key($to) : $to;
-
-            $paramCc[] = $toName ? [$toEmail => $toName] : $toEmail;
-        }
-
-        return $paramCc;
-    }
-
-    protected function getToArray($toData, $culture)
-    {
-        if (empty($toData)) {
-            return false;
-        }
-
-        if (\is_string($toData)) {
-            return [
-                ['to' => $toData, 'locale' => $culture],
-            ];
-        }
-
-        if ($toData instanceof RecipientTypeInterface) {
-            return $toData->getRecipients();
-        }
-
-        if (!\is_array($toData)) {
-            return false;
-        }
-
-        reset($toData);
-
-        if (isset($toData['to'])) {
-            return [
-                $toData,
-            ];
-        }
-
-        if (isset($toData['type'])) {
-            $type = $this->recipientManager->getType($toData['type']);
-            unset($toData['type']);
-
-            $type->setParams($toData);
-
-            return $type->getRecipients();
-        }
-
-        if (\is_string(current($toData))) {
-            return [
-                ['to' => $toData, 'locale' => $culture],
-            ];
-        }
-
-        return null;
-    }
-
-    protected function getTosByData($toData, $culture)
-    {
-        $toArray = $this->getToArray($toData, $culture);
-
-        if (false === $toArray) {
-            return $this->getDefaultTo();
-        }
-
-        if (null !== $toArray) {
-            return $toArray;
-        }
-
-        $result = [];
-        foreach ($toData as $data) {
-            $toArray = $this->getToArray($data, $culture);
-
-            if ($toArray) {
-                foreach ($toArray as $to) {
-                    $result[] = $to;
-                }
-            }
-        }
-
-        return $result;
     }
 
     protected function getFromFromTemplate(EmailTemplate $template = null, $culture = null)
@@ -872,35 +644,5 @@ class MailBuilder
     protected function getSubscriberRepository()
     {
         return $this->doctrine->getRepository(MessageSubscriber::class);
-    }
-
-    protected function getTemplateEntity(EmailTemplateTypeInterface $templateType)
-    {
-        if (empty($templateType->getEntity())) {
-            $template = $this->doctrine->getRepository(EmailTemplate::class)->findOneBy(['type' => \get_class($templateType)]);
-            if (!$template) {
-                $template = new EmailTemplate();
-                $template
-                    ->setType(\get_class($templateType));
-
-                foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
-                    $template->translate($locale)
-                             ->setComment($this->translator->trans($templateType->getComment(), [], 'messages', $locale))
-                             ->setSubject($this->translator->trans($templateType->getDefaultSubject(), [], 'messages', $locale))
-                             ->setFromName($this->translator->trans($templateType->getDefaultFromName(), [], 'messages', $locale))
-                             ->setFromEmail($this->translator->trans($templateType->getDefaultFromEmail(), [], 'messages', $locale))
-                             ->setContentText($this->translator->trans($templateType->getDefaultTextContent(), [], 'messages', $locale))
-                             ->setContentHtml($this->translator->trans($templateType->getDefaultHtmlContent(), [], 'messages', $locale))
-                    ;
-                }
-                $template->setCurrentLocale($this->hgabkaUtils->getCurrentLocale());
-                $this->doctrine->getManager()->persist($template);
-                $this->doctrine->getManager()->flush();
-            }
-
-            $templateType->setEntity($template);
-        }
-
-        return $templateType->getEntity();
     }
 }
