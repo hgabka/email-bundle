@@ -140,7 +140,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 if ($annotation) {
                     $usName = Container::underscore(str_replace('get', '', $method->getName()));
                     $placeholder = $annotation->getPlaceholder() ?: $usName;
-                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.'.$usName;
+                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.variable.'.$usName;
                     $params = [
                         'label' => $label,
                         'value' => [$this, $method->getName()],
@@ -174,7 +174,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             $vars[$key] = $varData;
             if (isset($vars[$key]['value'])) {
                 $v = $vars[$key]['value'];
-                $vars[$key]['value'] = \is_callable($v) ? \call_user_func($v) : $accessor->getValue($this, $v);
+                $vars[$key]['value'] = (string) (\is_callable($v) ? \call_user_func($v) : $accessor->getValue($this, $v));
             }
         }
 

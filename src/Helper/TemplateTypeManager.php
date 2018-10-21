@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Helper;
 
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -15,6 +16,9 @@ class TemplateTypeManager
     /** @var TranslatorInterface */
     protected $translator;
 
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
+
     /** @var array|EmailTemplateTypeInterface[] */
     protected $templateTypes = [];
 
@@ -24,10 +28,11 @@ class TemplateTypeManager
      * @param ManagerRegistry     $doctrine
      * @param TranslatorInterface $translator
      */
-    public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator)
+    public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, HgabkaUtils $hgabkaUtils)
     {
         $this->doctrine = $doctrine;
         $this->translator = $translator;
+        $this->hgabkaUtils = $hgabkaUtils;
     }
 
     public function addTemplateType(EmailTemplateTypeInterface $templateType)

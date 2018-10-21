@@ -24,7 +24,7 @@ services:
 
     hg_email.template_type_manager:
         class: '%hg_email.template_type_manager.class%'
-        arguments: ["@doctrine", "@translator"]
+        arguments: ["@doctrine", "@translator", "@hgabka_utils.hgabka_utils"]
 
     hg_email.recipient_type.default:
         class:  Hgabka\EmailBundle\Recipient\DefaultRecipientType
