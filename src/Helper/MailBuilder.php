@@ -191,18 +191,16 @@ class MailBuilder
             $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($culture));
         }
         $paramArray = $parameters;
-
+        $accessor =
+            PropertyAccess::createPropertyAccessorBuilder()
+                          ->enableExceptionOnInvalidIndex()
+                          ->getPropertyAccessor()
+        ;
+        $accessor->setValue($templateType, 'culture', $culture);
         if (!empty($paramArray)) {
-            $accessor =
-                PropertyAccess::createPropertyAccessorBuilder()
-                              ->enableExceptionOnInvalidIndex()
-                              ->getPropertyAccessor()
-            ;
             foreach ($paramArray as $key => $value) {
                 $accessor->setValue($templateType, $key, $value);
             }
-
-            $accessor->setValue($templateType, 'culture', $culture);
         }
 
         $params = [];
