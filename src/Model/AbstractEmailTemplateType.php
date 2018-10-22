@@ -41,7 +41,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     protected $variableCache;
 
     /** @var string */
-    protected $culture;
+    protected $locale;
 
     /**
      * @required
@@ -291,19 +291,19 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return string
      */
-    public function getCulture()
+    public function getLocale()
     {
-        return $this->culture;
+        return $this->locale;
     }
 
     /**
-     * @param string $culture
+     * @param string $locale
      *
      * @return AbstractEmailTemplateType
      */
-    public function setCulture($culture)
+    public function setLocale($locale)
     {
-        $this->culture = $culture;
+        $this->locale = $locale;
 
         return $this;
     }
@@ -316,8 +316,15 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return Container::underscore(str_replace(['Email', 'Template', 'Type'], '', $class));
     }
 
+    /**
+     * @param        $id
+     * @param array  $params
+     * @param string $domain
+     *
+     * @return string
+     */
     protected function trans($id, $params = [], $domain = 'messages')
     {
-        $this->translator->trans($id, $params, $domain, $this->culture);
+        return $this->translator->trans($id, $params, $domain, $this->locale);
     }
 }

@@ -35,4 +35,6 @@ interface EmailTemplateTypeInterface
     public function isSenderEditable();
 
     public function getSenderText();
+
+    public function setLocale($locale);
 }

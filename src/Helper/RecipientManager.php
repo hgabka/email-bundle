@@ -154,11 +154,11 @@ class RecipientManager
      * @param                            $sendParams
      * @param EmailTemplateTypeInterface $templateType
      * @param                            $defaultTo
-     * @param mixed                      $culture
+     * @param mixed                      $locale
      *
      * @return null|array|bool|mixed
      */
-    public function getParamTos($sendParams, EmailTemplate $template, $culture, $defaultTo)
+    public function getParamTos($sendParams, EmailTemplate $template, $locale, $defaultTo)
     {
         $templateType = $this->templateTypeManager->getTemplateType($template->getType());
         $toData = [];
@@ -172,24 +172,24 @@ class RecipientManager
             $toData = $this->getToDataByTemplate($template);
         }
 
-        return $this->getTosByData($toData, $culture, $defaultTo);
+        return $this->getTosByData($toData, $locale, $defaultTo);
     }
 
     /**
      * @param $ccData
-     * @param $culture
+     * @param $locale
      * @param mixed $defaultTo
      *
      * @return array
      */
-    public function composeCc($ccData, $culture, $defaultTo)
+    public function composeCc($ccData, $locale, $defaultTo)
     {
         $paramCc = [];
         if (empty($ccData)) {
             return $paramCc;
         }
 
-        $ccData = $this->getTosByData($ccData, $culture, $defaultTo);
+        $ccData = $this->getTosByData($ccData, $locale, $defaultTo);
         foreach ($ccData as $ccRow) {
             $paramTo = $ccRow['to'];
             $to = $this->translateEmailAddress($paramTo);
@@ -225,11 +225,11 @@ class RecipientManager
 
     /**
      * @param $toData
-     * @param $culture
+     * @param $locale
      *
      * @return null|array|bool|mixed
      */
-    protected function getToArray($toData, $culture)
+    protected function getToArray($toData, $locale)
     {
         if (empty($toData)) {
             return false;
@@ -237,7 +237,7 @@ class RecipientManager
 
         if (\is_string($toData)) {
             return [
-                ['to' => $toData, 'locale' => $culture],
+                ['to' => $toData, 'locale' => $locale],
             ];
         }
 
@@ -268,7 +268,7 @@ class RecipientManager
 
         if (\is_string(current($toData))) {
             return [
-                ['to' => $toData, 'locale' => $culture],
+                ['to' => $toData, 'locale' => $locale],
             ];
         }
 
@@ -277,14 +277,14 @@ class RecipientManager
 
     /**
      * @param $toData
-     * @param $culture
+     * @param $locale
      * @param $defaultTo
      *
      * @return null|array|bool|mixed
      */
-    protected function getTosByData($toData, $culture, $defaultTo)
+    protected function getTosByData($toData, $locale, $defaultTo)
     {
-        $toArray = $this->getToArray($toData, $culture);
+        $toArray = $this->getToArray($toData, $locale);
 
         if (false === $toArray) {
             return $defaultTo;
@@ -296,7 +296,7 @@ class RecipientManager
 
         $result = [];
         foreach ($toData as $data) {
-            $toArray = $this->getToArray($data, $culture);
+            $toArray = $this->getToArray($data, $locale);
 
             if ($toArray) {
                 foreach ($toArray as $to) {
