@@ -316,8 +316,14 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return Container::underscore(str_replace(['Email', 'Template', 'Type'], '', $class));
     }
 
+    /**
+     * @param        $id
+     * @param array  $params
+     * @param string $domain
+     * @return string
+     */
     protected function trans($id, $params = [], $domain = 'messages')
     {
-        $this->translator->trans($id, $params, $domain, $this->culture);
+        return $this->translator->trans($id, $params, $domain, $this->culture);
     }
 }
