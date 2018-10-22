@@ -267,7 +267,7 @@ class QueueManager
             }
 
             $to = $recipient['to'];
-            $culture = isset($recipient['culture']) ? $recipient['culture'] : sfConfig::get('sf_default_culture');
+            $locale = isset($recipient['locale']) ? $recipient['locale'] : '';
 
             $queue = new MessageQueue();
             $queue->setMessage($message);
@@ -278,7 +278,7 @@ class QueueManager
                 $queue->setToEmail($to);
             }
 
-            $queue->setLocale($culture);
+            $queue->setLocale($locale);
             $queue->setParameters(serialize($recipient));
             $queue->setRetries(0);
             $queue->setStatus(QueueStatusEnum::STATUS_INIT);

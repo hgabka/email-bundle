@@ -167,12 +167,12 @@ class MailBuilder
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $parameters
-     * @param null                              $culture
+     * @param null                              $locale
      * @param mixed                             $sendParams
      *
      * @return bool|\Swift_Message
      */
-    public function createTemplateMessage($class, $parameters = [], $sendParams = [], $culture = null)
+    public function createTemplateMessage($class, $parameters = [], $sendParams = [], $locale = null)
     {
         if ($class instanceof EmailTemplateTypeInterface) {
             $templateType = $class;
@@ -188,16 +188,16 @@ class MailBuilder
                 throw new \InvalidArgumentException('The template type '.\get_class($templateType).' has no sender set. Provide sender for the email.');
             }
 
-            $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($culture));
+            $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($locale));
         }
         $paramArray = $parameters;
-        $accessor =
-            PropertyAccess::createPropertyAccessorBuilder()
-                          ->enableExceptionOnInvalidIndex()
-                          ->getPropertyAccessor()
-        ;
-        $accessor->setValue($templateType, 'culture', $culture);
+        $templateType->setLocale($locale);
         if (!empty($paramArray)) {
+            $accessor =
+                PropertyAccess::createPropertyAccessorBuilder()
+                              ->enableExceptionOnInvalidIndex()
+                              ->getPropertyAccessor()
+            ;
             foreach ($paramArray as $key => $value) {
                 $accessor->setValue($templateType, $key, $value);
             }
@@ -215,18 +215,18 @@ class MailBuilder
         }
 
         $params = $this->paramSubstituter->normalizeParams($params);
-        $paramTos = $this->recipientManager->getParamTos($sendParams, $template, $culture, $this->getDefaultTo());
+        $paramTos = $this->recipientManager->getParamTos($sendParams, $template, $locale, $this->getDefaultTo());
 
         if (!empty($sendParams['cc'])) {
             $paramCc = $sendParams['cc'];
         } elseif ($templateType->isCcEditable()) {
-            $paramCc = $this->recipientManager->composeCc($template->getCcData(), $culture, $this->getDefaultTo());
+            $paramCc = $this->recipientManager->composeCc($template->getCcData(), $locale, $this->getDefaultTo());
         }
 
         if (!empty($sendParams['bcc'])) {
             $paramBcc = $sendParams['bcc'];
         } elseif ($templateType->isBccEditable()) {
-            $paramBcc = $this->recipientManager->composeCc($template->getBccData(), $culture, $this->getDefaultTo());
+            $paramBcc = $this->recipientManager->composeCc($template->getBccData(), $locale, $this->getDefaultTo());
         }
 
         if (empty($paramFrom) || empty($paramTos)) {
@@ -238,12 +238,12 @@ class MailBuilder
             $paramTo = $paramToRow['to'];
             ['name' => $name, 'email' => $email] = $this->addDefaultParams($paramFrom, $paramTo, $params);
 
-            $culture = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
+            $locale = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
 
-            $subject = $this->paramSubstituter->substituteParams($template->translate($culture)->getSubject(), $params, true);
+            $subject = $this->paramSubstituter->substituteParams($template->translate($locale)->getSubject(), $params, true);
 
-            $bodyText = $this->paramSubstituter->substituteParams($template->translate($culture)->getContentText(), $params, true);
-            $bodyHtml = $template->translate($culture)->getContentHtml();
+            $bodyText = $this->paramSubstituter->substituteParams($template->translate($locale)->getContentText(), $params, true);
+            $bodyHtml = $template->translate($locale)->getContentHtml();
             $mail = new \Swift_Message($subject);
 
             $layout = $template->getLayout();
@@ -256,7 +256,7 @@ class MailBuilder
                     $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
                 }
 
-                $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject, $layoutFile), [
+                $bodyHtml = strtr($layout->getDecoratedHtml($locale, $subject, $layoutFile), [
                     '%%tartalom%%' => $bodyHtml,
                     '%%nev%%' => $name,
                     '%%email%%' => $email,
@@ -270,7 +270,7 @@ class MailBuilder
                 }
 
                 if (!empty($layoutFile)) {
-                    $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+                    $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
                     $html = @file_get_contents($layoutFile);
                 } else {
                     $html = null;
@@ -289,7 +289,7 @@ class MailBuilder
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
-            $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
+            $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $locale);
 
             foreach ($attachments as $attachment) {
                 /** @var Attachment $attachment */
@@ -359,22 +359,22 @@ class MailBuilder
     /**
      * @param Message $message
      * @param         $to
-     * @param null    $culture
+     * @param null    $locale
      * @param bool    $addCcs
      * @param array   $parameters
      *
      * @return \Swift_Message
      */
-    public function createMessageMail(Message $message, $to, $culture = null, $addCcs = true, $parameters = [])
+    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [])
     {
-        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
+        $locale = $this->hgabkaUtils->getCurrentLocale($locale);
 
         $params = \is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
-        $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
 
-        $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $culture], UrlGeneratorInterface::ABSOLUTE_URL);
+        $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
         $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hg_email.message_unsubscribe_default_text').'</a>';
         $params['unsubscribe'] = $unsubscribeUrl;
         $params['unsubscribe_link'] = $unsubscribeLink;
@@ -385,11 +385,11 @@ class MailBuilder
             }
         }
 
-        $subject = $this->paramSubstituter->substituteParams($message->translate($culture)->getSubject(), $params);
+        $subject = $this->paramSubstituter->substituteParams($message->translate($locale)->getSubject(), $params);
         $mail = new \Swift_Message($subject);
 
-        $bodyText = $this->paramSubstituter->substituteParams($message->translate($culture)->getContentText(), $params);
-        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($culture)->getContentHtml(), $mail), $params);
+        $bodyText = $this->paramSubstituter->substituteParams($message->translate($locale)->getContentText(), $params);
+        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($locale)->getContentHtml(), $mail), $params);
 
         if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
             $bodyHtml .= '<br /><br />'.$unsubscribeLink;
@@ -398,7 +398,7 @@ class MailBuilder
         $layout = $message->getLayout();
 
         if ($layout && \strlen($bodyHtml) > 0) {
-            $bodyHtml = strtr($layout->getDecoratedHtml($culture, $subject), [
+            $bodyHtml = strtr($layout->getDecoratedHtml($locale, $subject), [
                 '%%tartalom%%' => $bodyHtml,
                 '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
                 '%%email%%' => isset($params['email']) ? $params['email'] : '',
@@ -412,7 +412,7 @@ class MailBuilder
             }
 
             if (!empty($layoutFile)) {
-                $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+                $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
                 $html = @file_get_contents($layoutFile);
             } else {
                 $html = null;
@@ -433,7 +433,7 @@ class MailBuilder
         $attachments = $this
             ->doctrine
             ->getRepository(Attachment::class)
-            ->getByMessage($message, $culture)
+            ->getByMessage($message, $locale)
         ;
 
         foreach ($attachments as $attachment) {
@@ -559,13 +559,13 @@ class MailBuilder
         $mail->{'set'.$method}($paramCc);
     }
 
-    protected function getFromFromTemplate(EmailTemplate $template = null, $culture = null)
+    protected function getFromFromTemplate(EmailTemplate $template = null, $locale = null)
     {
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = \is_array($default) ? key($default) : $default;
-        $name = ($template ? $template->getFromName($culture) : null) ?? ($defaultName ?? null);
-        $email = ($template ? $template->getFromEmail($culture) : null) ?? $defaultEmail;
+        $name = ($template ? $template->getFromName($locale) : null) ?? ($defaultName ?? null);
+        $email = ($template ? $template->getFromEmail($locale) : null) ?? $defaultEmail;
 
         return empty($name) ? $email : [$email => $name];
     }

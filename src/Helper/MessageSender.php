@@ -165,12 +165,12 @@ class MessageSender
                     continue;
                 }
 
-                if (!isset($oneRow['culture'])) {
-                    $oneRow['culture'] = $this->hgabkaUtils->getDefaultLocale();
+                if (!isset($oneRow['locale'])) {
+                    $oneRow['locale'] = $this->hgabkaUtils->getDefaultLocale();
                 }
 
                 foreach (array_keys($row) as $other) {
-                    if (!\in_array($other, ['to', 'culture', 'email', 'name'], true)) {
+                    if (!\in_array($other, ['to', 'locale', 'email', 'name'], true)) {
                         $oneRow[$other] = $row[$other];
                     }
                 }
@@ -187,8 +187,8 @@ class MessageSender
     public function getRecipientsForMessage($message)
     {
         $recs = [];
-        foreach ($this->hgabkaUtils->getAvailableLocales() as $culture) {
-            $tos = $this->getTos($message->getTo(), $culture);
+        foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
+            $tos = $this->getTos($message->getTo(), $locale);
             foreach ($tos as $to) {
                 $recs[] = $to;
             }
@@ -243,7 +243,7 @@ class MessageSender
                     $ar = $this->hgabkaUtils->entityToArray($subscriber, 0);
                     $recs[] = array_merge($ar, [
                         'to' => [$subscriber->getEmail() => $subscriber->getName()],
-                        'culture' => $subscriber->getLocale() ? $subscriber->getLocale() : $this->hgabkaUtils->getDefaultLocale(),
+                        'locale' => $subscriber->getLocale() ? $subscriber->getLocale() : $this->hgabkaUtils->getDefaultLocale(),
                     ]);
                     $emails[] = $subscriber->getEmail();
                 }
@@ -272,12 +272,12 @@ class MessageSender
                 continue;
             }
             $to = $rec['to'];
-            $culture = isset($rec['culture']) ? $rec['culture'] : $this->hgabkaUtils->getDefaultLocale();
+            $locale = isset($rec['locale']) ? $rec['locale'] : $this->hgabkaUtils->getDefaultLocale();
 
             $email = \is_array($to) ? key($to) : $to;
 
             try {
-                $mail = $this->mailBuilder->createMessageMail($message, $to, $culture, true, $rec);
+                $mail = $this->mailBuilder->createMessageMail($message, $to, $locale, true, $rec);
                 if ($mailer->send($mail)) {
                     $this->log('Email kuldese sikeres. Email: '.$email);
 
@@ -406,12 +406,12 @@ class MessageSender
         $em->flush();
     }
 
-    public function getTos($tos, $culture = null)
+    public function getTos($tos, $locale = null)
     {
         $toArray = explode("\r\n", trim($tos, "\r\n"));
 
         $recs = [];
-        $culture = $this->hgabkaUtils->getCurrentLocale($culture);
+        $locale = $this->hgabkaUtils->getCurrentLocale($locale);
 
         foreach ($toArray as $oneTo) {
             $oneTo = trim($oneTo, "\r\n");
@@ -425,7 +425,7 @@ class MessageSender
             }
 
             if (!empty($to)) {
-                $recs[] = ['to' => $to, 'culture' => $culture];
+                $recs[] = ['to' => $to, 'locale' => $locale];
             }
         }
 
@@ -493,21 +493,21 @@ class MessageSender
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $params
-     * @param null                              $culture
+     * @param null                              $locale
      * @param null                              $sendAt
      * @param bool                              $campaign
      * @param mixed                             $sendParams
      *
      * @return bool|mixed
      */
-    public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $culture = null, $sendAt = null, $campaign = false)
+    public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $locale = null, $sendAt = null, $campaign = false)
     {
-        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
+        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $locale);
 
         if (!$messages) {
             return false;
         }
-        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $culture);
+        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $locale);
 
         foreach ($messages as $message) {
             $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
@@ -519,18 +519,18 @@ class MessageSender
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $params
-     * @param null                              $culture
+     * @param null                              $locale
      * @param mixed                             $sendParams
      *
      * @return bool|int|mixed
      */
-    public function sendTemplateMail($class, $params = [], $sendParams = [], $culture = null)
+    public function sendTemplateMail($class, $params = [], $sendParams = [], $locale = null)
     {
         if ($this->config['force_queueing']) {
-            return $this->enqueueTemplateMessage($class, $params, $sendParams, $culture, null);
+            return $this->enqueueTemplateMessage($class, $params, $sendParams, $locale, null);
         }
 
-        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $culture);
+        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $locale);
 
         if (!$messages) {
             return false;

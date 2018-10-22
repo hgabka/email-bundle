@@ -236,15 +236,15 @@ class EmailLayout implements TranslatableInterface
         $this->messages->removeElement($message);
     }
 
-    public function getDecoratedHtml($culture, $subject = '', $layoutFile = false)
+    public function getDecoratedHtml($locale, $subject = '', $layoutFile = false)
     {
         if (!empty($layoutFile)) {
-            $layoutFile = strtr($layoutFile, ['%culture%' => $culture]);
+            $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
             $html = @file_get_contents($layoutFile);
         } else {
             $html = null;
         }
-        $content = $this->translate($culture)->getContentHtml();
+        $content = $this->translate($locale)->getContentHtml();
         if (empty($html)) {
             return $content;
         }
