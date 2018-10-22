@@ -201,6 +201,8 @@ class MailBuilder
             foreach ($paramArray as $key => $value) {
                 $accessor->setValue($templateType, $key, $value);
             }
+
+            $accessor->setValue($templateType, 'culture', $culture);
         }
 
         $params = [];
