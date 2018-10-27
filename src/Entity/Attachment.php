@@ -55,6 +55,14 @@ class Attachment
     protected $media;
 
     /**
+     * @var EmailTemplateTranslation
+     *
+     * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation", inversedBy="attachments")
+     * @ORM\JoinColumn(name="template_id", referencedColumnName="id")
+     */
+    protected $template;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)

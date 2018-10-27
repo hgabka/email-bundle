@@ -12,6 +12,9 @@ use Hgabka\EmailBundle\Entity\Message;
 
 class EmailSubscriber implements EventSubscriber
 {
+    /** @var array */
+    protected $attachments;
+
     public function getSubscribedEvents()
     {
         return [

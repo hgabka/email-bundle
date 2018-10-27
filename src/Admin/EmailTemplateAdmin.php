@@ -113,7 +113,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         parent::checkAccess($action, $object);
     }
 
-    public function postPersist($object)
+    public function prePersist($object)
     {
         $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
 
@@ -131,11 +131,9 @@ class EmailTemplateAdmin extends AbstractAdmin
                 $em->persist($att);
             }
         }
-
-        $em->flush();
     }
 
-    public function postUpdate($object)
+    public function preUpdate($object)
     {
         $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
         foreach ($object->getTranslations() as $trans) {
@@ -152,8 +150,6 @@ class EmailTemplateAdmin extends AbstractAdmin
                 $em->persist($att);
             }
         }
-
-        $em->flush();
     }
 
     public function toString($object)
