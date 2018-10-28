@@ -217,7 +217,11 @@ class ParamSubstituter
         if (0 !== strpos($url, 'http://') && 0 !== strpos($url, 'https://')) {
             $file = $this->projectDir.'/web/'.$url;
             if (!is_file($file)) {
-                return $url;
+                $file = $this->projectDir.'/public/'.$url;
+
+                if (!is_file($file)) {
+                    return $url;
+                }
             }
         } else {
             $content = @file_get_contents($url);
