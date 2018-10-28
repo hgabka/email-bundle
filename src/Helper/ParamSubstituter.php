@@ -248,7 +248,7 @@ class ParamSubstituter
      */
     protected function addHost($url)
     {
-        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url)) {
+        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url) || 0 === strpos('//', $url)) {
             return $url;
         }
 
@@ -269,7 +269,7 @@ class ParamSubstituter
      */
     protected function addHostToUrl($url)
     {
-        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url)) {
+        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url) || 0 === strpos('//', $url)) {
             return $url;
         }
 
