@@ -106,6 +106,24 @@ class ParamSubstituter
         return $html;
     }
 
+    public function transferRelativeLinks($html)
+    {
+        $pattern = '/(<a[^>]+href=["\'])([^"\']+)(["\'])(.*)/i';
+        $html = preg_replace_callback($pattern, function ($matches) {
+            return $matches[1].$this->addHostToUrl(trim($matches[2], " '\"")).$matches[3].$matches[4];
+        }, $html);
+
+        return $html;
+    }
+
+    public function prepareHtml($mail, $html, $params, $normalized = false)
+    {
+        $html = $this->embedImages($html, $mail);
+        $html = $this->substituteParams($html, $params, $normalized);
+
+        return $this->transferRelativeLinks($html);
+    }
+
     public function getVarChars()
     {
         $varChars = $this->varChars;
@@ -236,6 +254,22 @@ class ParamSubstituter
 
         $file = $this->requestStack->getCurrentRequest()->getBasePath().'/'.$url;
         if (!is_file($file)) {
+            return $url;
+        }
+
+        return $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost().$url;
+    }
+
+    /**
+     * Abszolút url-t generál a relatívból.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    protected function addHostToUrl($url)
+    {
+        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url)) {
             return $url;
         }
 
