@@ -285,7 +285,7 @@ class MailBuilder
             }
 
             if (\strlen($bodyHtml) > 0) {
-                $bodyHtml = $this->paramSubstituter->embedImages($this->paramSubstituter->substituteParams($bodyHtml, $params, true), $mail);
+                $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $bodyHtml, $params, true);
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
@@ -389,7 +389,7 @@ class MailBuilder
         $mail = new \Swift_Message($subject);
 
         $bodyText = $this->paramSubstituter->substituteParams($message->translate($locale)->getContentText(), $params);
-        $bodyHtml = $this->paramSubstituter->substituteParams($this->paramSubstituter->embedImages($message->translate($locale)->getContentHtml(), $mail), $params);
+        $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $message->translate($locale)->getContentHtml(), $params);
 
         if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
             $bodyHtml .= '<br /><br />'.$unsubscribeLink;
@@ -606,11 +606,12 @@ class MailBuilder
 
     protected function createSwiftAttachment(Media $media)
     {
-        $content = $this->getMediaContent($media);
-        $mime = \Swift_Attachment::newInstance($content, $media->getOriginalFilename(), $media->getContentType());
-        $mime->setSize($this->mediaManager->getMediaSize($media));
-
-        return $mime;
+        return (new \Swift_Attachment())
+            ->setBody($this->getMediaContent($media))
+            ->setFilename($media->getOriginalFilename())
+            ->setContentType($media->getContentType())
+            ->setSize($this->mediaManager->getMediaSize($media))
+        ;
     }
 
     /**

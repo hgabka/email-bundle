@@ -203,7 +203,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         return $this->redirectConfig['enable'] && $this->checkHost();
     }
 
-    private function _parentRestoreMessage(\Swift_Mime_Message $message)
+    private function _parentRestoreMessage(\Swift_Message $message)
     {
         // restore original headers
         $headers = $message->getHeaders();
@@ -226,7 +226,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
      *
      * @param \Swift_Mime_Message $message
      */
-    private function _restoreMessage(\Swift_Mime_Message $message)
+    private function _restoreMessage(\Swift_Message $message)
     {
         // restore original headers
         $headers = $message->getHeaders();
