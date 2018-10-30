@@ -37,10 +37,10 @@ class MessageTranslation implements TranslationInterface
     protected $translatable;
 
     /**
-     * @ORM\Column(name="comment", type="tstring)
+     * @ORM\Column(name="name", type="string")
      * @Assert\NotBlank()
      */
-    protected $comment;
+    protected $name;
 
     /**
      * @var string
