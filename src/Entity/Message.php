@@ -585,4 +585,9 @@ class Message implements TranslatableInterface
 
         return $choices[$this->getStatus()] ?? '';
     }
+
+    public function getName($locale = null)
+    {
+        return $this->translate($locale)->getName();
+    }
 }
