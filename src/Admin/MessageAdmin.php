@@ -3,17 +3,13 @@
 namespace Hgabka\EmailBundle\Admin;
 
 use Hgabka\EmailBundle\Entity\Attachment;
-use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Form\AttachmentType;
 use Hgabka\EmailBundle\Form\Type\MessageRecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
-use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
