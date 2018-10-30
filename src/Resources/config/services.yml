@@ -16,7 +16,17 @@ services:
           - [setBuilder, ["@hg_email.mail_builder"]]
           - [setTemplateTypeManager, ["@hg_email.template_type_manager"]]
           - [setAuthChecker, ["@security.authorization_checker"]]
-          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/edit.html.twig']]
+          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailTemplate/edit.html.twig']]
+
+    hg_email.admin.message:
+        class: Hgabka\EmailBundle\Admin\MessageAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.message.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+        arguments: [null, Hgabka\EmailBundle\Entity\Message, HgabkaEmailBundle:MessageAdmin]
+        calls:
+          - [setBuilder, ["@hg_email.mail_builder"]]
+          - [setAuthChecker, ["@security.authorization_checker"]]
+          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
 
     hg_email.recipient_manager:
         class: '%hg_email.recipient_manager.class%'

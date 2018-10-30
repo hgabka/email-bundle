@@ -55,8 +55,13 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
     {
         return [
             new \Twig_SimpleFunction(
-                'render_usable_vars',
-                [$this, 'renderUsableVars'],
+                'render_template_usable_vars',
+                [$this, 'renderTemplateUsableVars'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
+            new \Twig_SimpleFunction(
+                'render_message_usable_vars',
+                [$this, 'renderMessageUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new \Twig_SimpleFunction(
@@ -67,7 +72,7 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         ];
     }
 
-    public function renderUsableVars(\Twig_Environment $environment, EmailTemplate $template)
+    public function renderTemplateUsableVars(\Twig_Environment $environment, EmailTemplate $template)
     {
         $type = $this->templateTypeManager->getTemplateType($template->getType());
 
@@ -80,6 +85,15 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         foreach ($type->getVariables() as $placeholder => $varData) {
             $vars[$placeholder] = $this->translator->trans($varData['label']);
         }
+
+        $vars = $this->paramSubstituter->addVarChars($vars);
+
+        return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
+    }
+
+    public function renderMessageUsableVars(\Twig_Environment $environment, Message $message)
+    {
+        $vars['sender_name'] = 'hg_email.sender.name';
 
         $vars = $this->paramSubstituter->addVarChars($vars);
 

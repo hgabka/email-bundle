@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Form\Type\MessageRecipientFormType;
 use Hgabka\EmailBundle\Form\Type\TemplateRecipientFormType;
 use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
@@ -121,6 +122,25 @@ class RecipientManager
         if ($type) {
             $builder = $this->formFactory->createNamedBuilder($name, TemplateRecipientFormType::class, $params, [
                 'removable' => $removable,
+                'recipient_type' => $type,
+            ]);
+            $type->addFormFields($builder);
+
+            return $builder;
+        }
+
+        return null;
+    }
+
+    public function createMessageRecipientTypeFormBuilder($name, string $type)
+    {
+        $type = clone $this->getMessageRecipientType($type);
+
+        $params = $type->getParams();
+        $params['type'] = \get_class($type);
+
+        if ($type) {
+            $builder = $this->formFactory->createNamedBuilder($name, MessageRecipientFormType::class, $params, [
                 'recipient_type' => $type,
             ]);
             $type->addFormFields($builder);

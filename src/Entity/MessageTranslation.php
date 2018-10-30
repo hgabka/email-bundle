@@ -24,13 +24,23 @@ class MessageTranslation implements TranslationInterface
      */
     protected $id;
 
-    /** @var ArrayCollection |Attachment[] */
+    /**
+     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\Attachment", mappedBy="message")
+     *
+     * @var ArrayCollection |Attachment[]
+     */
     protected $attachments;
 
     /**
      * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\Message")
      */
     protected $translatable;
+
+    /**
+     * @ORM\Column(name="comment", type="tstring)
+     * @Assert\NotBlank()
+     */
+    protected $comment;
 
     /**
      * @var string

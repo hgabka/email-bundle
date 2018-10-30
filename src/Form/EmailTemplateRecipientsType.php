@@ -121,7 +121,7 @@ class EmailTemplateRecipientsType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'recipients';
+        return 'template_recipients';
     }
 
     protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true)
