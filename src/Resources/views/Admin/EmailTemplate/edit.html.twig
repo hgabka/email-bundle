@@ -61,7 +61,7 @@
                                                 <div class="box-body  container-fluid">
                                                     <div class="sonata-ba-collapsed-fields">
                                                         {% if objectId|default(admin.id(object)) is not null and form_tab.description != false %}
-                                                            {{ render_usable_vars(object) }}
+                                                            {{ render_template_usable_vars(object) }}
                                                         {% endif %}
 
                                                         {{ form_helper.render_groups(admin, form, form_tab['groups'], has_tab) }}

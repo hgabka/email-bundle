@@ -35,7 +35,7 @@ class EmailTemplateAdminController extends CRUDController
 
         $form = $builder->getForm();
 
-        $html = $this->renderView('@HgabkaEmail/Admin/recipient_type_form.html.twig', [
+        $html = $this->renderView('@HgabkaEmail/Admin/EmailTemplate/recipient_type_form.html.twig', [
             'form' => $form->createView(),
             'key' => $key,
             'fieldName' => $fieldName,

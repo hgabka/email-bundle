@@ -1,4 +1,4 @@
-{% block recipients_widget %}
+{% block template_recipients_widget %}
     <div id="accordion_{{ form.vars.id }}" class="panel-group">
         {% for key,child in form %}
             <div class="panel panel-default">
@@ -92,4 +92,8 @@
             {% endif %}
         });
     </script>
+{% endblock %}
+
+{% block message_recipients_widget %}
+    {{ block('template_recipients_widget') }}
 {% endblock %}
