@@ -7,6 +7,7 @@ use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Form\Type\TemplateRecipientFormType;
 use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -29,6 +30,9 @@ class RecipientManager
     /** @var array|EmailTemplateRecipientTypeInterface[] */
     protected $templateRecipientTypes;
 
+    /** @var array|MessageRecipientTypeInterface[] */
+    protected $messageRecipientTypes;
+
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
 
@@ -47,8 +51,8 @@ class RecipientManager
     }
 
     /**
-     * @param SettingTypeInterface $type
-     * @param                      $alias
+     * @param EmailTemplateRecipientTypeInterface $type
+     * @param                                     $alias
      */
     public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type)
     {
@@ -64,6 +68,23 @@ class RecipientManager
     }
 
     /**
+     * @param MessageRecipientTypeInterface $type
+     * @param                               $alias
+     */
+    public function addMessageRecipientType(EmailTemplateRecipientTypeInterface $type)
+    {
+        $alias = \get_class($type);
+
+        $this->messageRecipientTypes[$alias] = $type;
+        uasort($this->messageRecipientTypes, function ($type1, $type2) {
+            $p1 = null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority();
+            $p2 = null === $type2->getPriority() ? PHP_INT_MAX : $type2->getPriority();
+
+            return $p1 <=> $p2;
+        });
+    }
+
+    /**
      * @param null|string $type
      *
      * @return null|EmailTemplateRecipientTypeInterface|mixed
@@ -71,6 +92,16 @@ class RecipientManager
     public function getTemplateRecipientType(string $type = null)
     {
         return !empty($type) ? ($this->templateRecipientTypes[$type] ?? null) : null;
+    }
+
+    /**
+     * @param null|string $type
+     *
+     * @return null|MessageRecipientTypeInterface|mixed
+     */
+    public function getMessageRecipientType(string $type = null)
+    {
+        return !empty($type) ? ($this->messageRecipientTypes[$type] ?? null) : null;
     }
 
     /**
@@ -107,6 +138,21 @@ class RecipientManager
     {
         $choices = [];
         foreach ($this->templateRecipientTypes as $class => $type) {
+            if ($type->isPublic()) {
+                $choices[$this->translator->trans($type->getName())] = $class;
+            }
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMessageRecipientTypeChoices()
+    {
+        $choices = [];
+        foreach ($this->messageRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
                 $choices[$this->translator->trans($type->getName())] = $class;
             }
@@ -224,6 +270,16 @@ class RecipientManager
         return $address['email'];
     }
 
+    protected function hasTemplateRecipientType($type)
+    {
+        return array_key_exists($type, $this->templateRecipientTypes);
+    }
+
+    protected function hasMessageRecipientType($type)
+    {
+        return array_key_exists($type, $this->messageRecipientTypes);
+    }
+
     /**
      * @param $toData
      * @param $locale
@@ -259,7 +315,7 @@ class RecipientManager
         }
 
         if (isset($toData['type'])) {
-            $type = $this->getTemplateRecipientType($toData['type']);
+            $type = $this->hasTemplateRecipientType($toData['type']) ? $this->getTemplateRecipientType($toData['type']) : $this->getMessageRecipientType($toData['type']);
             unset($toData['type']);
 
             $type->setParams($toData);
