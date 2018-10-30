@@ -4,7 +4,8 @@ namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
-use Hgabka\EmailBundle\Form\Type\RecipientFormType;
+use Hgabka\EmailBundle\Form\Type\TemplateRecipientFormType;
+use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -25,8 +26,8 @@ class RecipientManager
     /** @var FormFactoryInterface */
     protected $formFactory;
 
-    /** @var array|RecipientTypeInterface[] */
-    protected $types;
+    /** @var array|EmailTemplateRecipientTypeInterface[] */
+    protected $templateRecipientTypes;
 
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
@@ -49,12 +50,12 @@ class RecipientManager
      * @param SettingTypeInterface $type
      * @param                      $alias
      */
-    public function addType(RecipientTypeInterface $type)
+    public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type)
     {
         $alias = \get_class($type);
 
-        $this->types[$alias] = $type;
-        uasort($this->types, function ($type1, $type2) {
+        $this->templateRecipientTypes[$alias] = $type;
+        uasort($this->templateRecipientTypes, function ($type1, $type2) {
             $p1 = null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority();
             $p2 = null === $type2->getPriority() ? PHP_INT_MAX : $type2->getPriority();
 
@@ -65,11 +66,11 @@ class RecipientManager
     /**
      * @param null|string $type
      *
-     * @return null|mixed|RecipientTypeInterface
+     * @return null|EmailTemplateRecipientTypeInterface|mixed
      */
-    public function getType(string $type = null)
+    public function getTemplateRecipientType(string $type = null)
     {
-        return !empty($type) ? ($this->types[$type] ?? null) : null;
+        return !empty($type) ? ($this->templateRecipientTypes[$type] ?? null) : null;
     }
 
     /**
@@ -79,15 +80,15 @@ class RecipientManager
      *
      * @return null|\Symfony\Component\Form\FormBuilderInterface
      */
-    public function createTypeFormBuilder($name, string $type, $removable = true)
+    public function createTemplateRecipientTypeFormBuilder($name, string $type, $removable = true)
     {
-        $type = clone $this->getType($type);
+        $type = clone $this->getTemplateRecipientType($type);
 
         $params = $type->getParams();
         $params['type'] = \get_class($type);
 
         if ($type) {
-            $builder = $this->formFactory->createNamedBuilder($name, RecipientFormType::class, $params, [
+            $builder = $this->formFactory->createNamedBuilder($name, TemplateRecipientFormType::class, $params, [
                 'removable' => $removable,
                 'recipient_type' => $type,
             ]);
@@ -102,10 +103,10 @@ class RecipientManager
     /**
      * @return array
      */
-    public function getTypeChoices()
+    public function getTemplateRecipientTypeChoices()
     {
         $choices = [];
-        foreach ($this->types as $class => $type) {
+        foreach ($this->templateRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
                 $choices[$this->translator->trans($type->getName())] = $class;
             }
@@ -130,7 +131,7 @@ class RecipientManager
                 $defRec = [$defRec];
             }
             foreach ($defRec as $defRecData) {
-                $defRecType = $this->getType($defRecData['type']);
+                $defRecType = $this->getTemplateRecipientType($defRecData['type']);
                 $params = $defRecData['params'] ?? [];
                 if (!empty($template->getToData())) {
                     foreach ($template->getToData() as $td) {
@@ -258,7 +259,7 @@ class RecipientManager
         }
 
         if (isset($toData['type'])) {
-            $type = $this->getType($toData['type']);
+            $type = $this->getTemplateRecipientType($toData['type']);
             unset($toData['type']);
 
             $type->setParams($toData);

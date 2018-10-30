@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Recipient;
 
-use Hgabka\EmailBundle\Model\AbstractRecipientType;
+use Hgabka\EmailBundle\Model\AbstractEmailTemplateRecipientType;
 use Hgabka\UtilsBundle\Form\Type\LocaleType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -11,13 +11,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class GeneralRecipientType extends AbstractRecipientType
+class GeneralEmailTemplateRecipientType extends AbstractEmailTemplateRecipientType
 {
     /** @var HgabkaUtils */
     protected $hgabkaUtils;
 
     /**
-     * GeneralRecipientType constructor.
+     * GeneralEmailTemplateRecipientType constructor.
      *
      * @param HgabkaUtils $hgabkaUtils
      */
@@ -79,7 +79,7 @@ class GeneralRecipientType extends AbstractRecipientType
         return 1;
     }
 
-    protected function calcRecipients()
+    protected function computeRecipients()
     {
         if (empty($this->getRecipientEmail())) {
             return [];

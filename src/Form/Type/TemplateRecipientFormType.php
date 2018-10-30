@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RecipientFormType extends AbstractType
+class TemplateRecipientFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

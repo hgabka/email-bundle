@@ -2,12 +2,16 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-abstract class AbstractRecipientType implements RecipientTypeInterface
+abstract class AbstractEmailTemplateRecipientType implements EmailTemplateRecipientTypeInterface
 {
+    /** @var MailBuilder */
+    protected $builder;
+
     /** @var array */
     protected $params;
 
@@ -41,6 +45,28 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     }
 
     /**
+     * @return MailBuilder
+     */
+    public function getBuilder(): MailBuilder
+    {
+        return $this->builder;
+    }
+
+    /**
+     * @required
+     *
+     * @param MailBuilder $builder
+     *
+     * @return AbstractEmailTemplateRecipientType
+     */
+    public function setBuilder($builder)
+    {
+        $this->builder = $builder;
+
+        return $this;
+    }
+
+    /**
      * @required
      */
     public function setManager(RecipientManager $manager)
@@ -54,7 +80,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     public function getRecipients()
     {
         if (null === $this->recipients) {
-            $recipients = $this->calcRecipients();
+            $recipients = $this->computeRecipients();
             if (!empty($recipients)) {
                 if (!\is_array($recipients) || !\is_int(key($recipients))) {
                     if (isset($recipients['to'])) {
@@ -107,7 +133,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     /**
      * @param array $staticParams
      *
-     * @return AbstractRecipientType
+     * @return AbstractEmailTemplateRecipientType
      */
     public function setStaticParams($staticParams)
     {
@@ -121,7 +147,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return $this->getStaticParams[$name] ?? null;
     }
 
-    abstract protected function calcRecipients();
+    abstract protected function computeRecipients();
 
     protected function getRecipientDisplay($recipient)
     {

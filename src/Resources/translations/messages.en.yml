@@ -4,6 +4,7 @@ breadcrumb:
 hg_email:
     form_translation_tab: 'In %locale%'
     recipient_type:
+        add: Add recipients
         default:
             name: 'Default recipient'
             title: 'Default recipient (%count%)'

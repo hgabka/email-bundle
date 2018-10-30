@@ -2,26 +2,12 @@
 
 namespace Hgabka\EmailBundle\Recipient;
 
-use Hgabka\EmailBundle\Helper\MailBuilder;
-use Hgabka\EmailBundle\Model\AbstractRecipientType;
+use Hgabka\EmailBundle\Model\AbstractEmailTemplateRecipientType;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class DefaultRecipientType extends AbstractRecipientType
+class DefaultEmailTemplateRecipientType extends AbstractEmailTemplateRecipientType
 {
-    /** @var MailBuilder */
-    protected $builder;
-
-    /**
-     * DefaultRecipientType constructor.
-     *
-     * @param MailBuilder $builder
-     */
-    public function __construct(MailBuilder $builder)
-    {
-        $this->builder = $builder;
-    }
-
     public function getName()
     {
         return 'hg_email.recipient_type.default.name';
@@ -65,7 +51,7 @@ class DefaultRecipientType extends AbstractRecipientType
         return 0;
     }
 
-    protected function calcRecipients()
+    protected function computeRecipients()
     {
         return $this->builder->getDefaultTo();
     }
