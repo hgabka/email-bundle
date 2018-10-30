@@ -59,7 +59,7 @@ abstract class AbstractEmailTemplateRecipientType implements EmailTemplateRecipi
      *
      * @return AbstractEmailTemplateRecipientType
      */
-    public function setBuilder($builder)
+    public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
 
