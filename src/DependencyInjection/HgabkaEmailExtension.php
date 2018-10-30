@@ -126,13 +126,24 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
 
         $definition = $container->findDefinition(RecipientManager::class);
 
-        // find all service IDs with the app.mail_transport tag
+        // find all service IDs with the hg_email.email_template_recipient_type tag
         $taggedServices = $container->findTaggedServiceIds('hg_email.email_template_recipient_type');
 
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addTemplateRecipientType', [
+                    $type,
+                ]);
+            }
+        }
+        // find all service IDs with the hg_email.message_recipient_type tag
+        $taggedServices = $container->findTaggedServiceIds('hg_email.message_recipient_type');
+
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                $type = new Reference($id);
+                $definition->addMethodCall('addMessageRecipientType', [
                     $type,
                 ]);
             }

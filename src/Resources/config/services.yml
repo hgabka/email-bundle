@@ -48,6 +48,28 @@ services:
         - [setBuilder, ["@hg_email.mail_builder"]]
         - [setTranslator, ["@translator"]]
 
+    hg_email.message_recipient_type.default:
+        class:  Hgabka\EmailBundle\Recipient\DefaultMessageRecipientType
+        tags:
+        - { name: hg_email.message_recipient_type }
+        arguments: ["@hg_email.mail_builder", "@translator"]
+        public: false
+        calls:
+        - [setManager, ["@hg_email.recipient_manager"]]
+        - [setBuilder, ["@hg_email.mail_builder"]]
+        - [setTranslator, ["@translator"]]
+
+    hg_email.emessage_recipient_type.general:
+        class:  Hgabka\EmailBundle\Recipient\GeneralMessageRecipientType
+        tags:
+        - { name: hg_email.message_recipient_type }
+        arguments: ["@hgabka_utils.hgabka_utils", "@translator"]
+        public: false
+        calls:
+        - [setManager, ["@hg_email.recipient_manager"]]
+        - [setBuilder, ["@hg_email.mail_builder"]]
+        - [setTranslator, ["@translator"]]
+
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
         arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager', "@hg_email.recipient_manager", "@event_dispatcher", "@hg_email.template_type_manager"]
