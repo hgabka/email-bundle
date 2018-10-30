@@ -26,24 +26,26 @@ services:
         class: '%hg_email.template_type_manager.class%'
         arguments: ["@doctrine", "@translator", "@hgabka_utils.hgabka_utils"]
 
-    hg_email.recipient_type.default:
-        class:  Hgabka\EmailBundle\Recipient\DefaultRecipientType
+    hg_email.email_template_recipient_type.default:
+        class:  Hgabka\EmailBundle\Recipient\DefaultEmailTemplateRecipientType
         tags:
-        - { name: hg_email.recipient_type }
+        - { name: hg_email.email_template_recipient_type }
         arguments: ["@hg_email.mail_builder", "@translator"]
         public: false
         calls:
         - [setManager, ["@hg_email.recipient_manager"]]
+        - [setBuilder, ["@hg_email.mail_builder"]]
         - [setTranslator, ["@translator"]]
 
-    hg_email.recipient_type.general:
-        class:  Hgabka\EmailBundle\Recipient\GeneralRecipientType
+    hg_email.email_template_recipient_type.general:
+        class:  Hgabka\EmailBundle\Recipient\GeneralEmailTemplateRecipientType
         tags:
-        - { name: hg_email.recipient_type }
+        - { name: hg_email.email_template_recipient_type }
         arguments: ["@hgabka_utils.hgabka_utils", "@translator"]
         public: false
         calls:
         - [setManager, ["@hg_email.recipient_manager"]]
+        - [setBuilder, ["@hg_email.mail_builder"]]
         - [setTranslator, ["@translator"]]
 
     hg_email.mail_builder:
@@ -134,7 +136,7 @@ services:
         class: Hgabka\EmailBundle\Helper\EmailParser
 
     hg_email.recipients_type:
-        class: Hgabka\EmailBundle\Form\RecipientsType
+        class: Hgabka\EmailBundle\Form\EmailTemplateRecipientsType
         arguments: ["@hg_email.recipient_manager", "@hg_email.template_type_manager"]
         tags:
             - { name: form.type }

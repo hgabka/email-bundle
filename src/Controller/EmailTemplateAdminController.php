@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
-use Hgabka\EmailBundle\Form\RecipientsType;
+use Hgabka\EmailBundle\Form\EmailTemplateRecipientsType;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +18,12 @@ class EmailTemplateAdminController extends CRUDController
         $fieldName = $request->get('fieldType').'Data';
 
         $type = $request->get('type');
-        $recType = $recipientManager->getType($type);
+        $recType = $recipientManager->getTemplateRecipientType($type);
 
         $builder = $this
             ->get('form.factory')
             ->createNamedBuilder($request->get('name'))
-            ->add($fieldName, RecipientsType::class, [
+            ->add($fieldName, EmailTemplateRecipientsType::class, [
                 'admin' => $this->admin,
                 'template_type' => $this->admin->getSubject()->getType(),
                 'recipients_type' => $request->get('fieldtype'),
@@ -31,7 +31,7 @@ class EmailTemplateAdminController extends CRUDController
         ;
 
         $key = uniqid('regtype_');
-        $builder->get($fieldName)->add($recipientManager->createTypeFormBuilder($key, $type));
+        $builder->get($fieldName)->add($recipientManager->createTemplateRecipientTypeFormBuilder($key, $type));
 
         $form = $builder->getForm();
 

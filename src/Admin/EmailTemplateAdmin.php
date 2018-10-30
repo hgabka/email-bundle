@@ -6,7 +6,7 @@ use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Form\AttachmentType;
-use Hgabka\EmailBundle\Form\RecipientsType;
+use Hgabka\EmailBundle\Form\EmailTemplateRecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
@@ -289,7 +289,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         if ($type->isToEditable()) {
             $form
                 ->with('hg_email.form_block.to_data')
-                    ->add('toData', RecipientsType::class, [
+                    ->add('toData', EmailTemplateRecipientsType::class, [
                         'label' => false,
                         'template_type' => $this->getSubject()->getType(),
                         'admin' => $this,
@@ -302,7 +302,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         if ($type->isCcEditable()) {
             $form
                 ->with('hg_email.form_block.cc_data')
-                    ->add('ccData', RecipientsType::class, [
+                    ->add('ccData', EmailTemplateRecipientsType::class, [
                         'label' => false,
                         'template_type' => $this->getSubject()->getType(),
                         'admin' => $this,
@@ -314,7 +314,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         if ($type->isBccEditable()) {
             $form
                 ->with('hg_email.form_block.bcc_data')
-                    ->add('bccData', RecipientsType::class, [
+                    ->add('bccData', EmailTemplateRecipientsType::class, [
                         'label' => false,
                         'template_type' => $this->getSubject()->getType(),
                         'admin' => $this,

@@ -4,8 +4,8 @@ namespace Hgabka\EmailBundle\Form;
 
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
-use Hgabka\EmailBundle\Model\RecipientTypeInterface;
-use Hgabka\EmailBundle\Recipient\DefaultRecipientType;
+use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
+use Hgabka\EmailBundle\Recipient\DefaultEmailTemplateRecipientType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -14,7 +14,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RecipientsType extends AbstractType
+class EmailTemplateRecipientsType extends AbstractType
 {
     /** @var RecipientManager */
     protected $manager;
@@ -64,7 +64,7 @@ class RecipientsType extends AbstractType
                                 }
                             } else {
                                 if (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type']) {
-                                    $this->addRecipientType(null, $form, DefaultRecipientType::class);
+                                    $this->addRecipientType(null, $form, DefaultEmailTemplateRecipientType::class);
                                 }
                             }
                         } else {
@@ -126,8 +126,8 @@ class RecipientsType extends AbstractType
 
     protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true)
     {
-        /** @var RecipientTypeInterface $recType */
-        $recType = $this->manager->getType($type);
+        /** @var EmailTemplateRecipientTypeInterface $recType */
+        $recType = $this->manager->getTemplateRecipientType($type);
         if (!$recType) {
             return;
         }
@@ -135,7 +135,7 @@ class RecipientsType extends AbstractType
             $recType->setParams($params);
         }
 
-        $builder = $this->manager->createTypeFormBuilder($name ?? uniqid('rectype_'), $type, $removable);
+        $builder = $this->manager->createTemplateRecipientTypeFormBuilder($name ?? uniqid('rectype_'), $type, $removable);
         if ($builder) {
             $form
                 ->add($builder->getForm())

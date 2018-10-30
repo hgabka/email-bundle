@@ -88,7 +88,7 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
 
     public function renderRecipientSelector($id)
     {
-        $choices = $this->recipientManager->getTypeChoices();
+        $choices = $this->recipientManager->getTemplateRecipientTypeChoices();
         $html = '<select id="rectype-select_'.$id.'">
                      <option value=""></option>';
         foreach ($choices as $label => $type) {

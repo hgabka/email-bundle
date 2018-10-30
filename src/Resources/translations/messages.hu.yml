@@ -4,6 +4,7 @@ breadcrumb:
 hg_email:
     form_translation_tab: '%locale% nyelven'
     recipient_type:
+        add: Címzettek hozzáadása
         default:
             name: 'Alapértelmezett címzett'
             title: 'Alapértelmezett címzett (%count%)'

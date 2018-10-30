@@ -4,8 +4,8 @@ namespace Hgabka\EmailBundle\DependencyInjection;
 
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
+use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
-use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -88,8 +88,8 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             ->addTag('hg_email.email_template_type')
         ;
         $container
-            ->registerForAutoconfiguration(RecipientTypeInterface::class)
-            ->addTag('hg_email.recipient_type')
+            ->registerForAutoconfiguration(EmailTemplateRecipientTypeInterface::class)
+            ->addTag('hg_email.email_template_recipient_type')
         ;
     }
 
@@ -127,12 +127,12 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $definition = $container->findDefinition(RecipientManager::class);
 
         // find all service IDs with the app.mail_transport tag
-        $taggedServices = $container->findTaggedServiceIds('hg_email.recipient_type');
+        $taggedServices = $container->findTaggedServiceIds('hg_email.email_template_recipient_type');
 
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
-                $definition->addMethodCall('addType', [
+                $definition->addMethodCall('addTemplateRecipientType', [
                     $type,
                 ]);
             }
