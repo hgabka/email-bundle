@@ -71,7 +71,7 @@ class RecipientManager
      * @param MessageRecipientTypeInterface $type
      * @param                               $alias
      */
-    public function addMessageRecipientType(EmailTemplateRecipientTypeInterface $type)
+    public function addMessageRecipientType(MessageRecipientTypeInterface $type)
     {
         $alias = \get_class($type);
 
