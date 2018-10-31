@@ -48,7 +48,7 @@ class Attachment
     /**
      * @var Media
      *
-     * @ORM\ManyToOne(targetEntity="Hgabka\MediaBundle\Entity\Media")
+     * @ORM\ManyToOne(targetEntity="Hgabka\MediaBundle\Entity\Media", cascade={"persist"})
      * @ORM\JoinColumn(name="media_id", referencedColumnName="id")
      * @Assert\NotNull()
      */

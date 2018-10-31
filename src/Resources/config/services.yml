@@ -193,6 +193,13 @@ services:
             - { name: form.type }
         public: false
 
+    hg_email.attachment_type:
+        class: Hgabka\EmailBundle\Form\AttachmentType
+        arguments: ["@hg_media.admin.media"]
+        tags:
+            - { name: form.type }
+        public: false
+
     hg_email.message_recipients_type:
         class: Hgabka\EmailBundle\Form\MessageRecipientsType
         arguments: ["@hg_email.recipient_manager"]
