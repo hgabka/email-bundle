@@ -47,5 +47,6 @@ class MessageRecipientFormType extends AbstractType
         $view->vars['removable'] = true;
         $view->vars['typeName'] = $options['recipient_type'] ? $options['recipient_type']->getName() : '';
         $view->vars['blockTitle'] = $options['recipient_type'] ? $options['recipient_type']->getTitle() : '';
+        $view->vars['recipientType'] = $options['recipient_type'];
     }
 }

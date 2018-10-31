@@ -1,0 +1,18 @@
+{% extends '@HgabkaEmail/Admin/recipient_type_form.html.twig' %}
+{% block recipient_form %}
+    {{ parent() }}
+{% endblock %}
+{% block javascripts %}
+    <script>
+        $(function(){
+            $('#{{ child.addUnsubscribe.vars.id }}').on('change', function () {
+                if ($(this).is(':checked')) {
+                    $(this).closest('.panel-body').find('.unsub-link-text').closest('.form-group').show();
+                } else {
+                    $(this).closest('.panel-body').find('.unsub-link-text').val('');
+                    $(this).closest('.panel-body').find('.unsub-link-text').closest('.form-group').hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}

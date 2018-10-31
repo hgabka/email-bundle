@@ -167,6 +167,11 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return [];
     }
 
+    public function getFormTemplate()
+    {
+        return null;
+    }
+
     abstract protected function computeRecipients();
 
     protected function getRecipientDisplay($recipient)

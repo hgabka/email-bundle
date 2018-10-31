@@ -1,18 +1,21 @@
+{% block recipient_form %}
 <div class="panel panel-default" id="panel_{{ key }}">
     <div class="panel-heading">
         <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
-                {{ form[fieldName][key].vars.blockTitle|trans }}
+                {{ child.vars.blockTitle|trans }}
             </a>
 
             <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
         </h4>
     </div>
-    <div id="collapse_{{ key }}" class="panel-collapse collapse in">
+    <div id="collapse_{{ key }}" class="panel-collapse collapse{% if ajax is defined or (child.vars.submitted and not child.vars.valid) %} in{% endif %}">
         <div class="panel-body">
-            {{ form_widget(form[fieldName][key]) }}
+            {{ form_widget(child) }}
         </div>
     </div>
 </div>
-
+{% endblock %}
+{% block javascripts %}
+{% endblock %}
 
