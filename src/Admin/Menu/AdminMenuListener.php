@@ -29,7 +29,6 @@ class AdminMenuListener
         $messageAdmin = $this->adminPool->getAdminByAdminCode('hg_email.admin.message');
 
         $group = $event->getMenu()->getChild('hg_email.group');
-        dump($group->getChildren());
         if ($group) {
             $emailCh = $group->getChild('hg_email.admin.email_template.label');
             if ($emailCh) {
