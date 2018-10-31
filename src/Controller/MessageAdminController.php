@@ -36,11 +36,12 @@ class MessageAdminController extends CRUDController
         $builder->get($fieldName)->add($recipientManager->createMessageRecipientTypeFormBuilder($key, $type));
 
         $form = $builder->getForm();
+        $template = $recType->getFormTemplate() ?: '@HgabkaEmail/Admin/recipient_type_form.html.twig';
 
-        $html = $this->renderView('@HgabkaEmail/Admin/recipient_type_form.html.twig', [
-            'form' => $form->createView(),
+        $html = $this->renderView($template, [
+            'child' => $form->get($fieldName)->get($key)->createView(),
             'key' => $key,
-            'fieldName' => $fieldName,
+            'ajax' => true,
         ]);
 
         return new JsonResponse([

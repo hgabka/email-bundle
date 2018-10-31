@@ -25,6 +25,7 @@ hg_email:
         usable_vars: Használható változók
         copy_to_clipboard: Másolás a vágólapra
         no_recipient: Nincsenek címzettek
+        unsubscribe: A leiratkozáshoz kattintson ide
     help:
         from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
         from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
@@ -59,6 +60,7 @@ hg_email:
             label: Körlevelek
     label:
         add_unsubscribe_link: Leiratkozó link automatikus hozzáadása
+        unsubscribe_link_text: 'Leiratkozó link szövege %locale% nyelven'
         lists: Levelezőlisták
         name: Név
         comment: Leírás

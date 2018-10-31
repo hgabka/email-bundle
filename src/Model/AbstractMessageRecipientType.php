@@ -34,4 +34,9 @@ abstract class AbstractMessageRecipientType extends AbstractRecipientType implem
 
         return $result;
     }
+
+    public function getFormTemplate()
+    {
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ use Hgabka\EmailBundle\Model\AbstractMessageRecipientType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class SubscribersMessageRecipientType extends AbstractMessageRecipientType
@@ -54,6 +55,21 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
                 'required' => false,
             ])
         ;
+        foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
+            $formBuilder
+                ->add(
+                    'linkText_'.$locale,
+                    TextType::class,
+                    [
+                'label' => $this->translator->trans('hg_email.label.unsubscribe_link_text', ['%locale%' => $this->hgabkaUtils->getIntlLocale($locale)]),
+                'required' => false,
+                'attr' => [
+                    'class' => 'unsub-link-text',
+                ],
+                        ]
+                )
+            ;
+        }
     }
 
     public function isPublic()
@@ -87,9 +103,15 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
     public function getParamDefaults()
     {
-        return [
+        $defaults = [
             'addUnsubscribe' => true,
         ];
+
+        foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
+            $defaults['linkText_'.$locale] = $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
+        }
+
+        return $defaults;
     }
 
     public function alterHtmlBody($html, $params)
@@ -100,6 +122,11 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         }
 
         return $html.'<br />'.$params['token'];
+    }
+
+    public function getFormTemplate()
+    {
+        return '@HgabkaEmail/Admin/Message/subscriber_recipient_form.html.twig';
     }
 
     protected function computeRecipients()

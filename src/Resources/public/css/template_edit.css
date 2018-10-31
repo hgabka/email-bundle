@@ -24,3 +24,10 @@
 .form-group[id$="_fromText"] {
     margin-bottom:0;
 }
+
+.panel-group[id$="toData"] .panel {
+    margin-top:5px;
+}
+.panel-group[id$="toData"] .panel:first-child {
+    margin-top:0;
+}

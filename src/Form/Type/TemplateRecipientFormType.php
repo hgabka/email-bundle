@@ -48,5 +48,6 @@ class TemplateRecipientFormType extends AbstractType
         $view->vars['removable'] = $options['removable'];
         $view->vars['typeName'] = $options['recipient_type'] ? $options['recipient_type']->getName() : '';
         $view->vars['blockTitle'] = $options['recipient_type'] ? $options['recipient_type']->getTitle() : '';
+        $view->vars['recipientType'] = $options['recipient_type'];
     }
 }

@@ -83,4 +83,6 @@ interface RecipientTypeInterface
     public function getPriority();
 
     public function getParamDefaults();
+
+    public function getFormTemplate();
 }

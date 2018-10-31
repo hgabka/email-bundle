@@ -1,23 +1,14 @@
 {% block template_recipients_widget %}
     <div id="accordion_{{ form.vars.id }}" class="panel-group">
         {% for key,child in form %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" href="#collapse_{{ key }}">
-                            {{ child.vars.blockTitle|trans }}
-                        </a>
-                        {% if child.vars.removable %}
-                            <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
-                        {% endif %}
-                    </h4>
-                </div>
-                <div id="collapse_{{ key }}" class="panel-collapse collapse{% if not child.vars.valid %} in{% endif %}">
-                    <div class="panel-body">
-                        {{ form_widget(child) }}
-                    </div>
-                </div>
-            </div>
+            {% set recipientType = child.vars.recipientType %}
+            {% if recipientType.formTemplate is defined and recipientType.formTemplate is not empty %}
+                {% set template = recipientType.formTemplate %}
+            {% else %}
+                {% set template = '@HgabkaEmail/Admin/recipient_type_form.html.twig' %}
+            {% endif %}
+
+            {% include template %}
         {% endfor %}
     </div>
     <div class="no-recipient no-recipient_{{ form.vars.id }}">

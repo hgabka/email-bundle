@@ -25,6 +25,7 @@ hg_email:
         usable_vars: Usable formulas
         copy_to_clipboard: Copy to clipboard
         no_recipient: No recipients
+        unsubscribe: Click here to unsubscribe
     help:
         from_name: 'If empty the default name will be used (currently: "%current%")'
         from_email: 'If empty the default email will be used (currently: "%current%")'
@@ -59,6 +60,7 @@ hg_email:
             label: Circulars
     label:
         add_unsubscribe_link: Add unsubscribe link automatically
+        unsubscribe_link_text: 'Unsubscribe link text in %locale%'
         lists: Mail lists
         name: Name
         comment: Comment

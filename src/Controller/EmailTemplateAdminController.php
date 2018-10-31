@@ -41,9 +41,9 @@ class EmailTemplateAdminController extends CRUDController
         $form = $builder->getForm();
 
         $html = $this->renderView('@HgabkaEmail/Admin/recipient_type_form.html.twig', [
-            'form' => $form->createView(),
+            'child' => $form->get($fieldName)->get($key)->createView(),
             'key' => $key,
-            'fieldName' => $fieldName,
+            'ajax' => true,
         ]);
 
         return new JsonResponse([
