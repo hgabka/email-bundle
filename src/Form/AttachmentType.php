@@ -3,6 +3,8 @@
 namespace Hgabka\EmailBundle\Form;
 
 use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\MediaBundle\Admin\MediaAdmin;
+use Hgabka\MediaBundle\Form\Type\MediaSimpleType;
 use Hgabka\MediaBundle\Form\Type\MediaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,6 +12,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AttachmentType extends AbstractType
 {
+    /** @var MediaAdmin */
+    protected $mediaAdmin;
+
+    /**
+     * AttachmentType constructor.
+     *
+     * @param MediaAdmin $mediaAdmin
+     */
+    public function __construct(MediaAdmin $mediaAdmin)
+    {
+        $this->mediaAdmin = $mediaAdmin;
+    }
+
     /**
      * Builds the form.
      *
@@ -23,9 +38,19 @@ class AttachmentType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('media', MediaType::class, ['label' => false, 'required' => false, 'mediatype' => 'file', 'foldername' => 'attachment'])
-            ;
+        $mediaAccess = $this->mediaAdmin->hasAccess('list');
+        if ($mediaAccess) {
+            $builder
+                ->add('media', MediaType::class, ['label' => false, 'required' => false, 'mediatype' => 'file', 'foldername' => 'attachment']);
+        } else {
+            $builder
+                ->add('media', MediaSimpleType::class, [
+                    'required' => false,
+                    'label' => false,
+                    'foldername' => 'attachment',
+                    'parentfolder' => 'fileroot',
+                    ]);
+        }
     }
 
     /**
