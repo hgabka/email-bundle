@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\UtilsBundle\Doctrine\Hydrator\KeyValueHydrator;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 
 class SubscriptionManager
@@ -112,6 +113,73 @@ class SubscriptionManager
         }
 
         $subscriber->setToken($sku);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEditableLists(): bool
+    {
+        return $this->editableLists;
+    }
+
+    /**
+     * @param bool $editableLists
+     *
+     * @return SubscriptionManager
+     */
+    public function setEditableLists($editableLists)
+    {
+        $this->editableLists = $editableLists;
+
+        return $this;
+    }
+
+    public function getListChoices()
+    {
+        return
+            $this
+                ->doctrine
+                ->getRepository(MessageList::class)
+                ->createQueryBuilder('l')
+                ->leftJoin('l.translations', 'lt', 'WITH', 'lt.locale = :locale')
+                ->setParameter('locale', $this->hgabkaUtils->getCurrentLocale())
+                ->orderBy('lt.name')
+                ->select('lt.name, l.id')
+                ->getQuery()
+                ->getResult(KeyValueHydrator::HYDRATOR_NAME)
+        ;
+    }
+
+    public function getSubscribers($listIds = null)
+    {
+        if (empty($listIds)) {
+            $defList = $this->doctrine->getRepository(MessageList::class)->getDefaultList();
+            $listIds = [$defList->getId()];
+        }
+
+        return
+            $this
+                ->doctrine
+                ->getRepository(MessageSubscriber::class)
+                ->createQueryBuilder('s')
+                ->leftJoin('s.listSubscriptions', 'ls')
+                ->leftJoin('ls.list', 'l')
+                ->where('l.id IN (:listids)')
+                ->setParameter('listids', $listIds)
+                ->groupBy('s.id')
+                ->getQuery()
+                ->getResult()
+        ;
+    }
+
+    public function getSubscriber($id)
+    {
+        if (empty($id)) {
+            return null;
+        }
+
+        return $this->doctrine->getRepository(MessageSubscriber::class)->find($id);
     }
 
     protected function getListsFromParams($lists)

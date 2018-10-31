@@ -60,8 +60,10 @@
                                         <div class="tab-pane fade{% if (not app.request.query.has('_tab') and loop.first) or (app.request.query.get('_tab') == _tab_name) %} in active{% endif %}" id="{{ _tab_name }}">
                                             <div class="box-body  container-fluid">
                                                 <div class="sonata-ba-collapsed-fields">
-                                                    {% if objectId|default(admin.id(object)) is not null and form_tab.description != false %}
-                                                        {{ render_message_usable_vars(object) }}
+                                                    {% if form_tab.description != false %}
+                                                        <div id="usable-vars" data-url="{{ admin.generateUrl('render_usable_vars') }}">
+                                                            {{ render_message_usable_vars(object) }}
+                                                        </div>
                                                     {% endif %}
 
                                                     {{ form_helper.render_groups(admin, form, form_tab['groups'], has_tab) }}
@@ -143,5 +145,16 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <script>
+        function renderUsableVars()
+        {
+            $.post($('#usable-vars').data('url'), {data: $('form').serialize(), name:'{{ form.vars.name }}'}, function (data) {
+              $('#usable-vars').html(data);
+            });
+        }
+        $(function() {
+            renderUsableVars();
+        });
+    </script>
     <script src="{{ asset('build/hgabkaemail.js') }}"></script>
 {% endblock %}

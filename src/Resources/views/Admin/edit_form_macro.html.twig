@@ -24,7 +24,7 @@
                                 {% endfor %}
                             {% else %}
                                 {% if code == 'hg_email.tab.general.hg_email.form_block.general' %}
-                                    {% set fields = ['comment'] %}
+                                    {% set fields = ['comment', 'name'] %}
                                 {% elseif code == 'hg_email.tab.general.hg_email.form_block.from_data' %}
                                     {% set fields = ['fromName', 'fromEmail'] %}
                                 {% elseif code == 'hg_email.tab.attachments.hg_email.form_block.attachments' %}

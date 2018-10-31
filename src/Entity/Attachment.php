@@ -41,7 +41,7 @@ class Attachment
     /**
      * @var int
      *
-     * @ORM\Column(name="owner_id", type="bigint")
+     * @ORM\Column(name="owner_id", type="bigint", nullable=true)
      */
     protected $ownerId;
 

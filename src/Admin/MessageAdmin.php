@@ -2,16 +2,19 @@
 
 namespace Hgabka\EmailBundle\Admin;
 
+use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Form\AttachmentType;
-use Hgabka\EmailBundle\Form\Type\MessageRecipientsType;
+use Hgabka\EmailBundle\Form\MessageRecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\UtilsBundle\Form\WysiwygType;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -67,7 +70,7 @@ class MessageAdmin extends AbstractAdmin
         $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
-            foreach ($attRepo->getByTemplate($trans->getTranslatable(), $trans->getLocale()) as $att) {
+            foreach ($attRepo->getByMessage($trans->getTranslatable(), $trans->getLocale()) as $att) {
                 $em->remove($att);
             }
             foreach ($trans->getAttachments() as $att) {
@@ -95,9 +98,18 @@ class MessageAdmin extends AbstractAdmin
         $em->flush();
     }
 
+    public function toString($object)
+    {
+        $name = $object ? $object->getName($this->getConfigurationPool()->getContainer()->get(HgabkaUtils::class)->getCurrentLocale()) : null;
+
+        return $name ?: $this->trans('breadcrumb.link_message_create');
+    }
+
     protected function configureRoutes(RouteCollection $collection)
     {
-        $collection->clearExcept(['edit', 'list', 'delete']);
+        $collection->clearExcept(['create', 'edit', 'list', 'delete']);
+        $collection->add('add_recipient', 'addRecipient');
+        $collection->add('render_usable_vars', 'renderUsableVars');
     }
 
     protected function configureListFields(ListMapper $listMapper)
@@ -120,7 +132,7 @@ class MessageAdmin extends AbstractAdmin
         $transFields = [
             'name' => [
                 'field_type' => TextType::class,
-                'label' => 'hg_email.label.comment',
+                'label' => 'hg_email.label.name',
                 'required' => true,
                 'constraints' => new NotBlank(),
             ],
@@ -234,11 +246,11 @@ class MessageAdmin extends AbstractAdmin
 
     protected function isCcEditable()
     {
-        return true;
+        return $this->builder->isMessageCcEditable();
     }
 
     protected function isBccEditable()
     {
-        return true;
+        return $this->builder->isMessageBccEditable();
     }
 }

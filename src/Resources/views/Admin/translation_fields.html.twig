@@ -22,7 +22,9 @@
 
             <div class="{% if fieldCount >1 %}panel-body {% endif %}{{ translationsFields.vars.id }}_a2lix_translationsFields-{{ locale }} tab-pane {% if app.request.locale == locale %}active{% endif %} {% if not form.vars.valid %}sonata-ba-field-error{% endif %}">
                 {% for field in fields %}
-                    {{ form_row(translationsFields[field]) }}
+                    {% if translationsFields[field] is defined %}
+                        {{ form_row(translationsFields[field]) }}
+                    {% endif %}
                 {% endfor %}
             </div>
         {% endfor %}

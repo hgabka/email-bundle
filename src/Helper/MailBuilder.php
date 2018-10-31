@@ -7,6 +7,7 @@ use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Event\BuildMessageMailEvent;
 use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
@@ -215,7 +216,7 @@ class MailBuilder
         }
 
         $params = $this->paramSubstituter->normalizeParams($params);
-        $paramTos = $this->recipientManager->getParamTos($sendParams, $template, $locale, $this->getDefaultTo());
+        $paramTos = $this->recipientManager->getTemplateParamTos($sendParams, $template, $locale, $this->getDefaultTo());
 
         if (!empty($sendParams['cc'])) {
             $paramCc = $sendParams['cc'];
@@ -357,32 +358,35 @@ class MailBuilder
     }
 
     /**
-     * @param Message $message
-     * @param         $to
-     * @param null    $locale
-     * @param bool    $addCcs
-     * @param array   $parameters
+     * @param Message    $message
+     * @param            $to
+     * @param null       $locale
+     * @param bool       $addCcs
+     * @param array      $parameters
+     * @param null|mixed $recType
      *
      * @return \Swift_Message
      */
-    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [])
+    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null)
     {
         $locale = $this->hgabkaUtils->getCurrentLocale($locale);
+        $params = [];
+        $paramFrom = $this->getFromFromMessage($message, $locale);
 
-        $params = \is_array($to) ? ['nev' => current($to), 'email' => key($to)] : ['email' => $to];
-        $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
+        ['name' => $name, 'email' => $email] = $this->addDefaultParams($paramFrom, $to, $params);
 
-        $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
+        //  $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
-        $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hg_email.message_unsubscribe_default_text').'</a>';
-        $params['unsubscribe'] = $unsubscribeUrl;
-        $params['unsubscribe_link'] = $unsubscribeLink;
+        /*        $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
+        
+                $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
+                $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hg_email.message_unsubscribe_default_text').'</a>';
+                $params['unsubscribe'] = $unsubscribeUrl;
+                $params['unsubscribe_link'] = $unsubscribeLink;*/
 
-        foreach ($parameters as $key => $value) {
-            if (!\in_array($key, ['to', 'name', 'email', 'webversion', 'unsubscribe', 'unsubscribe_link'], true) && \is_string($value)) {
-                $params[$key] = $value;
-            }
+        $vars = $parameters['vars'] ?? [];
+        foreach ($vars as $key => $value) {
+            $params[$key] = $value;
         }
 
         $subject = $this->paramSubstituter->substituteParams($message->translate($locale)->getSubject(), $params);
@@ -391,8 +395,18 @@ class MailBuilder
         $bodyText = $this->paramSubstituter->substituteParams($message->translate($locale)->getContentText(), $params);
         $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $message->translate($locale)->getContentHtml(), $params);
 
-        if ($this->config['auto_append_unsubscribe_link'] && !empty($unsubscribeLink)) {
-            $bodyHtml .= '<br /><br />'.$unsubscribeLink;
+        $event = new BuildMessageMailEvent();
+        $event
+            ->setBuilder($this)
+            ->setParams($parameters['params'] ?? [])
+            ->setRecipientType($recType)
+            ->setMessage($message)
+            ->setBody($bodyHtml)
+        ;
+
+        $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_MESSAGE_MAIL, $event);
+        if (!empty($event->getBody())) {
+            $bodyHtml = $event->getBody();
         }
 
         $layout = $message->getLayout();
@@ -450,12 +464,10 @@ class MailBuilder
             ->setTo($to)
         ;
 
-        $name = $message->getFromName();
-        $from = empty($name) ? $message->getFromEmail() : [$message->getFromEmail() => $name];
-        $mail->setFrom($from);
+        $mail->setFrom($paramFrom);
 
         if ($addCcs) {
-            $cc = $message->getCc();
+            $cc = $message->getCcData();
 
             if (!empty($cc)) {
                 foreach ($this->getTos($cc) as $oneCcData) {
@@ -472,7 +484,7 @@ class MailBuilder
                 }
             }
 
-            $bcc = $message->getBcc();
+            $bcc = $message->getBccData();
 
             if (!empty($bcc)) {
                 foreach ($this->getTos($bcc) as $oneBccData) {
@@ -502,17 +514,35 @@ class MailBuilder
         return $this->mediaManager->getMediaContent($media);
     }
 
-    public function getMessageVars()
+    public function getMessageVars(Message $message = null)
     {
-        $params = [
-            'nev' => 'hg_email.default_param_labels.name',
-            'email' => 'hg_email.default_param_labels.email',
-            'webversion' => 'hg_email.default_param_labels.webversion',
-            'unsubscribe' => 'hg_email.default_param_labels.unsubscribe',
-            'unsubscribe_link' => 'hg_email.default_param_labels.unsubscribe_link',
-        ];
+        $vars = $this->getFromToParams();
+        $vars['hg_email.variables.webversion'] = 'webversion';
+        $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
 
-        return $this->paramSubstituter->addVarChars($params);
+        foreach ($messageVars as $placeholder => $varData) {
+            $vars[$this->translator->trans($varData['label'])] = $placeholder;
+        }
+
+        return $vars;
+    }
+
+    public function getMessageVariablesByToData($toData)
+    {
+        if (empty($toData)) {
+            return [];
+        }
+
+        $vars = [];
+        foreach ($toData as $recipientTypeData) {
+            if (empty($recipientTypeData['type']) || !($recType = $this->recipientManager->getMessageRecipientType($recipientTypeData['type']))) {
+                continue;
+            }
+
+            $vars = array_merge($vars, $recType->getMessageVariables());
+        }
+
+        return $vars;
     }
 
     public function getFromToParams()
@@ -529,6 +559,27 @@ class MailBuilder
             $this->translator->trans('hg_email.variables.labels.from_email') => $fromEmailLabel,
             $this->translator->trans('hg_email.variables.labels.from_name') => $fromNameLabel,
         ];
+    }
+
+    public function isMessageCcEditable()
+    {
+        return $this->config['message_with_cc'] ?? false;
+    }
+
+    public function isMessageBccEditable()
+    {
+        return $this->config['message_with_bcc'] ?? false;
+    }
+
+    public function getFromFromMessage(Message $message, $locale = null)
+    {
+        $default = $this->getDefaultFrom();
+        $defaultName = $this->getDefaultFromName();
+        $defaultEmail = \is_array($default) ? key($default) : $default;
+        $name = ($message ? $message->getFromName($locale) : null) ?? ($defaultName ?? null);
+        $email = ($message ? $message->getFromEmail($locale) : null) ?? $defaultEmail;
+
+        return empty($name) ? $email : [$email => $name];
     }
 
     protected function addCcToMail($mail, $paramCc, $type)

@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Controller;
 
 use Hgabka\EmailBundle\Form\EmailTemplateRecipientsType;
+use Hgabka\EmailBundle\Helper\RecipientManager;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +15,11 @@ class EmailTemplateAdminController extends CRUDController
         if (!$request->isXmlHttpRequest()) {
             return $this->createNotFoundException();
         }
-        $recipientManager = $this->get('hg_email.recipient_manager');
+        $id = $request->query->get($this->admin->getIdParameter());
+        $existingObject = $this->admin->getObject($id);
+
+        $this->admin->setSubject($existingObject);
+        $recipientManager = $this->get(RecipientManager::class);
         $fieldName = $request->get('fieldType').'Data';
 
         $type = $request->get('type');

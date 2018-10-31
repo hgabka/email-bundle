@@ -81,4 +81,6 @@ interface RecipientTypeInterface
      * @return mixed
      */
     public function getPriority();
+
+    public function getParamDefaults();
 }

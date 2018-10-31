@@ -34,7 +34,11 @@
                     <label class="control-label" for="recipient_type">
                         {{ 'hg_email.label.choose_recipient_type'|trans }}
                     </label>
-                    {{ render_recipient_selector(form.vars.id) }}
+                    {% if form.vars.dataType == 'message' %}
+                        {{ render_message_recipient_selector(form.vars.id) }}
+                    {% else %}
+                        {{ render_template_recipient_selector(form.vars.id) }}
+                    {% endif %}
                 </div>
                 <div class="form-group">
                     <a href="#" id="add_recipient_submit_{{ form.vars.id }}" class="btn btn-success">
@@ -68,6 +72,10 @@
                 } else {
                     $noRecipient.hide();
                 }
+
+                if (typeof renderUsableVars !== 'undefined') {
+                    renderUsableVars();
+                }
             });
             {% if form.vars.add_button %}
                 $addRecipient.on('click', '.recipient-add', function (e) {
@@ -79,13 +87,17 @@
                 $('#add_recipient_submit_{{ form.vars.id }}').click(function (e) {
                     e.preventDefault();
                     if ($('#rectype-select_{{ form.vars.id }}').val().length > 0) {
-                        $.getJSON('{{ form.vars.admin.generateObjectUrl('add_recipient', form.vars.admin.subject, {fieldType: form.vars.recipientsType}) }}',
-                                  {type: $rectypeSelect.val(), name: '{{ form.parent.vars.name }}'}, function (data) {
+                        $.getJSON('{{ form.vars.admin.generateUrl('add_recipient', {fieldType: form.vars.recipientsType}) }}',
+                                  {type: $rectypeSelect.val(), name: '{{ form.parent.vars.name }}', id: {{ form.vars.admin.subject.id }}}, function (data) {
                                 $accordion.append(data.html);
                                 $selector.hide();
                                 $noRecipient.hide();
                                 $recipientAdd.show();
                                 $rectypeSelect.val('');
+                                Admin.shared_setup($accordion);
+                                if (typeof renderUsableVars !== 'undefined') {
+                                    renderUsableVars();
+                                }
                             });
                     }
                 });

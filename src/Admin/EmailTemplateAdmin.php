@@ -162,7 +162,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->clearExcept(['edit', 'list', 'delete']);
-        $collection->add('add_recipient', $this->getRouterIdParameter().'/addRecipient');
+        $collection->add('add_recipient', 'addRecipient');
     }
 
     protected function configureListFields(ListMapper $listMapper)

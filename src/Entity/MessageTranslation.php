@@ -43,6 +43,17 @@ class MessageTranslation implements TranslationInterface
     protected $name;
 
     /**
+     * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
+     */
+    protected $fromName;
+
+    /**
+     * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
+     * @Assert\Email()
+     */
+    protected $fromEmail;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
@@ -80,6 +91,26 @@ class MessageTranslation implements TranslationInterface
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     *
+     * @return MessageTranslation
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -160,6 +191,46 @@ class MessageTranslation implements TranslationInterface
     public function setAttachments($attachments)
     {
         $this->attachments = $attachments;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFromName()
+    {
+        return $this->fromName;
+    }
+
+    /**
+     * @param string $fromName
+     *
+     * @return Message
+     */
+    public function setFromName($fromName)
+    {
+        $this->fromName = $fromName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFromEmail()
+    {
+        return $this->fromEmail;
+    }
+
+    /**
+     * @param string $fromEmail
+     *
+     * @return Message
+     */
+    public function setFromEmail($fromEmail)
+    {
+        $this->fromEmail = $fromEmail;
 
         return $this;
     }

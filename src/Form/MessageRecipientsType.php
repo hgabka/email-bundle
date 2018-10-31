@@ -1,13 +1,15 @@
 <?php
 
-namespace Hgabka\EmailBundle\Form\Type;
+namespace Hgabka\EmailBundle\Form;
 
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MessageRecipientsType extends AbstractType
@@ -39,8 +41,10 @@ class MessageRecipientsType extends AbstractType
                 }
 
                 if (0 === \count($form)) {
-                    foreach ($data as $name => $typeData) {
-                        $this->addRecipientType($name, $form, $typeData['type'], $typeData);
+                    if (!empty($data)) {
+                        foreach ($data as $name => $typeData) {
+                            $this->addRecipientType($name, $form, $typeData['type'], $typeData);
+                        }
                     }
                 }
             })
@@ -79,6 +83,7 @@ class MessageRecipientsType extends AbstractType
         $view->vars['admin'] = $options['admin'];
         $view->vars['recipientsType'] = $options['recipients_type'];
         $view->vars['add_button'] = true;
+        $view->vars['dataType'] = 'message';
     }
 
     public function getBlockPrefix()

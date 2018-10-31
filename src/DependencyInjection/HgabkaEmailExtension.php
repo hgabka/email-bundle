@@ -6,6 +6,7 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -40,11 +41,11 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hg_email.queue_manager');
-        $queueDefinition->replaceArgument(3, $config['bounce_checking']);
-        $queueDefinition->replaceArgument(4, $config['max_retries']);
-        $queueDefinition->replaceArgument(5, $config['send_limit']);
-        $queueDefinition->replaceArgument(6, $config['message_logging']);
-        $queueDefinition->replaceArgument(7, $config['delete_sent_messages_after']);
+        $queueDefinition->replaceArgument(4, $config['bounce_checking']);
+        $queueDefinition->replaceArgument(5, $config['max_retries']);
+        $queueDefinition->replaceArgument(6, $config['send_limit']);
+        $queueDefinition->replaceArgument(7, $config['message_logging']);
+        $queueDefinition->replaceArgument(8, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition('hg_email.param_substituter');
         $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
@@ -90,6 +91,10 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $container
             ->registerForAutoconfiguration(EmailTemplateRecipientTypeInterface::class)
             ->addTag('hg_email.email_template_recipient_type')
+        ;
+        $container
+            ->registerForAutoconfiguration(MessageRecipientTypeInterface::class)
+            ->addTag('hg_email.message_recipient_type')
         ;
     }
 

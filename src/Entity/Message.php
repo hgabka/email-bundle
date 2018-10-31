@@ -44,36 +44,19 @@ class Message implements TranslatableInterface
     protected $sendLists;
 
     /**
-     * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="to_data", type="array", nullable=true)
      */
-    protected $fromName;
+    protected $toData;
 
     /**
-     * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
-     * @Assert\Email()
+     * @ORM\Column(name="cc_data", type="array", nullable=true)
      */
-    protected $fromEmail;
+    protected $ccData;
 
     /**
-     * @ORM\Column(name="to_type", type="string", length=255, nullable=true)
+     * @ORM\Column(name="bcc_data", type="array", nullable=true)
      */
-    protected $toType;
-
-    /**
-     * @ORM\Column(name="mail_to", type="text", nullable=true)
-     * @Assert\Email()
-     */
-    protected $to;
-
-    /**
-     * @ORM\Column(name="mail_cc", type="text", nullable=true)
-     */
-    protected $cc;
-
-    /**
-     * @ORM\Column(name="mail_bcc", type="text", nullable=true)
-     */
-    protected $bcc;
+    protected $bccData;
 
     /**
      * @var \DateTime
@@ -160,46 +143,6 @@ class Message implements TranslatableInterface
     }
 
     /**
-     * @return string
-     */
-    public function getFromName()
-    {
-        return $this->fromName;
-    }
-
-    /**
-     * @param string $fromName
-     *
-     * @return Message
-     */
-    public function setFromName($fromName)
-    {
-        $this->fromName = $fromName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFromEmail()
-    {
-        return $this->fromEmail;
-    }
-
-    /**
-     * @param string $fromEmail
-     *
-     * @return Message
-     */
-    public function setFromEmail($fromEmail)
-    {
-        $this->fromEmail = $fromEmail;
-
-        return $this;
-    }
-
-    /**
      * @return EmailLayout
      */
     public function getLayout()
@@ -239,86 +182,6 @@ class Message implements TranslatableInterface
         }
 
         $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getToType()
-    {
-        return $this->toType;
-    }
-
-    /**
-     * @param mixed $toType
-     *
-     * @return Message
-     */
-    public function setToType($toType)
-    {
-        $this->toType = $toType;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTo()
-    {
-        return $this->to;
-    }
-
-    /**
-     * @param mixed $to
-     *
-     * @return Message
-     */
-    public function setTo($to)
-    {
-        $this->to = $to;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCc()
-    {
-        return $this->cc;
-    }
-
-    /**
-     * @param mixed $cc
-     *
-     * @return Message
-     */
-    public function setCc($cc)
-    {
-        $this->cc = $cc;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBcc()
-    {
-        return $this->bcc;
-    }
-
-    /**
-     * @param mixed $bcc
-     *
-     * @return Message
-     */
-    public function setBcc($bcc)
-    {
-        $this->bcc = $bcc;
 
         return $this;
     }
@@ -497,6 +360,66 @@ class Message implements TranslatableInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getToData()
+    {
+        return $this->toData;
+    }
+
+    /**
+     * @param mixed $toData
+     *
+     * @return EmailTemplate
+     */
+    public function setToData($toData)
+    {
+        $this->toData = $toData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCcData()
+    {
+        return $this->ccData;
+    }
+
+    /**
+     * @param mixed $ccData
+     *
+     * @return Message
+     */
+    public function setCcData($ccData)
+    {
+        $this->ccData = $ccData;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBccData()
+    {
+        return $this->bccData;
+    }
+
+    /**
+     * @param mixed $bccData
+     *
+     * @return Message
+     */
+    public function setBccData($bccData)
+    {
+        $this->bccData = $bccData;
+
+        return $this;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getSentAt()
@@ -589,5 +512,15 @@ class Message implements TranslatableInterface
     public function getName($locale = null)
     {
         return $this->translate($locale)->getName();
+    }
+
+    public function getFromName($locale = null)
+    {
+        return $this->translate($locale)->getFromName();
+    }
+
+    public function getFromEmail($locale = null)
+    {
+        return $this->translate($locale)->getFromEmail();
     }
 }

@@ -120,7 +120,7 @@ class MessageSender
             return;
         }
 
-        $this->queueManager->addMessageToQueue($message, $this->getRecipientsForMessage($message));
+        $this->queueManager->addMessageToQueue($message);
         $message->setStatus(MessageStatusEnum::STATUS_FOLYAMATBAN);
         $this->updateMessageSendData($message);
     }
