@@ -70,7 +70,7 @@ class TemplateTypeManager
         $res = [];
         foreach ($this->templateTypes as $key => $type) {
             if ($type->isPublic()) {
-                $res[] = $type;
+                $res[$key] = $type;
             }
         }
 
