@@ -1,9 +1,14 @@
 breadcrumb:
     link_email_template_list: Email sablonok
+    link_message_list: Körlevelek
+    link_message_create: Új körlevél
 
 hg_email:
     form_translation_tab: '%locale% nyelven'
     recipient_type:
+        subscribers:
+            title: 'Hírlevélre feliratkozottak (%count% címzett)'
+            name: 'Hírlevélre feliratkozottak'
         add: Címzettek hozzáadása
         default:
             name: 'Alapértelmezett címzett'
@@ -50,7 +55,11 @@ hg_email:
     admin:
         email_template:
             label: Email sablonok
+        message:
+            label: Körlevelek
     label:
+        add_unsubscribe_link: Leiratkozó link automatikus hozzáadása
+        lists: Levelezőlisták
         name: Név
         comment: Leírás
         slug: Slug

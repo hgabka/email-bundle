@@ -1,9 +1,14 @@
 breadcrumb:
     link_email_template_list: Email templates
+    link_message_list: Circulars
+    link_message_create: New circular
 
 hg_email:
     form_translation_tab: 'In %locale%'
     recipient_type:
+        subscribers:
+            title: 'Newsletter subscribers (%count% recipient(s))'
+            name: 'Newsletter subscribers'
         add: Add recipients
         default:
             name: 'Default recipient'
@@ -50,7 +55,11 @@ hg_email:
     admin:
         email_template:
             label: Email templates
+        message:
+            label: Circulars
     label:
+        add_unsubscribe_link: Add unsubscribe link automatically
+        lists: Mail lists
         name: Name
         comment: Comment
         slug: Slug

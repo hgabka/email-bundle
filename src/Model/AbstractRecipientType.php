@@ -147,6 +147,26 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return $this->getStaticParams[$name] ?? null;
     }
 
+    public function getParamDefaults()
+    {
+        return [];
+    }
+
+    public function alterHtmlBody($html, $params)
+    {
+        return $html;
+    }
+
+    public function getVariableValues($params)
+    {
+        return [];
+    }
+
+    public function getMessageVariables()
+    {
+        return [];
+    }
+
     abstract protected function computeRecipients();
 
     protected function getRecipientDisplay($recipient)

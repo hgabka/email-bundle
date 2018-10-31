@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\EmailBundle\Entity\AbstractQueue;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailQueue;
+use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Logger\MessageLogger;
@@ -45,7 +46,10 @@ class QueueManager
     /** @var MailBuilder */
     protected $mailBuilder;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
+    /** @var RecipientManager */
+    protected $recipientManager;
+
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -55,6 +59,7 @@ class QueueManager
         $this->logger = $logger;
         $this->loggingEnabled = $loggingEnabled;
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
+        $this->recipientManager = $recipientManager;
     }
 
     /**
@@ -198,15 +203,21 @@ class QueueManager
 
         $to = empty($toName) ? $toEmail : [$toEmail => $toName];
 
-        $fromName = $message->getFromName();
-        $fromEmail = $message->getFromEmail();
-
-        $from = empty($fromName) ? $fromEmail : [$fromEmail => $fromName];
         $bounceConfig = $this->bounceConfig;
 
         try {
-            $params = $queue->getParameters();
-            $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, unserialize($params));
+            $params = json_decode($queue->getParameters(), true);
+
+            if (!isset($params['type'])) {
+                return false;
+            }
+            $recType = $this->recipientManager->getMessageRecipientType($params['type']);
+            if (!$recType) {
+                return false;
+            }
+            $recType->setParams($params['typeParams'] ?? []);
+
+            $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
             $headers = $message->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());
 
@@ -253,12 +264,31 @@ class QueueManager
         }
     }
 
-    public function addMessageToQueue($message, $recipients)
+    public function addMessageToQueue(Message $message)
     {
         $this->deleteMessageFromQueue($message);
 
         if (!$message) {
             return false;
+        }
+
+        $recipients = [];
+        foreach ($message->getToData() as $toData) {
+            $recType = $this->recipientManager->getMessageRecipientType($toData['type']);
+            $recType->setParams($toData);
+            if (!$recType) {
+                continue;
+            }
+            $recTypeRecipients = $recType->getRecipients();
+            if (!\is_array($recTypeRecipients)) {
+                $recTypeRecipients = [['to' => $recTypeRecipients, 'locale' => null]];
+            } elseif (isset($recTypeRecipients['to'])) {
+                $recTypeRecipients = [$recTypeRecipients];
+            }
+
+            foreach ($recTypeRecipients as $recData) {
+                $recipients[] = array_merge(['type' => \get_class($recType), 'typeParams' => $toData], $recData);
+            }
         }
 
         foreach ($recipients as $recipient) {
@@ -278,8 +308,10 @@ class QueueManager
                 $queue->setToEmail($to);
             }
 
+            $params = [];
+
             $queue->setLocale($locale);
-            $queue->setParameters(serialize($recipient));
+            $queue->setParameters(json_encode($recipient));
             $queue->setRetries(0);
             $queue->setStatus(QueueStatusEnum::STATUS_INIT);
 
@@ -462,7 +494,7 @@ class QueueManager
                 $this->log('Email kuldese sikeres. Email: '.$email);
                 ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
                 ++$fail;
             }
         }

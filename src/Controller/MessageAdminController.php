@@ -2,6 +2,9 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Form\MessageRecipientsType;
+use Hgabka\EmailBundle\Helper\RecipientManager;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,8 +16,10 @@ class MessageAdminController extends CRUDController
         if (!$request->isXmlHttpRequest()) {
             return $this->createNotFoundException();
         }
-        $recipientManager = $this->get('hg_email.recipient_manager');
         $fieldName = $request->get('fieldType').'Data';
+
+        $recipientManager = $this->get(RecipientManager::class);
+        $type = $request->get('type');
 
         $recType = $recipientManager->getMessageRecipientType($type);
 
@@ -40,6 +45,23 @@ class MessageAdminController extends CRUDController
 
         return new JsonResponse([
             'html' => $html,
+        ]);
+    }
+
+    public function renderUsableVarsAction()
+    {
+        $request = $this->getRequest();
+        if (!$request->isXmlHttpRequest()) {
+            return $this->createNotFoundException();
+        }
+
+        parse_str($request->request->get('data'), $data);
+        $toData = $data[$request->request->get('name')]['toData'] ?? [];
+
+        $message = (new Message())->setToData($toData);
+
+        return $this->render('@HgabkaEmail/Admin/Message/render_usable_vars.html.twig', [
+            'message' => $message,
         ]);
     }
 }

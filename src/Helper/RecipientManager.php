@@ -116,13 +116,14 @@ class RecipientManager
     {
         $type = clone $this->getTemplateRecipientType($type);
 
-        $params = $type->getParams();
+        $params = array_merge($type->getParamDefaults(), (array) $type->getParams());
         $params['type'] = \get_class($type);
 
         if ($type) {
             $builder = $this->formFactory->createNamedBuilder($name, TemplateRecipientFormType::class, $params, [
                 'removable' => $removable,
                 'recipient_type' => $type,
+                'data_class' => null,
             ]);
             $type->addFormFields($builder);
 
@@ -136,12 +137,13 @@ class RecipientManager
     {
         $type = clone $this->getMessageRecipientType($type);
 
-        $params = $type->getParams();
+        $params = array_merge($type->getParamDefaults(), (array) $type->getParams());
         $params['type'] = \get_class($type);
 
         if ($type) {
             $builder = $this->formFactory->createNamedBuilder($name, MessageRecipientFormType::class, $params, [
                 'recipient_type' => $type,
+                'data_class' => null,
             ]);
             $type->addFormFields($builder);
 
@@ -225,7 +227,7 @@ class RecipientManager
      *
      * @return null|array|bool|mixed
      */
-    public function getParamTos($sendParams, EmailTemplate $template, $locale, $defaultTo)
+    public function getTemplateParamTos($sendParams, EmailTemplate $template, $locale, $defaultTo)
     {
         $templateType = $this->templateTypeManager->getTemplateType($template->getType());
         $toData = [];
@@ -290,23 +292,13 @@ class RecipientManager
         return $address['email'];
     }
 
-    protected function hasTemplateRecipientType($type)
-    {
-        return array_key_exists($type, $this->templateRecipientTypes);
-    }
-
-    protected function hasMessageRecipientType($type)
-    {
-        return array_key_exists($type, $this->messageRecipientTypes);
-    }
-
     /**
      * @param $toData
      * @param $locale
      *
      * @return null|array|bool|mixed
      */
-    protected function getToArray($toData, $locale)
+    public function getToArray($toData, $locale)
     {
         if (empty($toData)) {
             return false;
@@ -350,6 +342,16 @@ class RecipientManager
         }
 
         return null;
+    }
+
+    protected function hasTemplateRecipientType($type)
+    {
+        return array_key_exists($type, $this->templateRecipientTypes);
+    }
+
+    protected function hasMessageRecipientType($type)
+    {
+        return array_key_exists($type, $this->messageRecipientTypes);
     }
 
     /**

@@ -4,7 +4,10 @@ namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
+use Prezent\Doctrine\Translatable\Annotation as Prezent;
+use Prezent\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -13,8 +16,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_message_list")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageListRepository")
  */
-class MessageList
+class MessageList implements TranslatableInterface
 {
+    use TranslatableTrait;
     use TimestampableEntity;
 
     /**
@@ -23,6 +27,11 @@ class MessageList
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageListTranslation")
+     */
+    protected $translations;
 
     /**
      * @var ArrayCollection|MessageListSubscription[]
@@ -50,11 +59,6 @@ class MessageList
      * @Assert\Valid()
      */
     protected $campaigns;
-
-    /**
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    protected $name;
 
     /**
      * @ORM\Column(name="is_default", type="boolean")
@@ -97,21 +101,24 @@ class MessageList
     }
 
     /**
+     * @param null|mixed $locale
+     *
      * @return mixed
      */
-    public function getName()
+    public function getName($locale = null)
     {
-        return $this->name;
+        return $this->translate($locale)->getName();
     }
 
     /**
-     * @param mixed $name
+     * @param mixed      $name
+     * @param null|mixed $locale
      *
      * @return MessageList
      */
-    public function setName($name)
+    public function setName($name, $locale = null)
     {
-        $this->name = $name;
+        $this->translate($locale)->setName($name);
 
         return $this;
     }

@@ -117,6 +117,7 @@ class EmailTemplateRecipientsType extends AbstractType
         $view->vars['recipientsType'] = $options['recipients_type'];
         $tplType = $this->templateTypeManager->getTemplateType($options['template_type']);
         $view->vars['add_button'] = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || ($tplType && empty($tplType->getDefaultRecipients()));
+        $view->vars['dataType'] = 'template';
     }
 
     public function getBlockPrefix()
