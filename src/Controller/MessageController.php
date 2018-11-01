@@ -2,7 +2,10 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Hgabka\EmailBundle\Entity\MessageList;
+use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageQueue;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -51,7 +54,7 @@ class MessageController extends Controller
         }
         $params['vars']['webveriosn'] = $router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        ['bodyHtml' => $bodyHtml] = $mailBuilder->createMessageMail($queue->getMessage(), $to, $queue->getLocale(), true, $params, $recType);
+        ['bodyHtml' => $bodyHtml] = $mailBuilder->createMessageMail($queue->getMessage(), $to, $queue->getLocale(), true, $params, $recType, false);
 
         return new Response($bodyHtml);
     }
@@ -71,7 +74,7 @@ class MessageController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $subscr = $em
-            ->getRepository('HgabkaKunstmaanEmailBundle:MessageSubscriber')
+            ->getRepository(MessageSubscriber::class)
             ->findOneByToken($token)
         ;
 
@@ -81,13 +84,13 @@ class MessageController extends Controller
 
         if ($request->query->has('list_id')) {
             $list = $em
-                ->getRepository('HgabkaKunstmaanEmailBundle:MessageList')
+                ->getRepository(MessageList::class)
                 ->findOneById($request->query->get('list_id'))
             ;
 
             if ($list) {
                 $sub = $em
-                    ->getRepository('HgabkaKunstmaanEmailBundle:MessageListSubscription')
+                    ->getRepository(MessageListSubscription::class)
                     ->findForSubscriberAndList($subscr, $list)
                 ;
 
@@ -101,7 +104,7 @@ class MessageController extends Controller
             $em->flush();
         }
 
-        return $this->render('HgabkaKunstmaanEmailBundle:Message:unsubscribe.html.twig');
+        return $this->render('@HgabkaEmailBundle/Message/unsubscribe.html.twig');
     }
 
     /**

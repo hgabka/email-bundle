@@ -86,7 +86,7 @@ services:
         class:  Hgabka\EmailBundle\Recipient\SubscribersMessageRecipientType
         tags:
         - { name: hg_email.message_recipient_type, priority: 10000 }
-        arguments: ["@hg_email.subscription_manager", "@hgabka_utils.hgabka_utils"]
+        arguments: ["@hg_email.subscription_manager", "@hgabka_utils.hgabka_utils", "@router"]
         public: false
         calls:
         - [setManager, ["@hg_email.recipient_manager"]]

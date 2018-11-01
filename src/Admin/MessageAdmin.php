@@ -24,6 +24,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageAdmin extends AbstractAdmin
 {
+    protected $accessMapping = [
+        'send' => 'SEND',
+    ];
     /** @var MailBuilder */
     private $builder;
 
@@ -110,6 +113,7 @@ class MessageAdmin extends AbstractAdmin
         $collection->clearExcept(['create', 'edit', 'list', 'delete']);
         $collection->add('add_recipient', 'addRecipient');
         $collection->add('render_usable_vars', 'renderUsableVars');
+        $collection->add('prepare', $this->getRouterIdParameter().'/prepare');
     }
 
     protected function configureListFields(ListMapper $listMapper)
