@@ -11,7 +11,7 @@ abstract class AbstractMessageRecipientType extends AbstractRecipientType implem
         return [];
     }
 
-    public function alterHtmlBody($html, $params)
+    public function alterHtmlBody($html, $params, $locale)
     {
         return $html;
     }

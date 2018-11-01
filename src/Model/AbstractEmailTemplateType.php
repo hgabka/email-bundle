@@ -43,6 +43,8 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /** @var string */
     protected $locale;
 
+    protected $priority;
+
     /**
      * @required
      */
@@ -304,6 +306,26 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function setLocale($locale)
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param mixed $priority
+     *
+     * @return AbstractEmailTemplateType
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
 
         return $this;
     }

@@ -77,11 +77,6 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         return true;
     }
 
-    public function getPriority()
-    {
-        return 0;
-    }
-
     public function getParams()
     {
         if (\is_array($this->params)) {
@@ -94,9 +89,13 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
     public function getMessageVariables()
     {
         return [
-            'date' => [
-                'label' => 'hg_email.label.subscription_date',
-                'value' => 'subscriptionDate',
+            'unsubscribe_url' => [
+                'label' => 'hg_email.variables.unsubscribe_url',
+                'value' => 'unsubscribeUrl',
+            ],
+            'unsubscribe_link' => [
+                'label' => 'hg_email.variables.unsubscribe_url',
+                'value' => 'unsubscribeUrl',
             ],
         ];
     }
@@ -114,14 +113,16 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         return $defaults;
     }
 
-    public function alterHtmlBody($html, $params)
+    public function alterHtmlBody($html, $params, $locale)
     {
         $unsub = $this->getParams()['addUnsubscribe'] ?? null;
         if (!$unsub) {
             return $html;
         }
 
-        return $html.'<br />'.$params['token'];
+        $text = $this->getParams()['linkText_'.$locale] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
+
+        return $html.'<br /><a href="">'.$text.'</a>';
     }
 
     public function getFormTemplate()

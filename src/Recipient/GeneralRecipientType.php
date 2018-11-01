@@ -74,11 +74,6 @@ abstract class GeneralRecipientType extends AbstractRecipientType
         return true;
     }
 
-    public function getPriority()
-    {
-        return 1;
-    }
-
     protected function computeRecipients()
     {
         if (empty($this->getRecipientEmail())) {

@@ -375,10 +375,8 @@ class MailBuilder
 
         ['name' => $name, 'email' => $email] = $this->addDefaultParams($paramFrom, $to, $params);
 
-        //  $params['webversion'] = $this->router->generate('hg_email_message_webversion', ['id' => $message->getId(), '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
-
         /*        $subscriber = $this->getSubscriberRepository()->findOneBy(['email' => $params['email']]);
-        
+
                 $unsubscribeUrl = $this->router->generate('hg_email_message_unsubscribe', ['token' => $subscriber ? $subscriber->getToken() : 'XXX', '_locale' => $locale], UrlGeneratorInterface::ABSOLUTE_URL);
                 $unsubscribeLink = '<a href="'.$unsubscribeUrl.'">'.$this->translator->trans('hg_email.message_unsubscribe_default_text').'</a>';
                 $params['unsubscribe'] = $unsubscribeUrl;
@@ -402,6 +400,7 @@ class MailBuilder
             ->setRecipientType($recType)
             ->setMessage($message)
             ->setBody($bodyHtml)
+            ->setLocale($locale)
         ;
 
         $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_MESSAGE_MAIL, $event);
@@ -501,7 +500,7 @@ class MailBuilder
             }
         }
 
-        return $mail;
+        return ['bodyHtml' => $bodyHtml, 'mail' => $mail];
     }
 
     /**
@@ -517,7 +516,7 @@ class MailBuilder
     public function getMessageVars(Message $message = null)
     {
         $vars = $this->getFromToParams();
-        $vars['hg_email.variables.webversion'] = 'webversion';
+        $vars[$this->translator->trans('hg_email.variables.label.webversion')] = $this->translateDefaultVariable('hg_email.variables.webversion');
         $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
 
         foreach ($messageVars as $placeholder => $varData) {
@@ -582,6 +581,11 @@ class MailBuilder
         return empty($name) ? $email : [$email => $name];
     }
 
+    public function translateDefaultVariable($code)
+    {
+        return $this->translator->trans($code, [], 'messages', 'en');
+    }
+
     protected function addCcToMail($mail, $paramCc, $type)
     {
         $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'Bcc' : 'Cc';
@@ -619,11 +623,6 @@ class MailBuilder
         $email = ($template ? $template->getFromEmail($locale) : null) ?? $defaultEmail;
 
         return empty($name) ? $email : [$email => $name];
-    }
-
-    protected function translateDefaultVariable($code)
-    {
-        return $this->translator->trans($code, [], 'messages', $this->hgabkaUtils->getCurrentLocale());
     }
 
     protected function addDefaultParams($paramFrom, $paramTo, &$params)

@@ -46,11 +46,6 @@ abstract class DefaultRecipientType extends AbstractRecipientType
         return true;
     }
 
-    public function getPriority()
-    {
-        return 0;
-    }
-
     protected function computeRecipients()
     {
         return $this->builder->getDefaultTo();

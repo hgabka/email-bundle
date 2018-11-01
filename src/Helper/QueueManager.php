@@ -11,6 +11,8 @@ use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Logger\MessageLogger;
 use Hgabka\MediaBundle\Entity\Media;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class QueueManager
 {
@@ -49,7 +51,10 @@ class QueueManager
     /** @var RecipientManager */
     protected $recipientManager;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
+    /** @var RouterInterface */
+    protected $router;
+
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -60,6 +65,7 @@ class QueueManager
         $this->loggingEnabled = $loggingEnabled;
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
         $this->recipientManager = $recipientManager;
+        $this->router = $router;
     }
 
     /**
@@ -216,8 +222,12 @@ class QueueManager
                 return false;
             }
             $recType->setParams($params['typeParams'] ?? []);
+            if (!isset($params['vars'])) {
+                $params['vars'] = [];
+            }
+            $params['vars']['webversion'] = $this->router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            $message = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
+            ['mail' => $message] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
             $headers = $message->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());
 
@@ -236,6 +246,8 @@ class QueueManager
 
             return true;
         } catch (\Exception $e) {
+            var_dump($e);
+            die();
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
@@ -299,6 +311,15 @@ class QueueManager
             $to = $recipient['to'];
             $locale = isset($recipient['locale']) ? $recipient['locale'] : '';
 
+            $existing = $this
+                ->doctrine
+                ->getRepository(MessageQueue::class)
+                ->getForMessageAndEmail($message, \is_array($to) ? key($to) : $to)
+            ;
+
+            if ($existing) {
+                continue;
+            }
             $queue = new MessageQueue();
             $queue->setMessage($message);
             if (\is_array($to)) {
