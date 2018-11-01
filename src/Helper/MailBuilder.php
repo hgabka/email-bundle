@@ -364,10 +364,11 @@ class MailBuilder
      * @param bool       $addCcs
      * @param array      $parameters
      * @param null|mixed $recType
+     * @param mixed      $embedImages
      *
      * @return \Swift_Message
      */
-    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null)
+    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true)
     {
         $locale = $this->hgabkaUtils->getCurrentLocale($locale);
         $params = [];
@@ -391,7 +392,7 @@ class MailBuilder
         $mail = new \Swift_Message($subject);
 
         $bodyText = $this->paramSubstituter->substituteParams($message->translate($locale)->getContentText(), $params);
-        $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $message->translate($locale)->getContentHtml(), $params);
+        $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $message->translate($locale)->getContentHtml(), $params, false, $embedImages);
 
         $event = new BuildMessageMailEvent();
         $event
@@ -516,7 +517,7 @@ class MailBuilder
     public function getMessageVars(Message $message = null)
     {
         $vars = $this->getFromToParams();
-        $vars[$this->translator->trans('hg_email.variables.label.webversion')] = $this->translateDefaultVariable('hg_email.variables.webversion');
+        $vars[$this->translator->trans('hg_email.variables.labels.webversion')] = $this->translateDefaultVariable('hg_email.variables.webversion');
         $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
 
         foreach ($messageVars as $placeholder => $varData) {

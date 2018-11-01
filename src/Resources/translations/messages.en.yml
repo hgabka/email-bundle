@@ -54,6 +54,8 @@ hg_email:
             from_name: Sender name
             from_email: Sender email
             webversion: Web version
+            unsubscribe_url: Unsubscribe URL
+            unsubscribe_link: Unsubscribe LINK
     group: Messages
     admin:
         email_template:

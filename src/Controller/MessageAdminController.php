@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Controller;
 
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Form\MessageRecipientsType;
+use Hgabka\EmailBundle\Form\MessageSendType;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -64,5 +65,27 @@ class MessageAdminController extends CRUDController
         return $this->render('@HgabkaEmail/Admin/Message/render_usable_vars.html.twig', [
             'message' => $message,
         ]);
+    }
+
+    public function prepareAction()
+    {
+        $request = $this->getRequest();
+        // the key used to lookup the template
+        $templateKey = 'edit';
+
+        $id = $request->get($this->admin->getIdParameter());
+        $existingObject = $this->admin->getObject($id);
+
+        if (!$existingObject) {
+            throw $this->createNotFoundException(sprintf('unable to find the object with id: %s', $id));
+        }
+
+        $this->checkParentChildAssociation($request, $existingObject);
+
+        $this->admin->checkAccess('send', $existingObject);
+
+        $form = $this->createForm(MessageSendType::class, $existingObject);
+
+        $form->handleRequest($request);
     }
 }

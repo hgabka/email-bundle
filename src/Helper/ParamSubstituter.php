@@ -116,9 +116,11 @@ class ParamSubstituter
         return $html;
     }
 
-    public function prepareHtml($mail, $html, $params, $normalized = false)
+    public function prepareHtml($mail, $html, $params, $normalized = false, $embedImages = true)
     {
-        $html = $this->embedImages($html, $mail);
+        if ($embedImages) {
+            $html = $this->embedImages($html, $mail);
+        }
         $html = $this->substituteParams($html, $params, $normalized);
 
         return $this->transferRelativeLinks($html);

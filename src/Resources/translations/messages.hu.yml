@@ -54,6 +54,8 @@ hg_email:
             from_name: Feladó neve
             from_email: Feladó email címe
             webversion: Webes változat
+            unsubscribe_url: Leiratkozó oldal URL
+            unsubscribe_link: Leiratkozó link
     group: Üzenetek
     admin:
         email_template:

@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 {
@@ -19,15 +21,19 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
     /** @var HgabkaUtils */
     protected $hgabkaUtils;
 
+    /** @var RouterInterface */
+    protected $router;
+
     /**
      * SubscribersMessageRecipientType constructor.
      *
      * @param SubscriptionManager $subscriptionManager
      */
-    public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils)
+    public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils, RouterInterface $router)
     {
         $this->subscriptionManager = $subscriptionManager;
         $this->hgabkaUtils = $hgabkaUtils;
+        $this->router = $router;
     }
 
     public function getName()
@@ -90,12 +96,12 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
     {
         return [
             'unsubscribe_url' => [
-                'label' => 'hg_email.variables.unsubscribe_url',
+                'label' => 'hg_email.variables.labels.unsubscribe_url',
                 'value' => 'unsubscribeUrl',
             ],
             'unsubscribe_link' => [
-                'label' => 'hg_email.variables.unsubscribe_url',
-                'value' => 'unsubscribeUrl',
+                'label' => 'hg_email.variables.labels.unsubscribe_link',
+                'value' => 'unsubscribeLink',
             ],
         ];
     }
@@ -122,7 +128,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
         $text = $this->getParams()['linkText_'.$locale] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
 
-        return $html.'<br /><a href="">'.$text.'</a>';
+        return $html.'<br /><a href="'.$params['unsubscribeUrl'].'">'.$text.'</a>';
     }
 
     public function getFormTemplate()
@@ -138,9 +144,14 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         $result = [];
         foreach ($subscribers as $subscriber) {
             /** @var MessageSubscriber $subscriber */
+            $text = $this->getParams()['linkText_'.$subscriber->getLocale()] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $subscriber->getLocale());
+            $unsubscribeUrl = $this->router->generate('hgabka_email_message_unsubscribe', ['token' => $subscriber->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            /** @var MessageSubscriber $subscriber */
             $params = [
                 'token' => $subscriber->getToken(),
-                'subscriptionDate' => $subscriber->getCreatedAt()->format('Y-m-d'),
+                'unsubscribeUrl' => $unsubscribeUrl,
+                'unsubscribeLink' => '<a href="'.$unsubscribeUrl.'">'.$text.'</a>',
             ];
 
             $result[] = [
