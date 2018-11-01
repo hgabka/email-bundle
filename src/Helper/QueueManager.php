@@ -246,8 +246,6 @@ class QueueManager
 
             return true;
         } catch (\Exception $e) {
-            var_dump($e);
-            die();
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
