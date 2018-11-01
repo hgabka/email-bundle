@@ -47,11 +47,13 @@ hg_email:
         from: felado
         name: nev
         email: email
+        webversion: webes_valtozat
         labels:
             to_name: Címzett neve
             to_email: Címzett email címe
             from_name: Feladó neve
             from_email: Feladó email címe
+            webversion: Webes változat
     group: Üzenetek
     admin:
         email_template:

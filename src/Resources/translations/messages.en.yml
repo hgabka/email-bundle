@@ -47,11 +47,13 @@ hg_email:
         from: sender
         name: name
         email: email
+        webversion: webversion
         labels:
             to_name: Recipient name
             to_email: Recipient email
             from_name: Sender name
             from_email: Sender email
+            webversion: Web version
     group: Messages
     admin:
         email_template:

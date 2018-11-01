@@ -8,5 +8,5 @@ interface MessageRecipientTypeInterface extends RecipientTypeInterface
 
     public function getVariableValues($params);
 
-    public function alterHtmlBody($html, $params);
+    public function alterHtmlBody($html, $params, $locale);
 }

@@ -35,10 +35,18 @@ class TemplateTypeManager
         $this->hgabkaUtils = $hgabkaUtils;
     }
 
-    public function addTemplateType(EmailTemplateTypeInterface $templateType)
+    public function addTemplateType(EmailTemplateTypeInterface $templateType, $priority)
     {
         $alias = \get_class($templateType);
+        $templateType->setPriority($priority);
+
         $this->templateTypes[$alias] = $templateType;
+        uasort($this->templateTypes, function ($type1, $type2) {
+            $p1 = (null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority());
+            $p2 = (null === $type2->getPriority() ? PHP_INT_MAX : $type2->getPriority());
+
+            return $p2 <=> $p1;
+        });
     }
 
     public function getTemplateType($class)

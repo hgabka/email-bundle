@@ -26,6 +26,8 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     /** @var TranslatorInterface */
     protected $translator;
 
+    protected $priority;
+
     /**
      * @required
      */
@@ -122,7 +124,12 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
 
     public function getPriority()
     {
-        return null;
+        return $this->priority;
+    }
+
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
     }
 
     public function getStaticParams()
@@ -152,7 +159,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return [];
     }
 
-    public function alterHtmlBody($html, $params)
+    public function alterHtmlBody($html, $params, $locale)
     {
         return $html;
     }

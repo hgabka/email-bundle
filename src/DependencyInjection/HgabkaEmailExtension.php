@@ -41,11 +41,11 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $loggerDefinition->replaceArgument(1, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hg_email.queue_manager');
-        $queueDefinition->replaceArgument(4, $config['bounce_checking']);
-        $queueDefinition->replaceArgument(5, $config['max_retries']);
-        $queueDefinition->replaceArgument(6, $config['send_limit']);
-        $queueDefinition->replaceArgument(7, $config['message_logging']);
-        $queueDefinition->replaceArgument(8, $config['delete_sent_messages_after']);
+        $queueDefinition->replaceArgument(5, $config['bounce_checking']);
+        $queueDefinition->replaceArgument(6, $config['max_retries']);
+        $queueDefinition->replaceArgument(7, $config['send_limit']);
+        $queueDefinition->replaceArgument(8, $config['message_logging']);
+        $queueDefinition->replaceArgument(9, $config['delete_sent_messages_after']);
 
         $substituterDefinition = $container->getDefinition('hg_email.param_substituter');
         $substituterDefinition->replaceArgument(3, $config['template_var_chars']);
@@ -124,7 +124,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addTemplateType', [
-                    $type,
+                    $type, $attributes['priority'] ?? 0,
                 ]);
             }
         }
@@ -138,7 +138,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addTemplateRecipientType', [
-                    $type,
+                    $type, $attributes['priority'] ?? 0,
                 ]);
             }
         }
@@ -149,7 +149,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addMessageRecipientType', [
-                    $type,
+                    $type, $attributes['priority'] ?? 0,
                 ]);
             }
         }

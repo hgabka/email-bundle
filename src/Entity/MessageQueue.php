@@ -150,4 +150,9 @@ class MessageQueue extends AbstractQueue
 
         return $this;
     }
+
+    public function getHash()
+    {
+        return md5($this->id.$this->getToEmail().$this->getMessage()->getId());
+    }
 }

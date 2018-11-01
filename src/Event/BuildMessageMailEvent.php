@@ -24,6 +24,9 @@ class BuildMessageMailEvent extends Event
     /** @var array */
     protected $params;
 
+    /** @var string */
+    protected $locale;
+
     /**
      * @return MailBuilder
      */
@@ -120,6 +123,26 @@ class BuildMessageMailEvent extends Event
     public function setRecipientType($recipientType)
     {
         $this->recipientType = $recipientType;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string $locale
+     *
+     * @return BuildMessageMailEvent
+     */
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
 
         return $this;
     }

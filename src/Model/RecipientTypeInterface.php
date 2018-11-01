@@ -85,4 +85,6 @@ interface RecipientTypeInterface
     public function getParamDefaults();
 
     public function getFormTemplate();
+
+    public function setPriority($priority);
 }

@@ -37,4 +37,8 @@ interface EmailTemplateTypeInterface
     public function getSenderText();
 
     public function setLocale($locale);
+
+    public function getPriority();
+
+    public function setPriority($priority);
 }

@@ -123,4 +123,21 @@ class MessageQueueRepository extends EntityRepository
 
         return $q->getQuery()->getResult();
     }
+
+    public function getForMessageAndEmail(Message $message, $email)
+    {
+        return
+            $this
+                ->createQueryBuilder('q')
+                ->where('q.message = :msg')
+                ->andWhere('q.toEmail = :email')
+                ->setParameters([
+                    'msg' => $message,
+                    'email' => $email,
+                ])
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult()
+        ;
+    }
 }
