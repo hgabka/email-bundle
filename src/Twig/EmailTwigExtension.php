@@ -4,9 +4,11 @@ namespace Hgabka\EmailBundle\Twig;
 
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\ParamSubstituter;
 use Hgabka\EmailBundle\Helper\RecipientManager;
+use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -27,18 +29,22 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
 
+    /** @var SubscriptionManager */
+    protected $subscriptionManager;
+
     /**
      * PublicTwigExtension constructor.
      *
      * @param MailBuilder $mailBuilder
      */
-    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager)
+    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager, SubscriptionManager $subscriptionManager)
     {
         $this->mailBuilder = $mailBuilder;
         $this->paramSubstituter = $paramSubstituter;
         $this->translator = $translator;
         $this->recipientManager = $recipientManager;
         $this->templateTypeManager = $templateTypeManager;
+        $this->subscriptionManager = $subscriptionManager;
     }
 
     public function getGlobals()
@@ -73,6 +79,11 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
             new \Twig_SimpleFunction(
                 'render_message_recipient_selector',
                 [$this, 'renderMessageRecipientSelector'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'render_subscriber_lists',
+                [$this, 'renderSubscriberLists'],
                 ['is_safe' => ['html']]
             ),
         ];
@@ -130,6 +141,19 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         }
 
         $html .= '</select>';
+
+        return $html;
+    }
+
+    public function renderSubscriberLists(MessageSubscriber $subscriber)
+    {
+        $lists = $this->subscriptionManager->getListsForSubscriber($subscriber);
+        $html = '<ul>';
+        foreach ($lists as $list) {
+            $html .= ('<li>'.$list->getName().'</li>');
+        }
+
+        $html .= '</ul>';
 
         return $html;
     }

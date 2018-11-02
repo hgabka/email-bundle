@@ -235,7 +235,7 @@ services:
 
     hg_email.email_twig_extension:
         class: Hgabka\EmailBundle\Twig\EmailTwigExtension
-        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator', "@hg_email.recipient_manager","@hg_email.template_type_manager"]
+        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator', "@hg_email.recipient_manager","@hg_email.template_type_manager", "@hg_email.subscription_manager"]
         public: false
         tags:
             - { name: twig.extension }

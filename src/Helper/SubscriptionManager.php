@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Collections\ArrayCollection;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
@@ -31,14 +32,13 @@ class SubscriptionManager
     {
         $this->doctrine = $doctrine;
         $this->hgabkaUtils = $hgabkaUtils;
-        $this->editableLists = $editableLists;
+        $this->editableLists = true; //$editableLists;
     }
 
     public function addSubscriberToLists(MessageSubscriber $subscriber, $lists = null, $withFlush = true)
     {
         $em = $this->doctrine->getManager();
         $subscrRepo = $em->getRepository(MessageListSubscription::class);
-
         foreach ($this->getListsFromParams($lists) as $list) {
             $existing = $subscrRepo->findForSubscriberAndList($subscriber, $list);
             if (!$existing) {
@@ -57,26 +57,35 @@ class SubscriptionManager
         }
     }
 
-    public function updateListSubscriptions(MessageSubscriber $subscriber, $lists = null)
+    public function updateListSubscriptions(MessageSubscriber $subscriber, $withFlush = true)
     {
+        $lists = $subscriber->getLists();
+
         $em = $this->doctrine->getManager();
         $subscrRepo = $em->getRepository(MessageListSubscription::class);
 
-        if (!empty($lists)) {
-            $subscrRepo
+        if (null !== $lists) {
+            $qb = $subscrRepo
                 ->createQueryBuilder('l')
                 ->delete()
                 ->where('l.subscriber = :subscr')
-                ->andWhere('l.list NOT IN (:lists)')
-                ->setParameters([
-                    'subscr' => $subscriber,
-                    'lists' => $this->getListsFromParams($lists),
-                ])
+                ->setParameter('subscr', $subscriber)
+            ;
+
+            if (!empty($lists)) {
+                $qb
+                    ->andWhere('l.list NOT IN (:lists)')
+                    ->setParameter('lists', $this->getListsFromParams($lists))
+                ;
+            }
+
+            $qb
                 ->getQuery()
                 ->execute()
             ;
         }
-        $this->addSubscriberToLists($subscriber, $lists, false);
+
+        $this->addSubscriberToLists($subscriber, $lists, $withFlush);
     }
 
     public function getListsForSubscriber(MessageSubscriber $subscriber)
@@ -230,13 +239,27 @@ class SubscriptionManager
 
     protected function getListsFromParams($lists)
     {
+        if ($lists instanceof ArrayCollection) {
+            foreach ($lists as $list) {
+                if (!$list instanceof MessageList) {
+                    $lists->removeElement($list);
+                }
+            }
+
+            return $lists;
+        }
+
         $em = $this->doctrine->getManager();
         $repo = $em->getRepository(MessageList::class);
 
-        if (empty($lists) || !$this->editableLists) {
+        if (null === $lists || !$this->editableLists) {
             $lists = [
                 $repo->getDefaultList(),
             ];
+        }
+
+        if (\is_array($lists) && empty($lists)) {
+            return [];
         }
 
         if (\ctype_digit($lists)) {
@@ -254,6 +277,8 @@ class SubscriptionManager
             }
 
             if (!$lists[$key] instanceof MessageList) {
+                var_dump($lists[$key]);
+                die();
                 unset($lists[$key]);
             }
         }

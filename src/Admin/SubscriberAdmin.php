@@ -8,13 +8,13 @@ use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Hgabka\UtilsBundle\Form\Type\LocaleType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\DoctrineORMAdminBundle\Filter\CallbackFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -55,6 +55,16 @@ class SubscriberAdmin extends AbstractAdmin
         return $this->trans('hg_email.label.subscriber', ['%name%' => $object->getName()]);
     }
 
+    public function postPersist($object)
+    {
+        $this->manager->updateListSubscriptions($object, true);
+    }
+
+    public function postUpdate($object)
+    {
+        $this->manager->updateListSubscriptions($object, true);
+    }
+
     protected function configureListFields(ListMapper $list)
     {
         $list
@@ -64,6 +74,16 @@ class SubscriberAdmin extends AbstractAdmin
             ->add('email', null, [
                 'label' => 'hg_email.label.email',
             ])
+        ;
+        if ($this->manager->isEditableLists()) {
+            $list
+                ->add('lists', null, [
+                    'label' => 'hg_email.label.lists',
+                    'template' => '@HgabkaEmail/Admin/Subscriber/list_lists.html.twig',
+                ])
+            ;
+        }
+        $list
             ->add('_action', null, [
                 'actions' => [
                     'edit' => [],
@@ -71,6 +91,47 @@ class SubscriberAdmin extends AbstractAdmin
                 ],
             ])
         ;
+    }
+
+    protected function configureDatagridFilters(DatagridMapper $filter)
+    {
+        $filter
+            ->add('name', null, [
+                'label' => 'hg_email.label.name',
+            ])
+            ->add('email', null, [
+                'label' => 'hg_email.label.email',
+            ])
+        ;
+        if ($this->manager->isEditableLists()) {
+            $filter
+                ->add('lists', CallbackFilter::class, [
+                    'label' => 'hg_email.label.lists',
+                    'field_type' => EntityType::class,
+                    'field_options' => [
+                        'class' => MessageList::class,
+                        'label' => 'hg_email.label.lists',
+                        'multiple' => true,
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er->createQueryBuilder('l')
+                                      ->leftJoin('l.translations', 'lt', 'WITH', 'lt.locale = :locale')
+                                      ->setParameter('locale', $this->utils->getCurrentLocale())
+                                      ->orderBy('l.isDefault', 'DESC')
+                                      ->addOrderBy('lt.name')
+                                ;
+                        },
+                    ],
+                    'callback' => function ($query, $alias, $field, $value) {
+                        $query
+                            ->leftJoin($alias.'.listSubscriptions', 'sl')
+                            ->andWhere('sl.list IN (:lists)')
+                            ->setParameter('lists', $value['value'])
+                           // ->groupBy($alias.'.id')
+                        ;
+                    },
+                ])
+            ;
+        }
     }
 
     protected function configureFormFields(FormMapper $form)
@@ -113,14 +174,5 @@ class SubscriberAdmin extends AbstractAdmin
                 ])
             ;
         }
-
-        $form->getFormBuilder()
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-                /** @var MessageSubscriber $subscriber */
-                $data = $event->getData();
-                $subscriber = $event->getForm()->getData();
-                $this->manager->updateListSubscriptions($subscriber, $data['lists'] ?? null);
-            })
-        ;
     }
 }
