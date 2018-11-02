@@ -441,7 +441,7 @@ class Message implements TranslatableInterface
 
     public function isPrepareable()
     {
-        return MessageStatusEnum::STATUS_INIT === $this->getStatus();
+        return MessageStatusEnum::STATUS_INIT === $this->getStatus() || null === $this->getId();
     }
 
     public function isUnprepareable()

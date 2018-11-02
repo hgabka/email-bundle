@@ -14,7 +14,7 @@ class MessageMailType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('email', EmailType::class, [
-            'label' => 'hgabka_kuma_email.labels.email',
+            'label' => 'hg_email.label.email',
             'required' => true,
             'constraints' => [
                 new Email(),
@@ -22,7 +22,7 @@ class MessageMailType extends AbstractType
             ],
         ])
             ->add('locale', LocaleType::class, [
-                'label' => 'hgabka_kuma_email.labels.locale',
+                'label' => 'hg_email.label.locale',
             ])
         ;
     }

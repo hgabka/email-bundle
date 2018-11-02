@@ -119,7 +119,7 @@ services:
 
     hg_email.param_substituter:
         class: 'Hgabka\EmailBundle\Helper\ParamSubstituter'
-        arguments: ["@request_stack", "%kernel.cache_dir%", "%kernel.project_dir%", []]
+        arguments: ["@request_stack", "@router", "%kernel.cache_dir%", "%kernel.project_dir%", []]
 
     hg_email.email_subscriber:
         class: Hgabka\EmailBundle\EventListener\EmailSubscriber
@@ -261,3 +261,11 @@ services:
 
     Hgabka\EmailBundle\Controller\MessageController:
         tags: ['controller.service_arguments']
+    Hgabka\EmailBundle\Controller\MessageAdminController:
+        tags: ['controller.service_arguments']
+
+    Hgabka\EmailBundle\Command\SendMessagesCommand:
+        arguments: ['@hg_email.message_sender']
+        tags:
+        - { name: console.command }
+

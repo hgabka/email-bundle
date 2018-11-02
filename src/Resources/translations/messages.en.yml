@@ -1,9 +1,13 @@
+list:
+    label__action: Actions
 breadcrumb:
     link_email_template_list: Email templates
     link_message_list: Circulars
     link_message_create: New circular
 
 hg_email:
+    text:
+        copy: copy
     form_translation_tab: 'In %locale%'
     recipient_type:
         subscribers:
@@ -26,6 +30,8 @@ hg_email:
         copy_to_clipboard: Copy to clipboard
         no_recipient: No recipients
         unsubscribe: Click here to unsubscribe
+        prepare: Send circular
+        testmail: 'Send test mail - %message%'
     help:
         from_name: 'If empty the default name will be used (currently: "%current%")'
         from_email: 'If empty the default email will be used (currently: "%current%")'
@@ -63,6 +69,9 @@ hg_email:
         message:
             label: Circulars
     label:
+        prepare: Send
+        update_and_prepare: Update and send
+        create_and_prepare: Create and send
         add_unsubscribe_link: Add unsubscribe link automatically
         unsubscribe_link_text: 'Unsubscribe link text in %locale%'
         lists: Mail lists

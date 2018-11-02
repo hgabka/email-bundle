@@ -1,9 +1,14 @@
+list:
+    label__action: Műveletek
+
 breadcrumb:
     link_email_template_list: Email sablonok
     link_message_list: Körlevelek
     link_message_create: Új körlevél
 
 hg_email:
+    text:
+        copy: másolat
     form_translation_tab: '%locale% nyelven'
     recipient_type:
         subscribers:
@@ -26,6 +31,8 @@ hg_email:
         copy_to_clipboard: Másolás a vágólapra
         no_recipient: Nincsenek címzettek
         unsubscribe: A leiratkozáshoz kattintson ide
+        prepare: Körlevél elküldése
+        testmail: 'Tesztüzenet küldése - %message%'
     help:
         from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
         from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
@@ -63,6 +70,9 @@ hg_email:
         message:
             label: Körlevelek
     label:
+        prepare: Küldés
+        update_and_prepare: Frissítés és küldés
+        create_and_prepare: Létrehozás és küldés
         add_unsubscribe_link: Leiratkozó link automatikus hozzáadása
         unsubscribe_link_text: 'Leiratkozó link szövege %locale% nyelven'
         lists: Levelezőlisták
@@ -138,6 +148,8 @@ hg_email:
         unsubscribe_success: Sikeresen leiratkozott hírlevelünkről
         copy_success: Az üzenet sikeresen lemásolva
         access_denied: Nincs jogosultsága a szerkesztéshez
+        not_prepareable: A körlevelet nem lehet küldésre előjegyezni
+        not_unprepareable: A küldési előjegyzés visszavonása nem lehetséges
 
     statuses:
         init: Szerkesztés alatt

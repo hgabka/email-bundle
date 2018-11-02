@@ -4,11 +4,15 @@ namespace Hgabka\EmailBundle\Helper;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\RouterInterface;
 
 class ParamSubstituter
 {
     /** @var RequestStack */
     protected $requestStack;
+
+    /** @var RouterInterface */
+    protected $router;
 
     protected $varChars;
 
@@ -18,12 +22,13 @@ class ParamSubstituter
     /** @var string */
     protected $projectDir;
 
-    public function __construct(RequestStack $requestStack, string $cacheDir, string $projectDir, $varChars)
+    public function __construct(RequestStack $requestStack, RouterInterface $router, string $cacheDir, string $projectDir, $varChars)
     {
         $this->requestStack = $requestStack;
         $this->cacheDir = $cacheDir;
         $this->projectDir = $projectDir;
         $this->varChars = $varChars;
+        $this->router = $router;
     }
 
     /**
@@ -263,7 +268,15 @@ class ParamSubstituter
             return $url;
         }
 
-        return $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost().$url;
+        return $this->getSchemeAndHttpHost().$url;
+    }
+
+    protected function getSchemeAndHttpHost()
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $context = $this->router->getContext();
+
+        return $request ? $request->getSchemeAndHttpHost() : ($context->getScheme().'://'.$context->getHost());
     }
 
     /**
@@ -279,7 +292,7 @@ class ParamSubstituter
             return $url;
         }
 
-        return $this->requestStack->getCurrentRequest()->getSchemeAndHttpHost().$url;
+        return $this->getSchemeAndHttpHost().$url;
     }
 
     protected function removeVarCharsFromString($string)

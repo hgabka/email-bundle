@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Form;
 
-use Hgabka\UtilsBundle\Form\Type\DateTimepickerType;
+use Sonata\CoreBundle\Form\Type\DatePickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,17 +17,18 @@ class SendType extends AbstractType
     {
         $builder
             ->add('type', ChoiceType::class, [
-                'label' => 'hg_email.labels.send_at',
+                'label' => 'hg_email.label.send_at',
                 'choices' => [
-                    'hg_email.labels.send_now' => 'now',
-                    'hg_email.labels.send_later' => 'later',
+                    'hg_email.label.send_now' => 'now',
+                    'hg_email.label.send_later' => 'later',
                 ],
             ])
-            ->add('time', DateTimepickerType::class, [
-                'label' => 'hg_email.labels.send_time',
+            ->add('time', DatePickerType::class, [
+                'label' => 'hg_email.label.send_time',
                 'constraints' => [
                     new Range(['min' => 'now', 'minMessage' => 'hg_email.messages.send_at_error']),
                 ],
+                'required' => false,
             ])
         ;
     }

@@ -1,0 +1,6 @@
+{% if admin.hasAccess('prepare') and object.prepareable  %}
+    <a href="{{ admin.generateObjectUrl('prepare', object) }}"  class="btn btn-sm btn-default" title="{{ 'hg_email.label.prepare'|trans }}">
+        <i class="fa fa-share-square" aria-hidden="true"></i>
+        {{ 'hg_email.label.prepare'|trans }}
+    </a>
+{% endif %}

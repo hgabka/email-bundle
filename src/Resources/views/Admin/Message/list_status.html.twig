@@ -1,0 +1,10 @@
+{% extends '@SonataAdmin/CRUD/base_list_field.html.twig' %}
+{% block field %}
+{{ ('hg_email.statuses.' ~ value) | trans }}<br />
+{% if object.beingSent %}
+    {{ 'hg_email.statuses.send_data' | trans({'%recipient%' : object.sentMail, '%success%' : object.sentSuccess, '%fail%' : object.sentFail}) }}
+{% endif %}
+{% if object.prepared %}
+    {{ ' (' ~ ('hg_email.statuses.send_date' | trans({'%date%' : ( object.sendAt is not empty ? (object.sendAt | localizeddate('long', 'short')) : ('hg_email.statuses.immidiately' | trans ))})) ~ ')' }}
+{% endif %}
+{% endblock %}
