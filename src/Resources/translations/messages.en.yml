@@ -68,6 +68,8 @@ hg_email:
             label: Email templates
         message:
             label: Circulars
+        subscriber:
+            label: Feliratkozottak
     label:
         prepare: Send
         update_and_prepare: Update and send
@@ -103,6 +105,7 @@ hg_email:
         copy: Duplicate
         choose_recipient_type: Choose recipient type
         add_recipient: Add recipient
+        subscriber: 'Subscriber %name%'
 
     tabs:
         general: General data
