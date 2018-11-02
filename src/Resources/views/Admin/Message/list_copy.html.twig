@@ -1,0 +1,6 @@
+{% if admin.hasAccess('create')  %}
+    <a href="{{ admin.generateObjectUrl('copy', object) }}"  class="btn btn-sm btn-default" title="{{ 'hg_email.label.copy'|trans }}">
+        <i class="fa fa-copy" aria-hidden="true"></i>
+        {{ 'hg_email.label.copy'|trans }}
+    </a>
+{% endif %}

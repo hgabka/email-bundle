@@ -1,0 +1,53 @@
+{% extends '@SonataAdmin/CRUD/base_edit.html.twig' %}
+{% block title %}
+    {{ "hg_email.title.testmail"|trans({ '%message%': object.name}) }}
+{% endblock %}
+{% block breadcrumb %}
+    <div class="hidden-xs">
+        <ol class="nav navbar-top-links breadcrumb">
+            <li>
+                <a href="{{ path('sonata_admin_dashboard') }}">{{ 'link_breadcrumb_dashboard' | trans({}, 'SonataAdminBundle') | raw }}</a>
+            </li>
+            {% if block('breadcrumb_between') is defined %}
+                {{ block('breadcrumb_between') }}
+            {% endif %}
+            <li class="active"><span>{{ block('title') }}</span></li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block navbar_title %}
+    {{- block('title') -}}
+{% endblock %}
+
+{% block form %}
+    <form role="form" action="{{ admin.generateObjectUrl('testmail', object) }}" method="POST">
+
+        {{ include('@SonataAdmin/Helper/render_form_dismissable_errors.html.twig') }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h4 class="box-title">{{ 'hg_email.title.testmail'|trans }}</h4>
+                    </div>
+                    <div class="box-body">
+                        <div class="sonata-ba-collapsed-fields">
+                            {{ form_widget(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sonata-ba-form-actions well well-small form-actions">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-share-square" aria-hidden="true"></i>
+                    {{ 'hg_email.label.send'|trans }}
+                </button>
+                <a class="btn btn-danger" href="{{ admin.generateUrl('list') }}">
+                    <i class="fa fa-ban" aria-hidden="true"></i>
+                    {{ 'kuma_admin.form.cancel'|trans }}
+                </a>
+            </div>
+            {{ form_rest(form) }}
+        </div>
+    </form>
+{% endblock %}

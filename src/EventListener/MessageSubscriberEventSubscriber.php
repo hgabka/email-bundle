@@ -40,7 +40,7 @@ class MessageSubscriberEventSubscriber implements EventSubscriberInterface
         $html = $event->getBody();
         $recType = $event->getRecipientType();
         if ($recType) {
-            $altered = $recType->alterHtmlBody($html, $event->getParams());
+            $altered = $recType->alterHtmlBody($html, $event->getParams(), $event->getLocale());
         }
 
         if (!empty($altered)) {

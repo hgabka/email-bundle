@@ -1,0 +1,6 @@
+{% if admin.hasAccess('prepare') and object.unprepareable  %}
+    <a href="{{ admin.generateObjectUrl('unprepare', object) }}"  class="btn btn-sm btn-default" title="{{ 'hg_email.label.unprepare'|trans }}">
+        <i class="fa fa-undo" aria-hidden="true"></i>
+        {{ 'hg_email.label.unprepare'|trans }}
+    </a>
+{% endif %}

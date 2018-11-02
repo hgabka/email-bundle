@@ -24,9 +24,16 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageAdmin extends AbstractAdmin
 {
-    protected $accessMapping = [
-        'send' => 'SEND',
+    protected $datagridValues = [
+        '_page' => 1,
+        '_sort_order' => 'ASC',
+        '_sort_by' => 'translations.name',
     ];
+
+    protected $accessMapping = [
+        'prepare' => 'PREPARE',
+    ];
+
     /** @var MailBuilder */
     private $builder;
 
@@ -114,17 +121,40 @@ class MessageAdmin extends AbstractAdmin
         $collection->add('add_recipient', 'addRecipient');
         $collection->add('render_usable_vars', 'renderUsableVars');
         $collection->add('prepare', $this->getRouterIdParameter().'/prepare');
+        $collection->add('unprepare', $this->getRouterIdParameter().'/unprepare');
+        $collection->add('testmail', $this->getRouterIdParameter().'/testmail');
+        $collection->add('copy', $this->getRouterIdParameter().'/copy');
     }
 
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('name', null, [
+            ->add('translations.name', null, [
                 'label' => 'hg_email.label.name',
+                'sortable' => true,
+                'template' => '@HgabkaEmail/Admin/Message/list_name.html.twig',
+            ])
+            ->add('status', null, [
+                'label' => 'hg_email.label.status',
+                'template' => '@HgabkaEmail/Admin/Message/list_status.html.twig',
             ])
             ->add('_action', null, [
                 'actions' => [
-                    'edit' => [],
+                    'edit' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_edit.html.twig',
+                    ],
+                    'prepare' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_prepare.html.twig',
+                    ],
+                    'unprepare' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_unprepare.html.twig',
+                    ],
+                    'testmail' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_testmail.html.twig',
+                    ],
+                    'copy' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_copy.html.twig',
+                    ],
                     'delete' => [],
                 ],
             ])
@@ -256,5 +286,44 @@ class MessageAdmin extends AbstractAdmin
     protected function isBccEditable()
     {
         return $this->builder->isMessageBccEditable();
+    }
+
+    protected function prepareQueryForTranslatableColumns($query)
+    {
+        $currentAlias = $query->getRootAliases()[0];
+        $utils = $this->getConfigurationPool()->getContainer()->get(HgabkaUtils::class);
+        $locale = $utils->getCurrentLocale();
+        $parameters = $this->getFilterParameters();
+        $sortBy = $parameters['_sort_by'];
+        $fieldDescription = $this->getListFieldDescription($sortBy);
+        $mapping = $fieldDescription->getAssociationMapping();
+        $entityClass = $mapping['targetEntity'] ?: $this->getClass();
+
+        if ($mapping) {
+            $mappings = $fieldDescription->getParentAssociationMappings();
+            $mappings[] = $mapping;
+
+            foreach ($mappings as $parentMapping) {
+                $fieldName = $parentMapping['fieldName'];
+                $query->leftJoin($currentAlias.'.'.$fieldName, $fieldName);
+
+                $currentAlias = $fieldName;
+            }
+        }
+
+        $query
+            ->leftJoin(
+                $currentAlias.'.translations',
+                'tr',
+                'with',
+                'tr.locale = :lang OR
+                (NOT EXISTS(SELECT t.id FROM '.$entityClass.'Translation t WHERE t.translatable = tr.translatable AND t.locale = :lang)
+                AND tr.locale = :lang_default)'
+            )
+            ->addOrderBy('tr.name', $parameters['_sort_order'])
+            ->setParameter(':lang', $locale)
+            ->setParameter(':lang_default', $utils->getDefaultLocale());
+
+        return $query;
     }
 }

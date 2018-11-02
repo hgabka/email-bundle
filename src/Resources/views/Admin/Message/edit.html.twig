@@ -109,6 +109,9 @@
                                 {% if admin.hasRoute('list') and admin.hasAccess('list') %}
                                     <button type="submit" class="btn btn-success" name="btn_update_and_list"><i class="fa fa-save"></i> <i class="fa fa-list" aria-hidden="true"></i> {{ 'btn_update_and_return_to_list'|trans({}, 'SonataAdminBundle') }}</button>
                                 {% endif %}
+                                {% if admin.hasRoute('prepare') and admin.hasAccess('prepare') %}
+                                    <button type="submit" class="btn btn-success" name="btn_update_and_prepare"><i class="fa fa-share-square" aria-hidden="true"></i> {{ 'hg_email.label.update_and_prepare'|trans }}</button>
+                                {% endif %}
 
                                 {% if admin.hasRoute('delete') and admin.hasAccess('delete', object) %}
                                     {{ 'delete_or'|trans({}, 'SonataAdminBundle') }}
@@ -121,6 +124,9 @@
                             {% else %}
                                 {% if admin.hasroute('edit') and admin.hasAccess('edit') %}
                                     <button class="btn btn-success" type="submit" name="btn_create_and_edit"><i class="fa fa-save" aria-hidden="true"></i> {{ 'btn_create_and_edit_again'|trans({}, 'SonataAdminBundle') }}</button>
+                                {% endif %}
+                                {% if admin.hasRoute('prepare') and admin.hasAccess('prepare') %}
+                                    <button type="submit" class="btn btn-success" name="btn_update_and_prepare"><i class="fa fa-share-square" aria-hidden="true"></i> {{ 'hg_email.label.create_and_prepare'|trans }}</button>
                                 {% endif %}
                                 {% if admin.hasroute('list') and admin.hasAccess('list') %}
                                     <button type="submit" class="btn btn-success" name="btn_create_and_list"><i class="fa fa-save"></i> <i class="fa fa-list" aria-hidden="true"></i> {{ 'btn_create_and_return_to_list'|trans({}, 'SonataAdminBundle') }}</button>
