@@ -32,7 +32,7 @@ class SubscriptionManager
     {
         $this->doctrine = $doctrine;
         $this->hgabkaUtils = $hgabkaUtils;
-        $this->editableLists = true; //$editableLists;
+        $this->editableLists = $editableLists;
     }
 
     public function addSubscriberToLists(MessageSubscriber $subscriber, $lists = null, $withFlush = true)
