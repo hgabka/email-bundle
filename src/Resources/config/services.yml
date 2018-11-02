@@ -28,6 +28,15 @@ services:
           - [setAuthChecker, ["@security.authorization_checker"]]
           - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
 
+    hg_email.admin.subscriber:
+        class: Hgabka\EmailBundle\Admin\SubscriberAdmin
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-newspaper"></i>', label: hg_email.admin.subscriber.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+        arguments: [null, Hgabka\EmailBundle\Entity\MessageSubscriber, HgabkaEmailBundle:SubscriberAdmin]
+        calls:
+        - [setManager, ["@hg_email.subscription_manager"]]
+        - [setUtils, ["@hgabka_utils.hgabka_utils"]]
+
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true
         arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager"]
@@ -262,6 +271,8 @@ services:
     Hgabka\EmailBundle\Controller\MessageController:
         tags: ['controller.service_arguments']
     Hgabka\EmailBundle\Controller\MessageAdminController:
+        tags: ['controller.service_arguments']
+    Hgabka\EmailBundle\Controller\SubscriberAdminController:
         tags: ['controller.service_arguments']
 
     Hgabka\EmailBundle\Command\SendMessagesCommand:

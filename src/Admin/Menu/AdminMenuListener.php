@@ -39,6 +39,10 @@ class AdminMenuListener
             if ($messageCh) {
                 $messageCh->setExtra('icon', '<i class="fa fa-envelope"></i>');
             }
+            $subscrCh = $group->getChild('hg_email.admin.subscriber.label');
+            if ($subscrCh) {
+                $subscrCh->setExtra('icon', '<i class="fa fa-users"></i>');
+            }
         }
     }
 }

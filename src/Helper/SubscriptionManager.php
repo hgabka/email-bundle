@@ -57,6 +57,44 @@ class SubscriptionManager
         }
     }
 
+    public function updateListSubscriptions(MessageSubscriber $subscriber, $lists = null)
+    {
+        $em = $this->doctrine->getManager();
+        $subscrRepo = $em->getRepository(MessageListSubscription::class);
+
+        if (!empty($lists)) {
+            $subscrRepo
+                ->createQueryBuilder('l')
+                ->delete()
+                ->where('l.subscriber = :subscr')
+                ->andWhere('l.list NOT IN (:lists)')
+                ->setParameters([
+                    'subscr' => $subscriber,
+                    'lists' => $this->getListsFromParams($lists),
+                ])
+                ->getQuery()
+                ->execute()
+            ;
+        }
+        $this->addSubscriberToLists($subscriber, $lists, false);
+    }
+
+    public function getListsForSubscriber(MessageSubscriber $subscriber)
+    {
+        return
+            $this
+                ->doctrine
+                ->getRepository(MessageList::class)
+                ->createQueryBuilder('l')
+                ->leftJoin('l.listSubscriptions', 'ls')
+                ->where('ls.subscriber = :subscr')
+                ->setParameter('subscr', $subscriber)
+                ->groupBy('l.id')
+                ->getQuery()
+                ->getResult()
+        ;
+    }
+
     public function createSubscription($name, $email, $locale = null, $lists = null)
     {
         $em = $this->doctrine->getManager();
@@ -182,6 +220,14 @@ class SubscriptionManager
         return $this->doctrine->getRepository(MessageSubscriber::class)->find($id);
     }
 
+    public function getDefaultList()
+    {
+        $em = $this->doctrine->getManager();
+        $repo = $em->getRepository(MessageList::class);
+
+        return $repo->getDefaultList();
+    }
+
     protected function getListsFromParams($lists)
     {
         $em = $this->doctrine->getManager();
@@ -193,7 +239,7 @@ class SubscriptionManager
             ];
         }
 
-        if (\is_int($lists)) {
+        if (\ctype_digit($lists)) {
             $lists = [
                 $repo->find($lists),
             ];
@@ -203,11 +249,11 @@ class SubscriptionManager
         }
 
         foreach ($lists as $key => $list) {
-            if (\is_int($list)) {
+            if (\ctype_digit($list)) {
                 $lists[$key] = $repo->find($list);
             }
 
-            if (!$list instanceof MessageList) {
+            if (!$lists[$key] instanceof MessageList) {
                 unset($lists[$key]);
             }
         }

@@ -5,6 +5,8 @@ breadcrumb:
     link_email_template_list: Email sablonok
     link_message_list: Körlevelek
     link_message_create: Új körlevél
+    link_message_subscriber_list: Feliratkozottak
+    link_message_subscriber_create: Új feliratkozott
 
 hg_email:
     text:
@@ -69,6 +71,8 @@ hg_email:
             label: Email sablonok
         message:
             label: Körlevelek
+        subscriber:
+            label: Feliratkozottak
     label:
         prepare: Küldés
         update_and_prepare: Frissítés és küldés
@@ -104,6 +108,7 @@ hg_email:
         copy: Duplikálás
         choose_recipient_type: Válasszon címzett típust
         add_recipient: Hozzáadás
+        subscriber: '%name% feliratkozott'
 
     tabs:
         general: Általános adatok

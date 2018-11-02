@@ -80,6 +80,11 @@ class MessageList implements TranslatableInterface
         $this->campaigns = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->getName() ?: '';
+    }
+
     /**
      * @return mixed
      */

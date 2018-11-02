@@ -57,6 +57,9 @@ class MessageSubscriber
      */
     protected $token;
 
+    /** @var array|MessageList[] */
+    protected $lists;
+
     /**
      * constructor.
      */
@@ -211,5 +214,25 @@ class MessageSubscriber
     public function removeListSubscription(MessageListSubscription $listSubscription)
     {
         $this->listSubscriptions->removeElement($listSubscription);
+    }
+
+    /**
+     * @return array|MessageList[]
+     */
+    public function getLists()
+    {
+        return $this->lists;
+    }
+
+    /**
+     * @param array|MessageList[] $lists
+     *
+     * @return MessageSubscriber
+     */
+    public function setLists($lists)
+    {
+        $this->lists = $lists;
+
+        return $this;
     }
 }
