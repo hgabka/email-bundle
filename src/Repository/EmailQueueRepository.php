@@ -3,8 +3,8 @@
 namespace Hgabka\EmailBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Hgabka\KunstmaanEmailBundle\Entity\EmailCampaign;
-use Hgabka\KunstmaanEmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Entity\EmailCampaign;
+use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 
 class EmailQueueRepository extends EntityRepository
 {

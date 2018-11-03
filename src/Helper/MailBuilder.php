@@ -11,9 +11,11 @@ use Hgabka\EmailBundle\Event\BuildMessageMailEvent;
 use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
+use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use http\Exception\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -170,10 +172,11 @@ class MailBuilder
      * @param array                             $parameters
      * @param null                              $locale
      * @param mixed                             $sendParams
+     * @param mixed                             $embedImages
      *
      * @return bool|\Swift_Message
      */
-    public function createTemplateMessage($class, $parameters = [], $sendParams = [], $locale = null)
+    public function createTemplateMessage($class, $parameters = [], $sendParams = [], $locale = null, $embedImages = true)
     {
         if ($class instanceof EmailTemplateTypeInterface) {
             $templateType = $class;
@@ -286,7 +289,7 @@ class MailBuilder
             }
 
             if (\strlen($bodyHtml) > 0) {
-                $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $bodyHtml, $params, true);
+                $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $bodyHtml, $params, true, $embedImages);
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
@@ -346,7 +349,7 @@ class MailBuilder
                     }
                 }
 
-                $messages[] = $mail;
+                $messages[] = ['message' => $mail, 'locale' => $locale];
             } catch (\Exception $e) {
                 throw $e;
 
@@ -355,6 +358,11 @@ class MailBuilder
         }
 
         return $messages;
+    }
+
+    public function embedImages($html, $mail)
+    {
+        return $this->paramSubstituter->embedImages($html, $mail);
     }
 
     /**
@@ -585,6 +593,21 @@ class MailBuilder
     public function translateDefaultVariable($code)
     {
         return $this->translator->trans($code, [], 'messages', 'en');
+    }
+
+    public function getTemplatetypeEntity($typeOrClass)
+    {
+        if (\is_string($typeOrClass)) {
+            $type = $this->templateTypeManager->getTemplateType($typeOrClass);
+        } else {
+            $type = $typeOrClass;
+        }
+
+        if (!$type instanceof  EmailTemplateTypeInterface) {
+            throw new InvalidArgumentException('Invalid template type: '.$typeOrClass);
+        }
+
+        return $this->templateTypeManager->getTemplateEntity($type);
     }
 
     protected function addCcToMail($mail, $paramCc, $type)

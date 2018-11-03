@@ -280,3 +280,8 @@ services:
         tags:
         - { name: console.command }
 
+    Hgabka\EmailBundle\Command\SendEmailsCommand:
+        arguments: ['@hg_email.message_sender']
+        tags:
+        - { name: console.command }
+

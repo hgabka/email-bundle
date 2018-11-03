@@ -502,15 +502,16 @@ class MessageSender
      */
     public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $locale = null, $sendAt = null, $campaign = false)
     {
-        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $locale);
+        $messages = $this->mailBuilder->createTemplateMessage($class, $params, $sendParams, $locale, false);
 
         if (!$messages) {
             return false;
         }
-        $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $locale);
+        $template = $this->mailBuilder->getTemplatetypeEntity($class);
 
-        foreach ($messages as $message) {
-            $this->queueManager->addEmailMessageToQueue($message, $attachments, $sendAt, $campaign);
+        foreach ($messages as $messageData) {
+            $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $messageData['locale']);
+            $this->queueManager->addEmailMessageToQueue($messageData['message'], $attachments, $sendAt, $campaign);
         }
 
         return $messages;
@@ -537,8 +538,8 @@ class MessageSender
         }
 
         $count = 0;
-        foreach ($messages as $message) {
-            $count += $this->mailer->send($message);
+        foreach ($messages as $messageData) {
+            $count += $this->mailer->send($messageData['message']);
         }
 
         return $count;
