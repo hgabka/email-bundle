@@ -4,6 +4,8 @@ breadcrumb:
     link_email_template_list: Email templates
     link_message_list: Circulars
     link_message_create: New circular
+    link_message_list_create: New mailing list
+    link_message_list_list: Mailing lists
 
 hg_email:
     text:
@@ -69,7 +71,9 @@ hg_email:
         message:
             label: Circulars
         subscriber:
-            label: Feliratkozottak
+            label: Subscribers
+        message_list:
+            label: Mailing lists
     label:
         prepare: Send
         update_and_prepare: Update and send
@@ -106,6 +110,7 @@ hg_email:
         choose_recipient_type: Choose recipient type
         add_recipient: Add recipient
         subscriber: 'Subscriber %name%'
+        message_list: 'Mailing list %name%'
 
     tabs:
         general: General data

@@ -7,6 +7,8 @@ breadcrumb:
     link_message_create: Új körlevél
     link_message_subscriber_list: Feliratkozottak
     link_message_subscriber_create: Új feliratkozott
+    link_message_list_create: Új levelezőlista
+    link_message_list_list: Levelezőlisták
 
 hg_email:
     text:
@@ -73,6 +75,8 @@ hg_email:
             label: Körlevelek
         subscriber:
             label: Feliratkozottak
+        message_list:
+            label: Levelezőlisták
     label:
         prepare: Küldés
         update_and_prepare: Frissítés és küldés
@@ -109,6 +113,8 @@ hg_email:
         choose_recipient_type: Válasszon címzett típust
         add_recipient: Hozzáadás
         subscriber: '%name% feliratkozott'
+        subscribers: 'Feliratkozottak'
+        message_list: '%name% levelezőlista'
 
     tabs:
         general: Általános adatok

@@ -8,6 +8,7 @@ use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Event\BuildMessageMailEvent;
+use Hgabka\EmailBundle\Event\BuildTemplateMailEvent;
 use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
@@ -290,6 +291,20 @@ class MailBuilder
 
             if (\strlen($bodyHtml) > 0) {
                 $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $bodyHtml, $params, true, $embedImages);
+
+                $event = new BuildTemplateMailEvent();
+                $event
+                    ->setBuilder($this)
+                    ->setTemplateType($templateType)
+                    ->setBody($bodyHtml)
+                    ->setLocale($locale)
+                    ->setParams($params)
+                    ->setParamSubstituter($this->paramSubstituter)
+                ;
+                $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_TEMPLATE_MAIL, $event);
+                if (!empty($event->getBody())) {
+                    $bodyHtml = $event->getBody();
+                }
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
