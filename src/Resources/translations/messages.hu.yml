@@ -9,8 +9,12 @@ breadcrumb:
     link_message_subscriber_create: Új feliratkozott
     link_message_list_create: Új levelezőlista
     link_message_list_list: Levelezőlisták
+    link_email_layout_create: Új levélsablon
+    link_email_layout_list: Levélsablonok
 
 hg_email:
+    placeholder:
+        email_layout: Általános sablon
     text:
         copy: másolat
     form_translation_tab: '%locale% nyelven'
@@ -77,7 +81,10 @@ hg_email:
             label: Feliratkozottak
         message_list:
             label: Levelezőlisták
+        email_layout:
+            label: Levélsablonok
     label:
+        layout: Levélsablon
         prepare: Küldés
         update_and_prepare: Frissítés és küldés
         create_and_prepare: Létrehozás és küldés
@@ -88,7 +95,6 @@ hg_email:
         comment: Leírás
         slug: Slug
         is_system: Rendszersablon
-        layout: Keretsablon
         subject: Tárgy
         content_text: Szöveges tartalom
         content_html: Formázott tartalom

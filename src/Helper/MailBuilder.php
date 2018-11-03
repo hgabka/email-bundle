@@ -375,6 +375,11 @@ class MailBuilder
         return $messages;
     }
 
+    public function layoutsEditable()
+    {
+        return $this->config['editable_layouts'];
+    }
+
     public function embedImages($html, $mail)
     {
         return $this->paramSubstituter->embedImages($html, $mail);

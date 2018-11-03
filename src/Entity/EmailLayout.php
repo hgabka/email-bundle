@@ -54,13 +54,6 @@ class EmailLayout implements TranslatableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    protected $name;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="styles", type="text")
      */
     protected $styles;
@@ -101,21 +94,24 @@ class EmailLayout implements TranslatableInterface
     }
 
     /**
+     * @param null|mixed $locale
+     *
      * @return string
      */
-    public function getName()
+    public function getName($locale = null)
     {
-        return $this->name;
+        return $this->translate($locale)->getName();
     }
 
     /**
-     * @param string $name
+     * @param string     $name
+     * @param null|mixed $locale
      *
      * @return EmailLayout
      */
-    public function setName($name)
+    public function setName($name, $locale = null)
     {
-        $this->name = $name;
+        $this->translate($locale)->setName($name);
 
         return $this;
     }
