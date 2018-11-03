@@ -145,7 +145,7 @@ class QueueManager
             }
 
             $contentText = $queue->getContentText();
-            $contentHtml = $queue->getContentHtml();
+            $contentHtml = $this->mailBuilder->embedImages($queue->getContentHtml(), $message);
 
             if (!empty($contentText)) {
                 $message->setBody($contentText);
@@ -159,7 +159,11 @@ class QueueManager
 
                 if ($content) {
                     $message->attach(
-                        \Swift_Attachment::newInstance($content, $attachment->getFilename(), $attachment->getContentType())
+                        (new \Swift_Attachment())
+                            ->setBody($content)
+                            ->setFilename($attachment->getFilename())
+                            ->setContentType($attachment->getContentType())
+                            ->setSize(\strlen($content))
                     );
                 }
             }
@@ -175,12 +179,12 @@ class QueueManager
                 $this->setError('Sikertelen küldés', $queue);
                 $this->doctrine->getManager()->flush();
 
-                return true;
+                return false;
             }
             $queue->setStatus(QueueStatusEnum::STATUS_ELKULDVE);
             $this->doctrine->getManager()->flush();
 
-            return false;
+            return true;
         } catch (\Exception $e) {
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
@@ -370,6 +374,7 @@ class QueueManager
 
         $em = $this->doctrine->getManager();
         $em->persist($queue);
+        $em->flush();
 
         foreach ($attachments as $attachment) {
             $newAttachment = new Attachment();
@@ -445,17 +450,17 @@ class QueueManager
             $to = unserialize($queue->getTo());
 
             $email = \is_array($to) ? key($to) : $to;
-            if ($this->send($queue)) {
+            if ($this->sendEmailQueue($queue)) {
                 $this->log('Email kuldese sikeres. Email: '.$email);
 
-                $days = $this->config['delete_sent_messages_after'];
+                $days = $this->deleteSentMessagesAfter;
 
                 if (empty($days)) {
                     $queue->delete();
                 }
                 ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
                 ++$fail;
             }
         }

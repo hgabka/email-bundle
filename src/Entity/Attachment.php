@@ -87,7 +87,7 @@ class Attachment
     /**
      * @var string
      *
-     * @ORM\Column(name="content", type="text", nullable=true)
+     * @ORM\Column(name="content", type="hg_utils_longblob", nullable=true)
      */
     protected $content;
 

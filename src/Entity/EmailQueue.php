@@ -82,7 +82,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getFrom(): string
+    public function getFrom()
     {
         return $this->from;
     }
@@ -102,7 +102,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getTo(): string
+    public function getTo()
     {
         return $this->to;
     }
@@ -122,7 +122,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getCc(): string
+    public function getCc()
     {
         return $this->cc;
     }
@@ -142,7 +142,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getBcc(): string
+    public function getBcc()
     {
         return $this->bcc;
     }
@@ -162,7 +162,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getSubject(): string
+    public function getSubject()
     {
         return $this->subject;
     }
@@ -182,7 +182,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getContentText(): string
+    public function getContentText()
     {
         return $this->contentText;
     }
@@ -202,7 +202,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getContentHtml(): string
+    public function getContentHtml()
     {
         return $this->contentHtml;
     }
@@ -222,7 +222,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return \DateTime
      */
-    public function getSendAt(): \DateTime
+    public function getSendAt()
     {
         return $this->sendAt;
     }
