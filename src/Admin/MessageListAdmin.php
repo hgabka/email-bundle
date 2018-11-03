@@ -43,6 +43,18 @@ class MessageListAdmin extends AbstractAdmin
         return $this->trans('hg_email.label.message_list', ['%name%' => $object->getName()]);
     }
 
+    /**
+     * Get the list of actions that can be accessed directly from the dashboard.
+     *
+     * @return array
+     */
+    public function getDashboardActions()
+    {
+        $actions = $this->manager->isEditableLists() ? parent::getDashboardActions() : [];
+
+        return $actions;
+    }
+
     protected function configureRoutes(RouteCollection $collection)
     {
         $collection->remove('export');
