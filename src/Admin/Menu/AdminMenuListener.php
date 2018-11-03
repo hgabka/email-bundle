@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Admin\Menu;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Sonata\AdminBundle\Admin\Pool;
 use Sonata\AdminBundle\Event\ConfigureMenuEvent;
 
@@ -11,6 +12,9 @@ class AdminMenuListener
     /** @var Pool */
     protected $adminPool;
 
+    /** @var SubscriptionManager */
+    protected $subscriptionManager;
+
     /**
      * AdminMenuListener constructor.
      *
@@ -18,9 +22,10 @@ class AdminMenuListener
      * @param ManagerRegistry $doctrine
      * @param FolderManager   $folderManager
      */
-    public function __construct(Pool $adminPool)
+    public function __construct(Pool $adminPool, SubscriptionManager $subscriptionManager)
     {
         $this->adminPool = $adminPool;
+        $this->subscriptionManager = $subscriptionManager;
     }
 
     public function addMenuItems(ConfigureMenuEvent $event)
@@ -42,6 +47,14 @@ class AdminMenuListener
             $subscrCh = $group->getChild('hg_email.admin.subscriber.label');
             if ($subscrCh) {
                 $subscrCh->setExtra('icon', '<i class="fa fa-users"></i>');
+            }
+            $listCh = $group->getChild('hg_email.admin.message_list.label');
+            if ($listCh) {
+                if (!$this->subscriptionManager->isEditableLists()) {
+                    $group->removeChild($listCh);
+                } else {
+                    $listCh->setExtra('icon', '<i class="fa fa-list"></i>');
+                }
             }
         }
     }
