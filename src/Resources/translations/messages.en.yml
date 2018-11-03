@@ -6,8 +6,12 @@ breadcrumb:
     link_message_create: New circular
     link_message_list_create: New mailing list
     link_message_list_list: Mailing lists
+    link_email_layout_create: Új levélsablon
+    link_email_layout_list: Levélsablonok
 
 hg_email:
+    placeholder:
+        email_layout: General layout
     text:
         copy: copy
     form_translation_tab: 'In %locale%'
@@ -74,7 +78,10 @@ hg_email:
             label: Subscribers
         message_list:
             label: Mailing lists
+        email_layout:
+            label: Layouts
     label:
+        layout: Layout
         prepare: Send
         update_and_prepare: Update and send
         create_and_prepare: Create and send
@@ -85,7 +92,6 @@ hg_email:
         comment: Comment
         slug: Slug
         is_system: System template
-        layout: Layout template
         subject: Subject
         content_text: Text content
         content_html: Formatted content

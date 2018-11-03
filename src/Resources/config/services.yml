@@ -28,6 +28,14 @@ services:
           - [setAuthChecker, ["@security.authorization_checker"]]
           - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
 
+    hg_email.admin.email_layout:
+        class: Hgabka\EmailBundle\Admin\EmailLayoutAdmin
+        tags:
+        - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.email_layout.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+        arguments: [null, Hgabka\EmailBundle\Entity\EmailLayout, HgabkaEmailBundle:EmailLayoutAdmin]
+        calls:
+        - [setMailBuilder, ["@hg_email.mail_builder"]]
+
     hg_email.admin.message_list:
         class: Hgabka\EmailBundle\Admin\MessageListAdmin
         tags:
@@ -267,7 +275,7 @@ services:
 
     Hgabka\EmailBundle\Admin\Menu\AdminMenuListener:
         autowire: true
-        arguments: ['@sonata.admin.pool', '@hg_email.subscription_manager']
+        arguments: ['@sonata.admin.pool', '@hg_email.subscription_manager','@hg_email.mail_builder']
         tags:
         - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
 
@@ -285,6 +293,9 @@ services:
         tags: ['controller.service_arguments']
     Hgabka\EmailBundle\Controller\MessageListAdminController:
         arguments: ['@hg_email.subscription_manager']
+        tags: ['controller.service_arguments']
+    Hgabka\EmailBundle\Controller\EmailLayoutAdminController:
+        arguments: ['@hg_email.mail_builder']
         tags: ['controller.service_arguments']
 
     Hgabka\EmailBundle\Command\SendMessagesCommand:

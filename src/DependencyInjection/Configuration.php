@@ -70,6 +70,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('message_with_cc')->defaultFalse()->end()
                 ->booleanNode('message_with_bcc')->defaultFalse()->end()
                 ->booleanNode('editable_lists')->defaultFalse()->end()
+                ->booleanNode('editable_layouts')->defaultFalse()->end()
                 ->booleanNode('auto_append_unsubscribe_link')->defaultFalse()->end()
                 ->scalarNode('return_path')->defaultValue('sfhungary@gmail.com')->end()
                 ->arrayNode('add_headers')

@@ -30,6 +30,13 @@ class EmailLayoutTranslation implements TranslationInterface
     /**
      * @var string
      *
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    protected $name;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="content_html", type="text")
      */
     protected $contentHtml = '';
@@ -70,6 +77,26 @@ class EmailLayoutTranslation implements TranslationInterface
     public function setContentHtml($contentHtml)
     {
         $this->contentHtml = $contentHtml;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return EmailLayoutTranslation
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
 
         return $this;
     }
