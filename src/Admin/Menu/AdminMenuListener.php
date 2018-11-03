@@ -64,7 +64,7 @@ class AdminMenuListener
             $layoutCh = $group->getChild('hg_email.admin.email_layout.label');
             if ($layoutCh) {
                 if (!$this->mailBuilder->layoutsEditable()) {
-                    $group->removeChild($listCh);
+                    $group->removeChild($layoutCh);
                 } else {
                     $layoutCh->setExtra('icon', '<i class="fa fa-image"></i>');
                 }
