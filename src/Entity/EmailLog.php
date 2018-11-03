@@ -74,7 +74,7 @@ class EmailLog
     /**
      * @var string
      *
-     * @ORM\Column(name="attachment", type="string", length=255, nullable=true)
+     * @ORM\Column(name="attachment", type="text", nullable=true)
      */
     protected $attachment;
 
@@ -303,8 +303,9 @@ class EmailLog
         foreach ($children as $child) {
             if ('text/html' === $child->getContentType()) {
                 $this->setHtmlBody($child->getBody());
-            } elseif ($child instanceof Swift_Attachment) {
-                $this->setAttachment($child->getFilename());
+            } elseif ($child instanceof \Swift_Attachment) {
+                $attachment = (string) $this->getAttachment();
+                $this->setAttachment((empty($attachment) ? '' : ($attachment.',')).$child->getFilename());
             }
         }
         $this->setMime($message->getContentType());
