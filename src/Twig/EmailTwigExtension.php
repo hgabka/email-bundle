@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Twig;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Helper\LayoutManager;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\ParamSubstituter;
 use Hgabka\EmailBundle\Helper\RecipientManager;
@@ -32,12 +33,15 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
     /** @var SubscriptionManager */
     protected $subscriptionManager;
 
+    /** @var LayoutManager */
+    protected $layoutManager;
+
     /**
      * PublicTwigExtension constructor.
      *
      * @param MailBuilder $mailBuilder
      */
-    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager, SubscriptionManager $subscriptionManager)
+    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager, SubscriptionManager $subscriptionManager, LayoutManager $layoutManager)
     {
         $this->mailBuilder = $mailBuilder;
         $this->paramSubstituter = $paramSubstituter;
@@ -45,6 +49,7 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         $this->recipientManager = $recipientManager;
         $this->templateTypeManager = $templateTypeManager;
         $this->subscriptionManager = $subscriptionManager;
+        $this->layoutManager = $layoutManager;
     }
 
     public function getGlobals()
@@ -69,6 +74,11 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
             new \Twig_SimpleFunction(
                 'render_message_usable_vars',
                 [$this, 'renderMessageUsableVars'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
+            new \Twig_SimpleFunction(
+                'render_layout_usable_vars',
+                [$this, 'renderLayoutUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new \Twig_SimpleFunction(
@@ -115,6 +125,15 @@ class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_Glob
         $vars = $this->paramSubstituter->addVarChars($vars);
 
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
+    }
+
+    public function renderLayoutUsableVars(\Twig_Environment $environment)
+    {
+        $vars = $this->layoutManager->getVariables();
+
+        $vars = $this->paramSubstituter->addVarChars($vars);
+
+        return $environment->render('@HgabkaEmail/Admin/EmailLayout/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
     public function renderTemplateRecipientSelector($id)

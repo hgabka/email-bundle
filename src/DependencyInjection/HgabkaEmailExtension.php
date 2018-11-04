@@ -6,6 +6,7 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\LayoutVarInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -82,6 +83,9 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $subscriptionManagerDefinition = $container->getDefinition('hg_email.subscription_manager');
         $subscriptionManagerDefinition->replaceArgument(2, $config['editable_lists']);
 
+        $layoutManagerDefinition = $container->getDefinition('hg_email.layout_manager');
+        $layoutManagerDefinition->replaceArgument(2, $config['layout_file']);
+
         $container->setParameter('hg_email.editor_role', $config['editor_role']);
 
         $container
@@ -95,6 +99,11 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $container
             ->registerForAutoconfiguration(MessageRecipientTypeInterface::class)
             ->addTag('hg_email.message_recipient_type')
+        ;
+
+        $container
+            ->registerForAutoconfiguration(LayoutVarInterface::class)
+            ->addTag('hg_email.layout_var')
         ;
     }
 
@@ -138,7 +147,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addTemplateRecipientType', [
-                    $type, $attributes['priority'] ?? 0,
+                    $type, $attributes['priority'] ?? null,
                 ]);
             }
         }
@@ -149,7 +158,19 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addMessageRecipientType', [
-                    $type, $attributes['priority'] ?? 0,
+                    $type, $attributes['priority'] ?? null,
+                ]);
+            }
+        }
+
+        $taggedServices = $container->findTaggedServiceIds('hg_email.layout_var');
+
+        $definition = $container->findDefinition('hg_email.layout_manager');
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                $type = new Reference($id);
+                $definition->addMethodCall('addLayoutVar', [
+                    $type, $attributes['priority'] ?? null,
                 ]);
             }
         }
