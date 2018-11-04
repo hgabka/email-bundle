@@ -59,6 +59,9 @@ class MailBuilder
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
 
+    /** @var LayoutManager */
+    protected $layoutManager;
+
     /**
      * MailBuilder constructor.
      *
@@ -79,7 +82,8 @@ class MailBuilder
         MediaManager $mediaManager,
         RecipientManager $recipientManager,
         EventDispatcherInterface $eventDispatcher,
-        TemplateTypeManager $templateTypeManager
+        TemplateTypeManager $templateTypeManager,
+        LayoutManager $layoutManager
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -91,6 +95,7 @@ class MailBuilder
         $this->recipientManager = $recipientManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->templateTypeManager = $templateTypeManager;
+        $this->layoutManager = $layoutManager;
     }
 
     /**
@@ -247,64 +252,35 @@ class MailBuilder
 
             $subject = $this->paramSubstituter->substituteParams($template->translate($locale)->getSubject(), $params, true);
 
-            $bodyText = $this->paramSubstituter->substituteParams($template->translate($locale)->getContentText(), $params, true);
-            $bodyHtml = $template->translate($locale)->getContentHtml();
             $mail = new \Swift_Message($subject);
+            $bodyText = $this->paramSubstituter->substituteParams($template->translate($locale)->getContentText(), $params, true);
+            $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $template->translate($locale)->getContentHtml(), $params, true, $embedImages);
+            $event = new BuildTemplateMailEvent();
+            $event
+                ->setBuilder($this)
+                ->setTemplateType($templateType)
+                ->setBody($bodyHtml)
+                ->setLocale($locale)
+                ->setParams($params)
+                ->setParamSubstituter($this->paramSubstituter)
+            ;
+            $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_TEMPLATE_MAIL, $event);
+            if (!empty($event->getBody())) {
+                $bodyHtml = $event->getBody();
+            }
 
             $layout = $template->getLayout();
 
-            if ($layout && \strlen($bodyHtml) > 0) {
-                $layoutFile = $this->config['layout_file'];
-                if (false === $layoutFile) {
-                    $layoutFile = null;
-                } elseif (empty($layoutFile)) {
-                    $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
-                }
-
-                $bodyHtml = strtr($layout->getDecoratedHtml($locale, $subject, $layoutFile), [
-                    '%%tartalom%%' => $bodyHtml,
-                    '%%nev%%' => $name,
-                    '%%email%%' => $email,
-                    '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
-                ]);
-            } elseif (\strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
-                $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
-
-                if (false !== $layoutFile && !is_file($layoutFile)) {
-                    $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
-                }
-
-                if (!empty($layoutFile)) {
-                    $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
-                    $html = @file_get_contents($layoutFile);
-                } else {
-                    $html = null;
-                }
-                if (!empty($html)) {
-                    $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, $name, $email);
-                }
-            }
+            $layoutParams = array_merge($params, [
+                    'subject' => $subject,
+            ]);
+            $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $locale, $layoutParams, $parameters['layout_file'] ?? null);
 
             if (\strlen($bodyText) > 0) {
                 $mail->addPart($bodyText, 'text/plain');
             }
 
             if (\strlen($bodyHtml) > 0) {
-                $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $bodyHtml, $params, true, $embedImages);
-
-                $event = new BuildTemplateMailEvent();
-                $event
-                    ->setBuilder($this)
-                    ->setTemplateType($templateType)
-                    ->setBody($bodyHtml)
-                    ->setLocale($locale)
-                    ->setParams($params)
-                    ->setParamSubstituter($this->paramSubstituter)
-                ;
-                $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_TEMPLATE_MAIL, $event);
-                if (!empty($event->getBody())) {
-                    $bodyHtml = $event->getBody();
-                }
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
@@ -438,31 +414,11 @@ class MailBuilder
         }
 
         $layout = $message->getLayout();
+        $layoutParams = array_merge($params ?? [], [
+                'subject' => $subject,
+        ]);
 
-        if ($layout && \strlen($bodyHtml) > 0) {
-            $bodyHtml = strtr($layout->getDecoratedHtml($locale, $subject), [
-                '%%tartalom%%' => $bodyHtml,
-                '%%nev%%' => isset($params['nev']) ? $params['nev'] : '',
-                '%%email%%' => isset($params['email']) ? $params['email'] : '',
-                '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
-            ]);
-        } elseif (\strlen($bodyHtml) > 0 && (false !== $this->config['layout_file'] || !empty($parameters['layout_file']))) {
-            $layoutFile = !empty($parameters['layout_file']) || (isset($parameters['layout_file']) && false === $parameters['layout_file']) ? $parameters['layout_file'] : $this->config['layout_file'];
-
-            if (false !== $layoutFile && !is_file($layoutFile)) {
-                $layoutFile = $this->paramSubstituter->getDefaultLayoutPath();
-            }
-
-            if (!empty($layoutFile)) {
-                $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
-                $html = @file_get_contents($layoutFile);
-            } else {
-                $html = null;
-            }
-            if (!empty($html)) {
-                $bodyHtml = $this->applyLayout($html, $subject, $bodyHtml, isset($params['nev']) ? $params['nev'] : '', isset($params['email']) ? $params['email'] : '');
-            }
-        }
+        $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $locale, $layoutParams);
 
         if (\strlen($bodyText) > 0) {
             $mail->addPart($bodyText, 'text/plain');
@@ -706,31 +662,6 @@ class MailBuilder
             ->setContentType($media->getContentType())
             ->setSize($this->mediaManager->getMediaSize($media))
         ;
-    }
-
-    /**
-     * @param $layout
-     * @param $subject
-     * @param $bodyHtml
-     * @param $name
-     * @param $email
-     *
-     * @return string
-     */
-    protected function applyLayout($layout, $subject, $bodyHtml, $name, $email)
-    {
-        if (empty($name)) {
-            $name = $this->translator->trans($this->config['default_name']);
-        }
-
-        return strtr($layout, [
-            '%%host%%' => $this->hgabkaUtils->getSchemeAndHttpHost(),
-            '%%styles%%' => '',
-            '%%title%%' => $subject,
-            '%%content%%' => $bodyHtml,
-            '%%name%%' => $name,
-            '%%email%%' => $email,
-        ]);
     }
 
     /**

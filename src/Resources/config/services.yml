@@ -35,6 +35,7 @@ services:
         arguments: [null, Hgabka\EmailBundle\Entity\EmailLayout, HgabkaEmailBundle:EmailLayoutAdmin]
         calls:
         - [setMailBuilder, ["@hg_email.mail_builder"]]
+        - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailLayout/edit.html.twig']]
 
     hg_email.admin.message_list:
         class: Hgabka\EmailBundle\Admin\MessageListAdmin
@@ -118,9 +119,13 @@ services:
         - [setBuilder, ["@hg_email.mail_builder"]]
         - [setTranslator, ["@translator"]]
 
+    hg_email.layout_manager:
+        class: Hgabka\EmailBundle\Helper\LayoutManager
+        arguments: ["@hgabka_utils.hgabka_utils", "@hg_email.param_substituter", '']
+
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
-        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager', "@hg_email.recipient_manager", "@event_dispatcher", "@hg_email.template_type_manager"]
+        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager', "@hg_email.recipient_manager", "@event_dispatcher", "@hg_email.template_type_manager", "@hg_email.layout_manager"]
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'
@@ -251,7 +256,7 @@ services:
 
     hg_email.email_twig_extension:
         class: Hgabka\EmailBundle\Twig\EmailTwigExtension
-        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator', "@hg_email.recipient_manager","@hg_email.template_type_manager", "@hg_email.subscription_manager"]
+        arguments: ['@hg_email.mail_builder','@hg_email.param_substituter', '@translator', "@hg_email.recipient_manager","@hg_email.template_type_manager", "@hg_email.subscription_manager", "@hg_email.layout_manager"]
         public: false
         tags:
             - { name: twig.extension }
@@ -279,11 +284,59 @@ services:
         tags:
         - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
 
+    hg_email.layout_var.content:
+        class: Hgabka\EmailBundle\Layout\ContentLayoutVar
+        tags:
+            - { name: hg_email.layout_var, priority: 90 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.layout_var.recipient_name:
+        class: Hgabka\EmailBundle\Layout\RecipientNameLayoutVar
+        arguments: ['@hg_email.mail_builder']
+        tags:
+            - { name: hg_email.layout_var, priority: 105 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.layout_var.recipient_email:
+        class: Hgabka\EmailBundle\Layout\RecipientEmailLayoutVar
+        arguments: ['@hg_email.mail_builder']
+        tags:
+            - { name: hg_email.layout_var, priority: 110 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.layout_var.sender_name:
+        class: Hgabka\EmailBundle\Layout\SenderNameLayoutVar
+        arguments: ['@hg_email.mail_builder']
+        tags:
+            - { name: hg_email.layout_var, priority: 104 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.layout_var.sender_email:
+        class: Hgabka\EmailBundle\Layout\SenderEmailLayoutVar
+        arguments: ['@hg_email.mail_builder']
+        tags:
+            - { name: hg_email.layout_var, priority: 109 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.layout_var.subject:
+        class: Hgabka\EmailBundle\Layout\SubjectLayoutVar
+        tags:
+            - { name: hg_email.layout_var, priority: 95 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+
     Hgabka\EmailBundle\Helper\MessageSender: "@hg_email.message_sender"
     Hgabka\EmailBundle\Helper\MailBuilder: "@hg_email.mail_builder"
     Hgabka\EmailBundle\Helper\TemplateTypeManager: "@hg_email.template_type_manager"
     Hgabka\EmailBundle\Helper\QueueManager: "@hg_email.queue_manager"
     Hgabka\EmailBundle\Helper\SubscriptionManager: '@hg_email.subscription_manager'
+    Hgabka\EmailBundle\Helper\LayoutManager: '@hg_email.layout_manager'
 
     Hgabka\EmailBundle\Controller\MessageController:
         tags: ['controller.service_arguments']

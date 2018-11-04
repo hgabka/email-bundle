@@ -56,15 +56,17 @@ class RecipientManager
      * @param                                     $alias
      * @param mixed                               $priority
      */
-    public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type, $priority)
+    public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type, $priority = null)
     {
         $alias = \get_class($type);
-        $type->setPriority($priority);
+        if (null !== $type->getPriority()) {
+            $type->setPriority($priority);
+        }
 
         $this->templateRecipientTypes[$alias] = $type;
         uasort($this->templateRecipientTypes, function ($type1, $type2) {
-            $p1 = (null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority());
-            $p2 = (null === $type2->getPriority() ? PHP_INT_MAX : $type2->getPriority());
+            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
+            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
 
             return $p2 <=> $p1;
         });
@@ -75,16 +77,18 @@ class RecipientManager
      * @param                               $alias
      * @param mixed                         $priority
      */
-    public function addMessageRecipientType(MessageRecipientTypeInterface $type, $priority)
+    public function addMessageRecipientType(MessageRecipientTypeInterface $type, $priority = null)
     {
         $alias = \get_class($type);
 
-        $type->setPriority($priority);
+        if (null !== $type->getPriority()) {
+            $type->setPriority($priority);
+        }
 
         $this->messageRecipientTypes[$alias] = $type;
         uasort($this->messageRecipientTypes, function ($type1, $type2) {
-            $p1 = (null === $type1->getPriority() ? PHP_INT_MAX : $type1->getPriority());
-            $p2 = (null === $type2->getPriority() ? PHP_INT_MAX : $type2->getPriority());
+            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
+            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
 
             return $p2 <=> $p1;
         });

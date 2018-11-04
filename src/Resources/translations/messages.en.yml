@@ -10,6 +10,17 @@ breadcrumb:
     link_email_layout_list: Levélsablonok
 
 hg_email:
+    layout_var:
+        content: Message content
+        subject: Message subject
+        recipient_name: Name of recipient
+        recipient_email: Email of recipient
+        sender_name: Name of sender
+        sender_email: Email of sender
+    block:
+        layout:
+            usable_vars: Usable formulas
+            general: General data
     placeholder:
         email_layout: General layout
     text:

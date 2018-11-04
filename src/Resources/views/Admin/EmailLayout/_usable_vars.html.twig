@@ -1,0 +1,7 @@
+<div class="usable-vars">
+                <ul>
+                    {% for placeholder, label in vars %}
+                        <li><a href="#" title="{{ 'hg_email.title.copy_to_clipboard'|trans }}" data-clipboard-text="{{ placeholder }}" class="var-placeholder"><span>{{ placeholder }}</span></a> <span class="var-label">{{ label }}</span></li>
+                    {% endfor %}
+                </ul>
+</div>

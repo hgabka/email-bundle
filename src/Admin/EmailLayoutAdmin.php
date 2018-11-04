@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Admin;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
+use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -89,27 +90,36 @@ class EmailLayoutAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $form)
     {
         $form
-            ->add('translations', TranslationsType::class, [
-                'label' => false,
-                'fields' => [
-                    'name' => [
-                        'label' => 'hg_email.label.name',
-                        'constraints' => new NotBlank(),
-                    ],
-                    'contentHtml' => [
-                        'field_type' => WysiwygType::class,
-                        'label' => 'hg_email.label.content_html',
-                        'constraints' => new NotBlank(),
-                        'config' => [
-                            'allowedContent' => true,
-                            'extraAllowedContent' => '*[*](*){*}',
-                            'fullPage' => true,
-                            'enterMode' => 2,
-                            'extraPlugins' => 'docprops',
+            ->with('hg_email.block.layout.usable_vars')
+                ->add('usableVars', StaticControlType::class, [
+                    'template' => '@HgabkaEmail/Admin/EmailLayout/usable_vars.html.twig',
+                    'mapped' => false,
+                    'label' => false,
+                ])
+            ->end()
+            ->with('hg_email.block.layout.general')
+                ->add('translations', TranslationsType::class, [
+                    'label' => false,
+                    'fields' => [
+                        'name' => [
+                            'label' => 'hg_email.label.name',
+                            'constraints' => new NotBlank(),
+                        ],
+                        'contentHtml' => [
+                            'field_type' => WysiwygType::class,
+                            'label' => 'hg_email.label.content_html',
+                            'constraints' => new NotBlank(),
+                            'config' => [
+                                'allowedContent' => true,
+                                'extraAllowedContent' => '*[*](*){*}',
+                                'fullPage' => true,
+                                'enterMode' => 2,
+                                'extraPlugins' => 'docprops',
+                            ],
                         ],
                     ],
-                ],
-            ])
+                ])
+            ->end()
         ;
     }
 }

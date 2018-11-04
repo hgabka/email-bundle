@@ -13,6 +13,17 @@ breadcrumb:
     link_email_layout_list: Levélsablonok
 
 hg_email:
+    layout_var:
+        content: Az üzenet szövege
+        subject: A levél tárgya
+        recipient_name: A küldő neve
+        recipient_email: A küldő email címe
+        sender_name: A címzett neve
+        sender_email: A címzett email címe
+    block:
+        layout:
+            usable_vars: Használható változók
+            general: Adatok
     placeholder:
         email_layout: Általános sablon
     text:

@@ -2,7 +2,6 @@
 
 namespace Hgabka\EmailBundle\Helper;
 
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -202,16 +201,6 @@ class ParamSubstituter
     }
 
     /**
-     * @return array|string
-     */
-    public function getDefaultLayoutPath()
-    {
-        $locator = new FileLocator(__DIR__.'/../Resources/layout');
-
-        return $locator->locate('layout.html');
-    }
-
-    /**
      * Embeddel egy képet és visszaadja a cid-et.
      *
      * @param string $url
@@ -221,7 +210,7 @@ class ParamSubstituter
      */
     protected function embedImage($url, $email)
     {
-        if (0 !== strpos($url, 'http://') && 0 !== strpos($url, 'https://')) {
+        if (0 !== strpos('http://', $url) && 0 !== strpos('https://', $url)) {
             $file = $this->projectDir.'/web/'.$url;
             if (!is_file($file)) {
                 $file = $this->projectDir.'/public/'.$url;
@@ -288,7 +277,7 @@ class ParamSubstituter
      */
     protected function addHostToUrl($url)
     {
-        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url) || 0 === strpos('//', $url)) {
+        if (0 === strpos($url, 'http://') || 0 === strpos($url, 'https://')) {
             return $url;
         }
 
