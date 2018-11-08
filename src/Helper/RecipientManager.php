@@ -337,6 +337,9 @@ class RecipientManager
 
         if (isset($toData['type'])) {
             $type = $this->hasTemplateRecipientType($toData['type']) ? $this->getTemplateRecipientType($toData['type']) : $this->getMessageRecipientType($toData['type']);
+            if (!$type) {
+                return null;
+            }
             unset($toData['type']);
 
             $type->setParams($toData);
