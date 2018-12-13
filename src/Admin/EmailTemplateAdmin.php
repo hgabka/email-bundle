@@ -313,7 +313,7 @@ class EmailTemplateAdmin extends AbstractAdmin
             ;
         }
 
-        if ($type->isCcEditable()) {
+        if ($type->isCcEditable() || !empty($type->getDefaultCc())) {
             $form
                 ->with('hg_email.form_block.cc_data')
                     ->add('ccData', EmailTemplateRecipientsType::class, [
@@ -325,7 +325,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ->end()
             ;
         }
-        if ($type->isBccEditable()) {
+        if ($type->isBccEditable() || !empty($type->getDefaultBcc())) {
             $form
                 ->with('hg_email.form_block.bcc_data')
                     ->add('bccData', EmailTemplateRecipientsType::class, [

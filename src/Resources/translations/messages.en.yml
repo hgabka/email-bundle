@@ -40,8 +40,8 @@ hg_email:
                 name: Recipient name
                 email: Recipient email
                 locale: The language of the message sent
-            name: General sender
-            title: 'General sender (%recipient%)'
+            name: General recipient
+            title: 'General recipient (%recipient%)'
     title:
         usable_vars: Usable formulas
         copy_to_clipboard: Copy to clipboard

@@ -231,12 +231,18 @@ class MailBuilder
             $paramCc = $sendParams['cc'];
         } elseif ($templateType->isCcEditable()) {
             $paramCc = $this->recipientManager->composeCc($template->getCcData(), $locale, $this->getDefaultTo());
+        } elseif (!empty($templateType->getDefaultCc())) {
+            $ccData = $this->recipientManager->getCcDataByTemplate($template);
+            $paramCc = $this->recipientManager->composeCc($ccData, $locale, $this->getDefaultTo());
         }
 
         if (!empty($sendParams['bcc'])) {
             $paramBcc = $sendParams['bcc'];
         } elseif ($templateType->isBccEditable()) {
             $paramBcc = $this->recipientManager->composeCc($template->getBccData(), $locale, $this->getDefaultTo());
+        } elseif (!empty($templateType->getDefaultBcc())) {
+            $bccData = $this->recipientManager->getBccDataByTemplate($template);
+            $paramBcc = $this->recipientManager->composeCc($bccData, $locale, $this->getDefaultTo());
         }
 
         if (empty($paramFrom) || empty($paramTos)) {

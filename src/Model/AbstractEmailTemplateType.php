@@ -290,6 +290,16 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return null;
     }
 
+    public function getDefaultCc()
+    {
+        return null;
+    }
+
+    public function getDefaultBcc()
+    {
+        return null;
+    }
+
     /**
      * @return string
      */

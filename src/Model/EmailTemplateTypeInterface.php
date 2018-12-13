@@ -41,4 +41,8 @@ interface EmailTemplateTypeInterface
     public function getPriority();
 
     public function setPriority($priority);
+
+    public function getDefaultCc();
+
+    public function getDefaultBcc();
 }

@@ -5,8 +5,9 @@
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
                 {{ child.vars.blockTitle|trans }}
             </a>
-
+            {% if child.vars.removable %}
             <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
+            {% endif %}
         </h4>
     </div>
     <div id="collapse_{{ key }}" class="panel-collapse collapse{% if ajax is defined or (child.vars.submitted and not child.vars.valid) %} in{% endif %}">
