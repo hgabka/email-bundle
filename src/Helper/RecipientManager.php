@@ -115,13 +115,14 @@ class RecipientManager
     }
 
     /**
-     * @param string $type
-     * @param bool   $removable
-     * @param mixed  $name
+     * @param string     $type
+     * @param bool       $removable
+     * @param mixed      $name
+     * @param null|mixed $label
      *
      * @return null|\Symfony\Component\Form\FormBuilderInterface
      */
-    public function createTemplateRecipientTypeFormBuilder($name, string $type, $removable = true)
+    public function createTemplateRecipientTypeFormBuilder($name, string $type, $removable = true, $label = null)
     {
         $type = clone $this->getTemplateRecipientType($type);
 
@@ -130,6 +131,7 @@ class RecipientManager
 
         if ($type) {
             $builder = $this->formFactory->createNamedBuilder($name, TemplateRecipientFormType::class, $params, [
+                'block_title' => $label,
                 'removable' => $removable,
                 'recipient_type' => $type,
                 'data_class' => null,
@@ -223,6 +225,60 @@ class RecipientManager
             }
         } else {
             $toData = $template->getToData();
+        }
+
+        return $toData;
+    }
+
+    /**
+     * @param EmailTemplate              $template
+     * @param EmailTemplateTypeInterface $templateType
+     *
+     * @return array|mixed
+     */
+    public function getCcDataByTemplate(EmailTemplate $template)
+    {
+        $toData = [];
+        $templateType = $this->templateTypeManager->getTemplateType($template->getType());
+        if (!empty($templateType->getDefaultCc())) {
+            $defRec = $templateType->getDefaultCc();
+            if (isset($defRec['type'])) {
+                $defRec = [$defRec];
+            }
+            foreach ($defRec as $defRecData) {
+                $defRecType = $this->getTemplateRecipientType($defRecData['type']);
+                $params = $defRecData['params'] ?? [];
+                unset($params['type']);
+                $defRecType->setParams($params);
+                $toData[] = $defRecType;
+            }
+        }
+
+        return $toData;
+    }
+
+    /**
+     * @param EmailTemplate              $template
+     * @param EmailTemplateTypeInterface $templateType
+     *
+     * @return array|mixed
+     */
+    public function getBccDataByTemplate(EmailTemplate $template)
+    {
+        $toData = [];
+        $templateType = $this->templateTypeManager->getTemplateType($template->getType());
+        if (!empty($templateType->getDefaultBcc())) {
+            $defRec = $templateType->getDefaultBcc();
+            if (isset($defRec['type'])) {
+                $defRec = [$defRec];
+            }
+            foreach ($defRec as $defRecData) {
+                $defRecType = $this->getTemplateRecipientType($defRecData['type']);
+                $params = $defRecData['params'] ?? [];
+                unset($params['type']);
+                $defRecType->setParams($params);
+                $toData[] = $defRecType;
+            }
         }
 
         return $toData;

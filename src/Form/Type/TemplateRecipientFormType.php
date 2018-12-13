@@ -39,6 +39,7 @@ class TemplateRecipientFormType extends AbstractType
                 'removable' => true,
                 'recipient_type' => null,
                 'auto_initialize' => false,
+                'block_title' => null,
             ])
         ;
     }
@@ -47,7 +48,7 @@ class TemplateRecipientFormType extends AbstractType
     {
         $view->vars['removable'] = $options['removable'];
         $view->vars['typeName'] = $options['recipient_type'] ? $options['recipient_type']->getName() : '';
-        $view->vars['blockTitle'] = $options['recipient_type'] ? $options['recipient_type']->getTitle() : '';
+        $view->vars['blockTitle'] = $options['block_title'] ?? ($options['recipient_type'] ? $options['recipient_type']->getTitle() : '');
         $view->vars['recipientType'] = $options['recipient_type'];
     }
 }

@@ -59,7 +59,29 @@ class EmailTemplateRecipientsType extends AbstractType
 
                                 foreach ($recipients as $recTypeData) {
                                     if (!empty($recTypeData['type'])) {
-                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type']);
+                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, false, $recTypeData['label'] ?? null);
+                                    }
+                                }
+                            } elseif (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type'] && !empty($templateType->getDefaultCc())) {
+                                $recipients = $templateType->getDefaultCc();
+                                if (array_key_exists('type', $recipients)) {
+                                    $recipients = [$recipients];
+                                }
+
+                                foreach ($recipients as $recTypeData) {
+                                    if (!empty($recTypeData['type'])) {
+                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, false, $recTypeData['label'] ?? null);
+                                    }
+                                }
+                            } elseif (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type'] && !empty($templateType->getDefaultBcc())) {
+                                $recipients = $templateType->getDefaultBcc();
+                                if (array_key_exists('type', $recipients)) {
+                                    $recipients = [$recipients];
+                                }
+
+                                foreach ($recipients as $recTypeData) {
+                                    if (!empty($recTypeData['type'])) {
+                                        $this->addRecipientType(null, $form, $recTypeData['type'], $recTypeData['params'] ?? null, false, $recTypeData['label'] ?? null);
                                     }
                                 }
                             } else {
@@ -68,9 +90,27 @@ class EmailTemplateRecipientsType extends AbstractType
                                 }
                             }
                         } else {
-                            $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
+                            $removable = (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type'] && empty($templateType->getDefaultRecipients())) ||
+                                (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type'] && empty($templateType->getDefaultCc())) ||
+                                (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type'] && empty($templateType->getDefaultBcc()));
+
                             foreach ($data as $name => $typeData) {
-                                $this->addRecipientType($name, $form, $typeData['type'], $typeData, $removable);
+                                $label = null;
+                                if (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type']) {
+                                    $defs = $templateType->getDefaultRecipients();
+                                } elseif (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type']) {
+                                    $defs = $templateType->getDefaultCc();
+                                } elseif (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type']) {
+                                    $defs = $templateType->getDefaultBcc();
+                                }
+
+                                if (!empty($defs)) {
+                                    if ($defs['type'] === $typeData['type'] && !empty($defs['label'])) {
+                                        $label = $defs['label'];
+                                    }
+                                }
+
+                                $this->addRecipientType($name, $form, $typeData['type'], $typeData, $removable, $label);
                             }
                         }
                     }
@@ -85,7 +125,9 @@ class EmailTemplateRecipientsType extends AbstractType
 
                 $templateType = $this->templateTypeManager->getTemplateType($options['template_type']);
 
-                $removable = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || empty($templateType->getDefaultRecipients());
+                $removable = (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type'] && empty($templateType->getDefaultRecipients())) ||
+                    (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type'] && empty($templateType->getDefaultCc())) ||
+                    (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type'] && empty($templateType->getDefaultBcc()));
 
                 if (0 === \count($form) && !empty($data)) {
                     foreach ($data as $name => $typeData) {
@@ -116,7 +158,11 @@ class EmailTemplateRecipientsType extends AbstractType
         $view->vars['admin'] = $options['admin'];
         $view->vars['recipientsType'] = $options['recipients_type'];
         $tplType = $this->templateTypeManager->getTemplateType($options['template_type']);
-        $view->vars['add_button'] = RecipientManager::RECIPIENT_TYPE_TO !== $options['recipients_type'] || ($tplType && empty($tplType->getDefaultRecipients()));
+        $view->vars['add_button'] =
+            (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type'] && (!$tplType || empty($tplType->getDefaultRecipients()))) ||
+            (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type'] && (!$tplType || empty($tplType->getDefaultCc()))) ||
+            (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type'] && (!$tplType || empty($tplType->getDefaultBcc())))
+        ;
         $view->vars['dataType'] = 'template';
     }
 
@@ -125,7 +171,7 @@ class EmailTemplateRecipientsType extends AbstractType
         return 'template_recipients';
     }
 
-    protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true)
+    protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true, $label = null)
     {
         /** @var EmailTemplateRecipientTypeInterface $recType */
         $recType = $this->manager->getTemplateRecipientType($type);
@@ -136,7 +182,7 @@ class EmailTemplateRecipientsType extends AbstractType
             $recType->setParams($params);
         }
 
-        $builder = $this->manager->createTemplateRecipientTypeFormBuilder($name ?? uniqid('rectype_'), $type, $removable);
+        $builder = $this->manager->createTemplateRecipientTypeFormBuilder($name ?? uniqid('rectype_'), $type, $removable, $label);
         if ($builder) {
             $form
                 ->add($builder->getForm())
