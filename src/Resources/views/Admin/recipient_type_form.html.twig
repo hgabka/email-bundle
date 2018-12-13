@@ -1,22 +1,27 @@
 {% block recipient_form %}
-<div class="panel panel-default" id="panel_{{ key }}">
-    <div class="panel-heading">
-        <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
-                {{ child.vars.blockTitle|trans }}
-            </a>
-            {% if child.vars.removable %}
-            <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
-            {% endif %}
-        </h4>
-    </div>
-    <div id="collapse_{{ key }}" class="panel-collapse collapse{% if ajax is defined or (child.vars.submitted and not child.vars.valid) %} in{% endif %}">
-        <div class="panel-body">
-            {{ form_widget(child) }}
+    <div class="panel panel-default" id="panel_{{ key }}">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                {% if child.children|length > 1 %}
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ key }}">
+                        {{ child.vars.blockTitle|trans }}
+                    </a>
+                {% else %}
+                    {{ child.vars.blockTitle|trans }}
+                {% endif %}
+                {% if child.vars.removable %}
+                    <a href="#" class="recipient-remove"><i class="fa fa-times" aria-hidden="true"></i></a>
+                {% endif %}
+            </h4>
         </div>
+        {% if child.children|length > 1 %}
+            <div id="collapse_{{ key }}" class="panel-collapse collapse{% if ajax is defined or (child.vars.submitted and not child.vars.valid) %} in{% endif %}">
+                <div class="panel-body">
+                    {{ form_widget(child) }}
+                </div>
+            </div>
+        {% endif %}
     </div>
-</div>
 {% endblock %}
 {% block javascripts %}
 {% endblock %}
-
