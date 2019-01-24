@@ -352,26 +352,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return $this;
     }
 
-    protected function getKey()
-    {
-        $fcqn = explode('\\', static::class);
-        $class = array_pop($fcqn);
-
-        return Container::underscore(str_replace(['Email', 'Template', 'Type'], '', $class));
-    }
-
-    /**
-     * @param        $id
-     * @param array  $params
-     * @param string $domain
-     *
-     * @return string
-     */
-    protected function trans($id, $params = [], $domain = 'messages')
-    {
-        return $this->translator->trans($id, $params, $domain, $this->locale);
-    }
-
     public function setParameters($paramArray)
     {
         if (!empty($paramArray)) {
@@ -391,5 +371,25 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         $this->setParameters($paramArray);
 
         return $this->messageSender->sendTemplateMail($this, [], $sendParams, $locale);
+    }
+
+    protected function getKey()
+    {
+        $fcqn = explode('\\', static::class);
+        $class = array_pop($fcqn);
+
+        return Container::underscore(str_replace(['Email', 'Template', 'Type'], '', $class));
+    }
+
+    /**
+     * @param        $id
+     * @param array  $params
+     * @param string $domain
+     *
+     * @return string
+     */
+    protected function trans($id, $params = [], $domain = 'messages')
+    {
+        return $this->translator->trans($id, $params, $domain, $this->locale);
     }
 }
