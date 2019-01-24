@@ -19,7 +19,6 @@ use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -202,16 +201,7 @@ class MailBuilder
         }
         $paramArray = $parameters;
         $templateType->setLocale($locale);
-        if (!empty($paramArray)) {
-            $accessor =
-                PropertyAccess::createPropertyAccessorBuilder()
-                              ->enableExceptionOnInvalidIndex()
-                              ->getPropertyAccessor()
-            ;
-            foreach ($paramArray as $key => $value) {
-                $accessor->setValue($templateType, $key, $value);
-            }
-        }
+        $templateType->setParameters($paramArray);
 
         $params = [];
         foreach ($templateType->getVariableValues() as $placeholder => $data) {

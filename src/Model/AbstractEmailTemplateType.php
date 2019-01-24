@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Model;
 
 use Doctrine\Common\Annotations\Reader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
+use Hgabka\EmailBundle\Helper\MessageSender;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -38,6 +39,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /** @var Reader */
     protected $annotationReader;
 
+    /** @var MessageSender */
+    protected $messageSender;
+
     protected $variableCache;
 
     /** @var string */
@@ -51,6 +55,14 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
+    }
+
+    /**
+     * @required
+     */
+    public function setMessageSender(MessageSender $messageSender)
+    {
+        $this->messageSender = $messageSender;
     }
 
     /**
@@ -338,6 +350,27 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         $this->priority = $priority;
 
         return $this;
+    }
+
+    public function setParameters($paramArray)
+    {
+        if (!empty($paramArray)) {
+            $accessor =
+                PropertyAccess::createPropertyAccessorBuilder()
+                              ->enableExceptionOnInvalidIndex()
+                              ->getPropertyAccessor()
+            ;
+            foreach ($paramArray as $key => $value) {
+                $accessor->setValue($this, $key, $value);
+            }
+        }
+    }
+
+    public function send($paramArray = [], $sendParams = [], $locale = null)
+    {
+        $this->setParameters($paramArray);
+
+        return $this->messageSender->sendTemplateMail($this, [], $sendParams, $locale);
     }
 
     protected function getKey()
