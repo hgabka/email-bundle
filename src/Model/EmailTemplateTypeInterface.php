@@ -45,4 +45,6 @@ interface EmailTemplateTypeInterface
     public function getDefaultCc();
 
     public function getDefaultBcc();
+
+    public function setParameters($paramArray);
 }

@@ -202,16 +202,7 @@ class MailBuilder
         }
         $paramArray = $parameters;
         $templateType->setLocale($locale);
-        if (!empty($paramArray)) {
-            $accessor =
-                PropertyAccess::createPropertyAccessorBuilder()
-                              ->enableExceptionOnInvalidIndex()
-                              ->getPropertyAccessor()
-            ;
-            foreach ($paramArray as $key => $value) {
-                $accessor->setValue($templateType, $key, $value);
-            }
-        }
+        $templateType->setParameters($paramArray);
 
         $params = [];
         foreach ($templateType->getVariableValues() as $placeholder => $data) {
