@@ -39,7 +39,11 @@ class AddReturnPathPlugin implements \Swift_Events_SendListener
             return;
         }
 
-        $message->setReturnPath($path);
+        $returnPath = $message->getReturnPath();
+        
+        if (empty($returnPath)) {
+            $message->setReturnPath($path);
+        }    
     }
 
     /**
