@@ -69,6 +69,8 @@ class Configuration implements ConfigurationInterface
                 ->variableNode('pre_defined_message_recipients')->end()
                 ->booleanNode('message_with_cc')->defaultFalse()->end()
                 ->booleanNode('message_with_bcc')->defaultFalse()->end()
+                ->scalarNode('message_return_path')->defaultNull()->end()
+                ->scalarNode('email_return_path')->defaultNull()->end()
                 ->booleanNode('editable_lists')->defaultFalse()->end()
                 ->booleanNode('editable_layouts')->defaultFalse()->end()
                 ->booleanNode('auto_append_unsubscribe_link')->defaultFalse()->end()

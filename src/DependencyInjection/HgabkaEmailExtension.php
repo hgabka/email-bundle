@@ -47,6 +47,8 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $queueDefinition->replaceArgument(7, $config['send_limit']);
         $queueDefinition->replaceArgument(8, $config['message_logging']);
         $queueDefinition->replaceArgument(9, $config['delete_sent_messages_after']);
+        $queueDefinition->replaceArgument(10, $config['message_return_path']);
+        $queueDefinition->replaceArgument(11, $config['email_return_path']);
 
         $substituterDefinition = $container->getDefinition('hg_email.param_substituter');
         $substituterDefinition->replaceArgument(4, $config['template_var_chars']);
