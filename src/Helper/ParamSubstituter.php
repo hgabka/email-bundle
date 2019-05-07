@@ -75,13 +75,13 @@ class ParamSubstituter
      */
     public function setAbsoluteImageUrls($html)
     {
-        $pattern = '/(<img[^>]+src=["\'])([^"\':]+)(["\'])/ie';
+        $pattern = '/(<img[^>]+src=["\'])([^"\':]+)(["\'])/i';
 
         $html = preg_replace_callback($pattern, function ($matches) {
             return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];
         }, $html);
 
-        $pattern = '/(<input[^>]+src=["\'])([^"\':]+)(["\'])/ie';
+        $pattern = '/(<input[^>]+src=["\'])([^"\':]+)(["\'])/i';
 
         return preg_replace_callback($pattern, function ($matches) {
             return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];

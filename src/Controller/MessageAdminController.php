@@ -293,7 +293,7 @@ class MessageAdminController extends CRUDController
     {
         $request = $this->getRequest();
         if (null !== $request->get('btn_update_and_prepare')) {
-            return $this->redirect($this->admin->generateUrl('prepare', $params));
+            return $this->redirect($this->admin->generateObjectUrl('prepare', $object));
         }
 
         return parent::redirectTo($object);

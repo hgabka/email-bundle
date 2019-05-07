@@ -54,7 +54,13 @@ class QueueManager
     /** @var RouterInterface */
     protected $router;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter)
+    /** @var string */
+    protected $messageReturnPath;
+
+    /** @var string */
+    protected $emailReturnPath;
+
+    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter, $messageReturnPath, $emailReturnPath)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -66,6 +72,8 @@ class QueueManager
         $this->deleteSentMessagesAfter = $deleteSentMessagesAfter;
         $this->recipientManager = $recipientManager;
         $this->router = $router;
+        $this->messageReturnPath = $messageReturnPath;
+        $this->emailReturnPath = $emailReturnPath;
     }
 
     /**
@@ -173,6 +181,12 @@ class QueueManager
 
             if (isset($this->bounceConfig['account']['address'])) {
                 $message->setReturnPath($this->bounceConfig['account']['address']);
+            } else {
+                if (null === $this->emailReturnPath) {
+                    $message->setReturnPath(\is_string($from) ? $from : key($from));
+                } elseif (\is_string($this->emailReturnPath)) {
+                    $message->setReturnPath($this->emailReturnPath);
+                }
             }
 
             if ($this->mailer->send($message) < 1) {
@@ -231,15 +245,23 @@ class QueueManager
             }
             $params['vars']['webversion'] = $this->router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            ['mail' => $message] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
-            $headers = $message->getHeaders();
+            ['mail' => $mail] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
+            /** @var \Swift_Message $mail */
+            $headers = $mail->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());
 
             if (isset($bounceConfig['account']['address'])) {
-                $message->setReturnPath($bounceConfig['account']['address']);
+                $mail->setReturnPath($bounceConfig['account']['address']);
+            } else {
+                if (null === $this->messageReturnPath) {
+                    $from = $mail->getFrom();
+                    $mail->setReturnPath(\is_string($from) ? $from : key($from));
+                } elseif (\is_string($this->messageReturnPath)) {
+                    $mail->setReturnPath($this->messageReturnPath);
+                }
             }
 
-            if ($mailer->send($message) < 1) {
+            if ($mailer->send($mail) < 1) {
                 $queue->setError('Sikertelen kuldes');
                 $this->doctrine->getManager()->flush();
 
@@ -250,8 +272,6 @@ class QueueManager
 
             return true;
         } catch (\Exception $e) {
-            var_dump($e);
-            die();
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
