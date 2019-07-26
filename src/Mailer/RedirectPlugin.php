@@ -164,6 +164,8 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
         // Add each hard coded recipient
         $message->setTo($this->_recipient);
+        $message->setCc([]);
+        $message->setBcc([]);
     }
 
     public function sendPerformed(\Swift_Events_SendEvent $evt)
