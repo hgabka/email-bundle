@@ -200,21 +200,8 @@ class MailBuilder
             $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($locale));
         }
         $paramArray = $parameters;
-        $templateType->setLocale($this->hgabkaUtils->getCurrentLocale($locale));
         $templateType->setParameters($paramArray);
 
-        $params = [];
-        foreach ($templateType->getVariableValues() as $placeholder => $data) {
-            $params[$placeholder] = [
-                'value' => $data['value'],
-            ];
-
-            if (isset($data['type'])) {
-                $params[$placeholder]['type'] = $data['type'];
-            }
-        }
-
-        $params = $this->paramSubstituter->normalizeParams($params);
         $paramTos = $this->recipientManager->getTemplateParamTos($sendParams, $template, $locale, $this->getDefaultTo());
 
         if (!empty($sendParams['cc'])) {
@@ -241,10 +228,22 @@ class MailBuilder
         $messages = [];
 
         foreach ($paramTos as $paramToRow) {
+            $locale = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
+
+            $templateType->setLocale($locale);
+            $params = [];
+            foreach ($templateType->getVariableValues() as $placeholder => $data) {
+                $params[$placeholder] = [
+                    'value' => $data['value'],
+                ];
+
+                if (isset($data['type'])) {
+                    $params[$placeholder]['type'] = $data['type'];
+                }
+            }
+            $params = $this->paramSubstituter->normalizeParams($params);
             $paramTo = $paramToRow['to'];
             ['name' => $name, 'email' => $email] = $this->addDefaultParams($paramFrom, $paramTo, $params);
-
-            $locale = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
 
             $subject = $this->paramSubstituter->substituteParams($template->translate($locale)->getSubject(), $params, true);
 
