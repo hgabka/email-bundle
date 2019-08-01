@@ -200,7 +200,7 @@ class MailBuilder
             $paramFrom = $this->getFromFromTemplate($template, $this->hgabkaUtils->getCurrentLocale($locale));
         }
         $paramArray = $parameters;
-        $templateType->setLocale($locale);
+        $templateType->setLocale($this->hgabkaUtils->getCurrentLocale($locale));
         $templateType->setParameters($paramArray);
 
         $params = [];
