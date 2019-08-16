@@ -34,6 +34,6 @@ class EmailLogger
 
         $em = $this->doctrine->getManager();
         $em->persist($model);
-        $em->flush();
+        $em->flush($model);
     }
 }
