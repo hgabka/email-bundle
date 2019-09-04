@@ -277,8 +277,6 @@ class SubscriptionManager
             }
 
             if (!$lists[$key] instanceof MessageList) {
-                var_dump($lists[$key]);
-                die();
                 unset($lists[$key]);
             }
         }
