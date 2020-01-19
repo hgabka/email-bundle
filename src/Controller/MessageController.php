@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageQueue;
@@ -17,6 +18,24 @@ use Symfony\Component\Routing\RouterInterface;
 
 class MessageController extends AbstractController
 {
+    /** @var ManagerRegistry */
+    protected $doctrine;
+
+    /**
+     * MessageController constructor.
+     *
+     * @param ManagerRegistry $doctrine
+     */
+    public function __construct(ManagerRegistry $doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
+    protected function getDoctrine()
+    {
+        return $this->doctrine;
+    }
+    
     /**
      * The webversion action.
      *
