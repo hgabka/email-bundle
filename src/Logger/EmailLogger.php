@@ -11,14 +11,17 @@ class EmailLogger
     /** @var Registry */
     protected $doctrine;
 
+    /** @var bool */
+    protected $useEmailLogging;
     /**
      * EmailLogger constructor.
      *
      * @param Registry $doctrine
      */
-    public function __construct(Registry $doctrine)
+    public function __construct(Registry $doctrine, $useEmailLogging)
     {
         $this->doctrine = $doctrine;
+        $this->useEmailLogging = $useEmailLogging;
     }
 
     /**
@@ -28,6 +31,10 @@ class EmailLogger
      */
     public function logMessage(MailerEvent $event)
     {
+        if (!$this->useEmailLogging) {
+            return;
+        }
+        
         $message = $event->getMessage();
         $model = new EmailLog();
         $model->fromMessage($message);
