@@ -137,7 +137,7 @@ services:
 
     hg_email.email_logger:
         class: 'Hgabka\EmailBundle\Logger\EmailLogger'
-        arguments: ["@doctrine"]
+        arguments: ["@doctrine", '']
 
     hg_email.queue_manager:
         class: '%hg_email.queue_manager.class%'
