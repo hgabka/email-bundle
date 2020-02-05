@@ -12,8 +12,10 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Translation\TranslatorInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 
-class EmailTwigExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
 {
     /** @var MailBuilder */
     protected $mailBuilder;
