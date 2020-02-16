@@ -79,7 +79,7 @@
                     e.preventDefault();
                     if ($('#rectype-select_{{ form.vars.id }}').val().length > 0) {
                         $.getJSON('{{ form.vars.admin.generateUrl('add_recipient', {fieldType: form.vars.recipientsType}) }}',
-                                  {type: $rectypeSelect.val(), name: '{{ form.parent.vars.name }}', id: {{ form.vars.admin.subject.id }}}, function (data) {
+                                  {type: $rectypeSelect.val(), name: '{{ form.parent.vars.name }}', id: '{{ form.vars.admin.subject.id }}'}, function (data) {
                                 $accordion.append(data.html);
                                 $selector.hide();
                                 $noRecipient.hide();
