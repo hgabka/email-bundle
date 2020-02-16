@@ -152,6 +152,7 @@
 
 {% block javascripts %}
     {{ parent() }}
+    {{ encore_entry_script_tags('hgabkaemail') }}
     <script>
         function renderUsableVars()
         {
@@ -163,5 +164,4 @@
             renderUsableVars();
         });
     </script>
-    <script src="{{ asset('build/hgabkaemail.js') }}"></script>
 {% endblock %}
