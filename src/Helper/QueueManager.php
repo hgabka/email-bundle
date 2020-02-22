@@ -333,7 +333,7 @@ class QueueManager
             }
 
             $to = $recipient['to'];
-            $locale = isset($recipient['locale']) ? $recipient['locale'] : '';
+            $locale = isset($recipient['locale']) ? $recipient['locale'] : null;
 
             $existing = $this
                 ->doctrine
