@@ -74,7 +74,7 @@ class MessageQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getToName(): string
+    public function getToName(): ?string
     {
         return $this->toName;
     }
@@ -94,7 +94,7 @@ class MessageQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getToEmail(): string
+    public function getToEmail(): ?string
     {
         return $this->toEmail;
     }
@@ -114,7 +114,7 @@ class MessageQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getLocale(): string
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -134,7 +134,7 @@ class MessageQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getParameters(): string
+    public function getParameters(): ?string
     {
         return $this->parameters;
     }
