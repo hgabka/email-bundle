@@ -149,7 +149,7 @@ class SubscriberAdmin extends AbstractAdmin
                 ],
             ])
         ;
-        if ($this->utils->getAvailableLocales() > 1) {
+        if (\count($this->utils->getAvailableLocales()) > 1) {
             $form
                 ->add('locale', LocaleType::class, [
                     'label' => 'hg_email.label.locale',
