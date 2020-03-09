@@ -414,12 +414,12 @@ class RecipientManager
 
     protected function hasTemplateRecipientType($type)
     {
-        return array_key_exists($type, $this->templateRecipientTypes);
+        return \array_key_exists($type, $this->templateRecipientTypes);
     }
 
     protected function hasMessageRecipientType($type)
     {
-        return array_key_exists($type, $this->messageRecipientTypes);
+        return \array_key_exists($type, $this->messageRecipientTypes);
     }
 
     /**

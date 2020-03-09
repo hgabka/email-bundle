@@ -270,7 +270,7 @@ services:
 
     hg_email.subscription_manager:
         class: 'Hgabka\EmailBundle\Helper\SubscriptionManager'
-        arguments: ["@doctrine", "@hgabka_utils.hgabka_utils", '']
+        arguments: ["@doctrine", "@hgabka_utils.hgabka_utils", '', '']
 
     hg_email.subscriber_subscriber:
         class: Hgabka\EmailBundle\EventListener\SubscriberSubscriber

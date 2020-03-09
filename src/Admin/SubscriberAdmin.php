@@ -67,10 +67,15 @@ class SubscriberAdmin extends AbstractAdmin
 
     protected function configureListFields(ListMapper $list)
     {
+        if ($this->manager->isUseNames()) {
+            $list
+                ->add('name', null, [
+                    'label' => 'hg_email.label.name',
+                ])
+            ;
+        }
+
         $list
-            ->add('name', null, [
-                'label' => 'hg_email.label.name',
-            ])
             ->add('email', null, [
                 'label' => 'hg_email.label.email',
             ])
@@ -95,10 +100,15 @@ class SubscriberAdmin extends AbstractAdmin
 
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
+        if ($this->manager->isUseNames()) {
+            $filter
+                ->add('name', null, [
+                    'label' => 'hg_email.label.name',
+                ])
+            ;
+        }
+
         $filter
-            ->add('name', null, [
-                'label' => 'hg_email.label.name',
-            ])
             ->add('email', null, [
                 'label' => 'hg_email.label.email',
             ])
@@ -136,11 +146,16 @@ class SubscriberAdmin extends AbstractAdmin
 
     protected function configureFormFields(FormMapper $form)
     {
+        if ($this->manager->isUseNames()) {
+            $form
+                ->add('name', TextType::class, [
+                    'label' => 'hg_email.label.name',
+                    'constraints' => new NotBlank(),
+                ])
+            ;
+        }
+
         $form
-            ->add('name', TextType::class, [
-                'label' => 'hg_email.label.name',
-                'constraints' => new NotBlank(),
-            ])
             ->add('email', EmailType::class, [
                 'label' => 'hg_email.label.email',
                 'constraints' => [
@@ -149,7 +164,7 @@ class SubscriberAdmin extends AbstractAdmin
                 ],
             ])
         ;
-        if ($this->utils->getAvailableLocales() > 1) {
+        if (\count($this->utils->getAvailableLocales()) > 1) {
             $form
                 ->add('locale', LocaleType::class, [
                     'label' => 'hg_email.label.locale',

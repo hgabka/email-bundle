@@ -53,7 +53,7 @@ class EmailTemplateRecipientsType extends AbstractType
                         if (empty($data)) {
                             if (RecipientManager::RECIPIENT_TYPE_TO === $options['recipients_type'] && !empty($templateType->getDefaultRecipients())) {
                                 $recipients = $templateType->getDefaultRecipients();
-                                if (array_key_exists('type', $recipients)) {
+                                if (\array_key_exists('type', $recipients)) {
                                     $recipients = [$recipients];
                                 }
 
@@ -64,7 +64,7 @@ class EmailTemplateRecipientsType extends AbstractType
                                 }
                             } elseif (RecipientManager::RECIPIENT_TYPE_CC === $options['recipients_type'] && !empty($templateType->getDefaultCc())) {
                                 $recipients = $templateType->getDefaultCc();
-                                if (array_key_exists('type', $recipients)) {
+                                if (\array_key_exists('type', $recipients)) {
                                     $recipients = [$recipients];
                                 }
 
@@ -75,7 +75,7 @@ class EmailTemplateRecipientsType extends AbstractType
                                 }
                             } elseif (RecipientManager::RECIPIENT_TYPE_BCC === $options['recipients_type'] && !empty($templateType->getDefaultBcc())) {
                                 $recipients = $templateType->getDefaultBcc();
-                                if (array_key_exists('type', $recipients)) {
+                                if (\array_key_exists('type', $recipients)) {
                                     $recipients = [$recipients];
                                 }
 

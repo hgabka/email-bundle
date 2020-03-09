@@ -632,8 +632,8 @@ class MailBuilder
         $fromEmail = \is_array($from) ? key($from) : $from;
 
         foreach (array_combine(
-                     array_values($this->getFromToParams()),
-                     [
+            array_values($this->getFromToParams()),
+            [
                          $toEmail,
                          $toName,
                          $fromEmail,

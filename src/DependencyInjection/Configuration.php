@@ -31,6 +31,13 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('messages_enabled')->defaultTrue()->end()
                 ->booleanNode('subscribers_enabled')->defaultTrue()->end()
                 ->scalarNode('editor_role')->defaultValue('ROLE_EMAIL_ADMIN')->end()
+
+                ->arrayNode('subscriptions')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('use_names')->defaultTrue()->end()
+                    ->end()
+                ->end()
                 ->arrayNode('default_sender')
                     ->addDefaultsIfNotSet()
                     ->canBeUnset()

@@ -86,7 +86,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
     public function getParams()
     {
         if (\is_array($this->params)) {
-            $this->params['addUnsubscribe'] = array_key_exists('addUnsubscribe', $this->params) ? (bool) $this->params['addUnsubscribe'] : false;
+            $this->params['addUnsubscribe'] = \array_key_exists('addUnsubscribe', $this->params) ? (bool) $this->params['addUnsubscribe'] : false;
         }
 
         return $this->params;

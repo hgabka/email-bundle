@@ -13,10 +13,12 @@ class EmailLogger
 
     /** @var bool */
     protected $useEmailLogging;
+
     /**
      * EmailLogger constructor.
      *
      * @param Registry $doctrine
+     * @param mixed    $useEmailLogging
      */
     public function __construct(Registry $doctrine, $useEmailLogging)
     {
@@ -34,7 +36,7 @@ class EmailLogger
         if (!$this->useEmailLogging) {
             return;
         }
-        
+
         $message = $event->getMessage();
         $model = new EmailLog();
         $model->fromMessage($message);

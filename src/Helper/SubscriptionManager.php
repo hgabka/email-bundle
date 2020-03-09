@@ -21,6 +21,9 @@ class SubscriptionManager
     /** @var bool */
     protected $editableLists;
 
+    /** @var bool */
+    protected $useNames;
+
     /**
      * SubscriptionManager constructor.
      *
@@ -28,11 +31,12 @@ class SubscriptionManager
      * @param HgabkaUtils $hgabkaUtils
      * @param bool        $editableLists
      */
-    public function __construct(Registry $doctrine, HgabkaUtils $hgabkaUtils, bool $editableLists)
+    public function __construct(Registry $doctrine, HgabkaUtils $hgabkaUtils, bool $editableLists, bool $useNames)
     {
         $this->doctrine = $doctrine;
         $this->hgabkaUtils = $hgabkaUtils;
         $this->editableLists = $editableLists;
+        $this->useNames = $useNames;
     }
 
     public function addSubscriberToLists(MessageSubscriber $subscriber, $lists = null, $withFlush = true)
@@ -111,7 +115,7 @@ class SubscriptionManager
         if (!$existing) {
             $existing = new MessageSubscriber();
             $existing
-                ->setName($name)
+                ->setName($this->useNames ? $name : null)
                 ->setEmail($email)
                 ->setLocale($locale ?? $this->hgabkaUtils->getCurrentLocale())
             ;
@@ -180,6 +184,14 @@ class SubscriptionManager
         $this->editableLists = $editableLists;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseNames(): bool
+    {
+        return $this->useNames;
     }
 
     public function getListChoices()
@@ -262,7 +274,7 @@ class SubscriptionManager
             return [];
         }
 
-        if (\ctype_digit($lists)) {
+        if (ctype_digit($lists)) {
             $lists = [
                 $repo->find($lists),
             ];
@@ -272,7 +284,7 @@ class SubscriptionManager
         }
 
         foreach ($lists as $key => $list) {
-            if (\ctype_digit($list)) {
+            if (ctype_digit($list)) {
                 $lists[$key] = $repo->find($list);
             }
 

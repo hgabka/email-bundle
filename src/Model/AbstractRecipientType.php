@@ -93,7 +93,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
                 }
 
                 foreach ($recipients as &$recipient) {
-                    if (!array_key_exists('to', $recipient)) {
+                    if (!\array_key_exists('to', $recipient)) {
                         $recipient = ['to' => $recipient, 'locale' => null];
                     }
                 }
@@ -187,7 +187,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
             return $recipient;
         }
 
-        if (array_key_exists('to', $recipient)) {
+        if (\array_key_exists('to', $recipient)) {
             $recipient = $recipient['to'];
             if (!\is_array($recipient)) {
                 return $recipient;

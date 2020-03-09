@@ -31,11 +31,6 @@ class MessageController extends AbstractController
         $this->doctrine = $doctrine;
     }
 
-    protected function getDoctrine()
-    {
-        return $this->doctrine;
-    }
-    
     /**
      * The webversion action.
      *
@@ -124,6 +119,11 @@ class MessageController extends AbstractController
         }
 
         return $this->render('@HgabkaEmailBundle/Message/unsubscribe.html.twig');
+    }
+
+    protected function getDoctrine()
+    {
+        return $this->doctrine;
     }
 
     /**

@@ -114,8 +114,8 @@ class MessageAdminController extends CRUDController
                 return $this->redirectToList();
             }
             $this->addFlash(
-                    'sonata_flash_error',
-                    $this->trans('hg_email.messages.prepare_error')
+                'sonata_flash_error',
+                $this->trans('hg_email.messages.prepare_error')
                 );
         }
         $formView = $form->createView();
@@ -205,8 +205,8 @@ class MessageAdminController extends CRUDController
                 return $this->redirectToList();
             }
             $this->addFlash(
-                    'sonata_flash_error',
-                    $this->trans('hg_email.messages.testmail_error')
+                'sonata_flash_error',
+                $this->trans('hg_email.messages.testmail_error')
                 );
         }
 

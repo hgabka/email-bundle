@@ -275,7 +275,7 @@ class EmailQueue extends AbstractQueue
             if (!\is_array($name) && $mail === $email) {
                 return true;
             } elseif (\is_array($name)) {
-                if (\in_array($email, $name, true) || array_key_exists($email, $name)) {
+                if (\in_array($email, $name, true) || \array_key_exists($email, $name)) {
                     return true;
                 }
             }
