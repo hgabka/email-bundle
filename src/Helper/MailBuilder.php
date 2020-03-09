@@ -532,14 +532,20 @@ class MailBuilder
         $fromNameLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.name');
         $fromEmailLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.email');
 
-        return [
+        $params = [
             $this->translator->trans('hg_email.variables.labels.to_email') => $toEmailLabel,
-            $this->translator->trans('hg_email.variables.labels.to_name') => $toNameLabel,
-            $this->translator->trans('hg_email.variables.labels.from_email') => $fromEmailLabel,
-            $this->translator->trans('hg_email.variables.labels.from_name') => $fromNameLabel,
         ];
-    }
 
+        if ($this->config['subscriptions']['use_names']) {
+            $params[$this->translator->trans('hg_email.variables.labels.to_name')] = $toNameLabel;
+        }
+
+        $params[$this->translator->trans('hg_email.variables.labels.from_email')] = $fromEmailLabel;
+        $params[$this->translator->trans('hg_email.variables.labels.from_name')] = $fromNameLabel;
+
+        return $params;
+    }
+    
     public function isMessageCcEditable()
     {
         return $this->config['message_with_cc'] ?? false;
