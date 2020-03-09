@@ -108,7 +108,7 @@ class SubscriptionManager
         ;
     }
 
-    public function createSubscription($name, $email, $locale = null, $lists = null)
+    public function createSubscription($email, $name = null, $locale = null, $lists = null)
     {
         $em = $this->doctrine->getManager();
         $existing = $em->getRepository(MessageSubscriber::class)->findOneByEmail($email);
