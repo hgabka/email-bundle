@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Form;
 
 use Hgabka\UtilsBundle\Form\Type\LocaleType;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -11,6 +12,19 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageMailType extends AbstractType
 {
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
+
+    /**
+     * MessageMailType constructor.
+     *
+     * @param HgabkaUtils $hgabkaUtils
+     */
+    public function __construct(HgabkaUtils $hgabkaUtils)
+    {
+        $this->hgabkaUtils = $hgabkaUtils;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('email', EmailType::class, [
@@ -21,10 +35,14 @@ class MessageMailType extends AbstractType
                 new NotBlank(),
             ],
         ])
-            ->add('locale', LocaleType::class, [
-                'label' => 'hg_email.label.locale',
-            ])
         ;
+        if (\count($this->hgabkaUtils->getAvailableLocales()) > 1) {
+            $builder
+                ->add('locale', LocaleType::class, [
+                    'label' => 'hg_email.label.locale',
+                ])
+            ;
+        }
     }
 
     /**

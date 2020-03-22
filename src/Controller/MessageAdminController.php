@@ -160,7 +160,7 @@ class MessageAdminController extends CRUDController
         return $this->redirectToList();
     }
 
-    public function testmailAction(MailBuilder $mailBuilder, RecipientManager $recipientManager)
+    public function testmailAction(MailBuilder $mailBuilder, RecipientManager $recipientManager, HgabkaUtils $hgabkaUtils)
     {
         $request = $this->getRequest();
 
@@ -177,7 +177,7 @@ class MessageAdminController extends CRUDController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $email = $form->getData()['email'];
-                $locale = $form->getData()['locale'];
+                $locale = $form->getData()['locale'] ?? $hgabkaUtils->getDefaultLocale();
                 $recType = $recipientManager->getMessageRecipientType(GeneralMessageRecipientType::class);
                 $recType->setParams([
                     'name' => 'XXX',

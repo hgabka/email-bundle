@@ -539,7 +539,7 @@ class MailBuilder
             $this->translator->trans('hg_email.variables.labels.from_name') => $fromNameLabel,
         ];
     }
-    
+
     public function isMessageCcEditable()
     {
         return $this->config['message_with_cc'] ?? false;
