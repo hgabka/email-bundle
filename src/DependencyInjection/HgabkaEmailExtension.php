@@ -39,7 +39,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $senderDefinition->addMethodCall('setConfig', [$config]);
 
         $loggerDefinition = $container->getDefinition('hg_email.message_logger');
-        $loggerDefinition->replaceArgument(1, $config['log_path']);
+        $loggerDefinition->replaceArgument(0, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hg_email.queue_manager');
         $queueDefinition->replaceArgument(5, $config['bounce_checking']);
@@ -57,7 +57,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
 
         $emailLoggerDefinition = $container->getDefinition('hg_email.email_logger');
-        $emailLoggerDefinition->replaceArgument(1, $config['use_email_logging']);
+        $emailLoggerDefinition->replaceArgument(0, $config['use_email_logging']);
 
         $redirectPluginDefinition = $container->getDefinition('hg_email.redirect_plugin');
         $redirectPluginDefinition->replaceArgument(0, $config['redirect']['recipients'] ?? []);
