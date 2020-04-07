@@ -39,7 +39,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $senderDefinition->addMethodCall('setConfig', [$config]);
 
         $loggerDefinition = $container->getDefinition('hg_email.message_logger');
-        $loggerDefinition->replaceArgument(1, $config['log_path']);
+        $loggerDefinition->replaceArgument(0, $config['log_path']);
 
         $queueDefinition = $container->getDefinition('hg_email.queue_manager');
         $queueDefinition->replaceArgument(5, $config['bounce_checking']);
