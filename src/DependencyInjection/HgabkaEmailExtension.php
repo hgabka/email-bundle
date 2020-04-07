@@ -57,7 +57,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
 
         $emailLoggerDefinition = $container->getDefinition('hg_email.email_logger');
-        $emailLoggerDefinition->replaceArgument(0, $config['use_email_logging']);
+        $emailLoggerDefinition->replaceArgument(1, $config['use_email_logging']);
 
         $redirectPluginDefinition = $container->getDefinition('hg_email.redirect_plugin');
         $redirectPluginDefinition->replaceArgument(0, $config['redirect']['recipients'] ?? []);
