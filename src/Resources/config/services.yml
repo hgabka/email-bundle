@@ -133,7 +133,7 @@ services:
 
     hg_email.message_logger:
         class: '%hg_email.message_logger.class%'
-        arguments: ["@logger", '']
+        arguments: ['']
 
     hg_email.email_logger:
         class: 'Hgabka\EmailBundle\Logger\EmailLogger'
