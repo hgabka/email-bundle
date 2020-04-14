@@ -93,7 +93,7 @@ class MessageController extends AbstractController
         ;
 
         if (!$subscr) {
-            throw new $this->createNotFoundException('Missing subscriber');
+            throw $this->createNotFoundException('Missing subscriber');
         }
 
         if ($request->query->has('list_id')) {
@@ -118,7 +118,7 @@ class MessageController extends AbstractController
             $em->flush();
         }
 
-        return $this->render('@HgabkaEmailBundle/Message/unsubscribe.html.twig');
+        return $this->render('@HgabkaEmail/Message/unsubscribe.html.twig');
     }
 
     protected function getDoctrine()
