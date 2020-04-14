@@ -346,6 +346,7 @@ services:
     Hgabka\EmailBundle\Helper\LayoutManager: '@hg_email.layout_manager'
 
     Hgabka\EmailBundle\Controller\MessageController:
+        arguments: ['@doctrine']
         tags: ['controller.service_arguments']
     Hgabka\EmailBundle\Controller\MessageAdminController:
         tags: ['controller.service_arguments']
