@@ -3,9 +3,9 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Prezent\Doctrine\Translatable\Annotation as Prezent;
-use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
-use Prezent\Doctrine\Translatable\TranslationInterface;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\Entity\TranslationTrait;
+use Hgabka\Doctrine\Translatable\TranslationInterface;
 
 /**
  * @ORM\Table(name="hg_email_email_layout_translation")
@@ -23,7 +23,7 @@ class EmailLayoutTranslation implements TranslationInterface
     protected $id;
 
     /**
-     * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout")
+     * @Hgabka\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout")
      */
     protected $translatable;
 

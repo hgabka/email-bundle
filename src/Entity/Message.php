@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
-use Prezent\Doctrine\Translatable\Annotation as Prezent;
-use Prezent\Doctrine\Translatable\TranslatableInterface;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -30,7 +30,7 @@ class Message implements TranslatableInterface
     protected $id;
 
     /**
-     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageTranslation")
+     * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageTranslation")
      */
     protected $translations;
 

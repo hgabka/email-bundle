@@ -4,9 +4,9 @@ namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Prezent\Doctrine\Translatable\Annotation as Prezent;
-use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
-use Prezent\Doctrine\Translatable\TranslationInterface;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\Entity\TranslationTrait;
+use Hgabka\Doctrine\Translatable\TranslationInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -32,7 +32,7 @@ class MessageTranslation implements TranslationInterface
     protected $attachments;
 
     /**
-     * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\Message")
+     * @Hgabka\Translatable(targetEntity="Hgabka\EmailBundle\Entity\Message")
      */
     protected $translatable;
 

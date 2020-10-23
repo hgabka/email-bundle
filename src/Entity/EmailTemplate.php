@@ -6,8 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
-use Prezent\Doctrine\Translatable\Annotation as Prezent;
-use Prezent\Doctrine\Translatable\TranslatableInterface;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\TranslatableInterface;
 
 /**
  * Email layout.
@@ -28,7 +28,7 @@ class EmailTemplate implements TranslatableInterface
     protected $id;
 
     /**
-     * @Prezent\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation")
+     * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation")
      */
     protected $translations;
 

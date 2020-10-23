@@ -3,9 +3,9 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Prezent\Doctrine\Translatable\Annotation as Prezent;
-use Prezent\Doctrine\Translatable\Entity\TranslationTrait;
-use Prezent\Doctrine\Translatable\TranslationInterface;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\Entity\TranslationTrait;
+use Hgabka\Doctrine\Translatable\TranslationInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -24,7 +24,7 @@ class MessageListTranslation implements TranslationInterface
     protected $id;
 
     /**
-     * @Prezent\Translatable(targetEntity="Hgabka\EmailBundle\Entity\MessageList")
+     * @Hgabka\Translatable(targetEntity="Hgabka\EmailBundle\Entity\MessageList")
      */
     protected $translatable;
 
