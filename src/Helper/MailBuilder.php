@@ -448,7 +448,6 @@ class MailBuilder
             $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<'.$params['unsubscribe_url'].'>');
         }
 
-
         if ($addCcs) {
             $cc = $message->getCcData();
 

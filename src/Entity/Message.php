@@ -4,11 +4,11 @@ namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
+use Hgabka\Doctrine\Translatable\TranslatableInterface;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
-use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
-use Hgabka\Doctrine\Translatable\TranslatableInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
