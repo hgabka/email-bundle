@@ -10,7 +10,6 @@ use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
-use Hgabka\EmailBundle\Recipient\DefaultMessageRecipientType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -46,6 +45,7 @@ class RecipientManager
      *
      * @param ManagerRegistry     $doctrine
      * @param TranslatorInterface $translator
+     * @param mixed               $excludedRecipientClasses
      */
     public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
     {
@@ -177,7 +177,7 @@ class RecipientManager
         $choices = [];
         foreach ($this->templateRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
-                if (in_array($class, $this->excludedRecipientClasses['email_template'])) {
+                if (\in_array($class, $this->excludedRecipientClasses['email_template'], true)) {
                     continue;
                 }
                 $choices[$this->translator->trans($type->getName())] = $class;
@@ -195,7 +195,7 @@ class RecipientManager
         $choices = [];
         foreach ($this->messageRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
-                if (in_array($class, $this->excludedRecipientClasses['message'])) {
+                if (\in_array($class, $this->excludedRecipientClasses['message'], true)) {
                     continue;
                 }
                 $choices[$this->translator->trans($type->getName())] = $class;
