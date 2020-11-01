@@ -28,6 +28,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmailTemplateAdmin extends AbstractAdmin
 {
+    protected $baseRoutePattern = 'email-template';
+
     /** @var MailBuilder */
     private $builder;
 
