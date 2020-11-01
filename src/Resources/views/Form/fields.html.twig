@@ -71,7 +71,10 @@
             {% if form.vars.add_button %}
                 $addRecipient.on('click', '.recipient-add', function (e) {
                     e.preventDefault();
-                    $('#rectype-select_{{ form.vars.id }}').val('').trigger('change');
+                    var $typeSelect = $('#rectype-select_{{ form.vars.id }}');
+                    if ($typeSelect.length > 0) {
+                        $typeSelect.val('').trigger('change');
+                    }
                     $selector.show();
                     $recipientAdd.hide();
                 });
