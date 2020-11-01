@@ -85,6 +85,9 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $voterDefinition = $container->getDefinition('hg_email.email_voter');
         $voterDefinition->replaceArgument(1, $config['editor_role']);
 
+        $recipientManagerDefinition = $container->getDefinition(RecipientManager::class);
+        $recipientManagerDefinition->replaceArgument(4, $config['excluded_recipient_classes']);
+        
         $subscriptionManagerDefinition = $container->getDefinition('hg_email.subscription_manager');
         $subscriptionManagerDefinition->replaceArgument(2, $config['editable_lists']);
 

@@ -56,7 +56,7 @@ services:
 
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true
-        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager"]
+        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager", '']
 
     hg_email.recipient_manager:
         alias: Hgabka\EmailBundle\Helper\RecipientManager

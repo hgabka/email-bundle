@@ -10,6 +10,7 @@ use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
+use Hgabka\EmailBundle\Recipient\DefaultMessageRecipientType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -37,18 +38,22 @@ class RecipientManager
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
 
+    /** @var array */
+    protected $excludedRecipientClasses;
+
     /**
      * RecipientManager constructor.
      *
      * @param ManagerRegistry     $doctrine
      * @param TranslatorInterface $translator
      */
-    public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager)
+    public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
     {
         $this->doctrine = $doctrine;
         $this->translator = $translator;
         $this->formFactory = $formFactory;
         $this->templateTypeManager = $templateTypeManager;
+        $this->excludedRecipientClasses = $excludedRecipientClasses;
     }
 
     /**
@@ -172,6 +177,9 @@ class RecipientManager
         $choices = [];
         foreach ($this->templateRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
+                if (in_array($class, $this->excludedRecipientClasses['email_template'])) {
+                    continue;
+                }
                 $choices[$this->translator->trans($type->getName())] = $class;
             }
         }
@@ -187,6 +195,9 @@ class RecipientManager
         $choices = [];
         foreach ($this->messageRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
+                if (in_array($class, $this->excludedRecipientClasses['message'])) {
+                    continue;
+                }
                 $choices[$this->translator->trans($type->getName())] = $class;
             }
         }
