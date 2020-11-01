@@ -26,6 +26,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageAdmin extends AbstractAdmin
 {
+    protected $baseRoutePattern = 'message';
+    
     protected $datagridValues = [
         '_page' => 1,
         '_sort_order' => 'ASC',
