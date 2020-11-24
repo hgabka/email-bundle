@@ -1,6 +1,6 @@
 {
   "name": "hgabka-email",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "utils assets for hgabka-email bundle",
   "author": "Gabe",
   "license": "ISC",
@@ -10,5 +10,11 @@
     "moment-with-locales-es6": "^1.0.1",
     "clipboard": "^2.0.1"
   },
-  "main": "assets/js/app"
+  "main": "assets/js/app",
+  "scripts": {
+    "postinstall": "rm -rf src"
+  },
+  "files": [
+    "/assets/*"
+  ]
 }
