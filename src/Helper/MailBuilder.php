@@ -269,7 +269,7 @@ class MailBuilder
             $layoutParams = array_merge($params, [
                     'subject' => $subject,
             ]);
-            $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $locale, $layoutParams, $parameters['layout_file'] ?? null);
+            $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $locale, $layoutParams, $sendParams['layout_file'] ?? null);
 
             if (\strlen($bodyText) > 0) {
                 $mail->addPart($bodyText, 'text/plain');
