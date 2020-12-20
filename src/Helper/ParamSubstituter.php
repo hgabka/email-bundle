@@ -252,7 +252,9 @@ class ParamSubstituter
             return $url;
         }
 
-        $file = $this->requestStack->getCurrentRequest()->getBasePath().'/'.$url;
+        $request = $this->requestStack->getCurrentRequest();
+        $file = $request ? $request->getBasePath().'/'.$url : '/'.$url;
+        
         if (!is_file($file)) {
             return $url;
         }
