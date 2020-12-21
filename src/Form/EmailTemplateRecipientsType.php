@@ -24,8 +24,6 @@ class EmailTemplateRecipientsType extends AbstractType
 
     /**
      * RecipientsType constructor.
-     *
-     * @param RecipientManager $manager
      */
     public function __construct(RecipientManager $manager, TemplateTypeManager $templateTypeManager)
     {

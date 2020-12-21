@@ -17,8 +17,7 @@ class EmailLogger
     /**
      * EmailLogger constructor.
      *
-     * @param Registry $doctrine
-     * @param mixed    $useEmailLogging
+     * @param mixed $useEmailLogging
      */
     public function __construct(Registry $doctrine, $useEmailLogging)
     {

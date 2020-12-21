@@ -15,8 +15,6 @@ class MailSenderEvent extends Event
 
     /**
      * MailSenderEvent constructor.
-     *
-     * @param MailBuilder $builder
      */
     public function __construct(MailBuilder $builder)
     {

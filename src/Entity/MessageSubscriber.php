@@ -191,8 +191,6 @@ class MessageSubscriber
     /**
      * Add send list.
      *
-     * @param MessageListSubscription $listSubscription
-     *
      * @return MessageSubscriber
      */
     public function addListSubscription(MessageListSubscription $listSubscription)
@@ -208,8 +206,6 @@ class MessageSubscriber
 
     /**
      * Remove send list.
-     *
-     * @param MessageListSubscription $listSubscription
      */
     public function removeListSubscription(MessageListSubscription $listSubscription)
     {

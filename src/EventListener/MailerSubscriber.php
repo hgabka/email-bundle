@@ -16,9 +16,6 @@ class MailerSubscriber implements EventSubscriberInterface
 
     /**
      * MailerSubscriber constructor.
-     *
-     * @param EmailLogger $logger
-     * @param string      $strategy
      */
     public function __construct(EmailLogger $logger, string $strategy)
     {
@@ -35,9 +32,6 @@ class MailerSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param MailerEvent $event
-     */
     public function onSendCalled(MailerEvent $event)
     {
         if ('mailer_send' === $this->strategy) {
@@ -45,9 +39,6 @@ class MailerSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param MailerEvent $event
-     */
     public function onMailSent(MailerEvent $event)
     {
         if ('mailer_send' !== $this->strategy) {
@@ -55,9 +46,6 @@ class MailerSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param MailerEvent $event
-     */
     public function onAddHeaders(MailerEvent $event)
     {
         $event->setReturnValue($event->getParameter('configHeaders'));

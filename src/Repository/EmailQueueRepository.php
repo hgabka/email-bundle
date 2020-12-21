@@ -57,8 +57,6 @@ class EmailQueueRepository extends EntityRepository
     }
 
     /**
-     * @param null|EmailCampaign $campaign
-     *
      * @return mixed
      */
     public function getQueues(EmailCampaign $campaign = null)

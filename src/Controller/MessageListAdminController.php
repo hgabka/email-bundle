@@ -13,8 +13,6 @@ class MessageListAdminController extends CRUDController
 
     /**
      * MessageListAdminController constructor.
-     *
-     * @param SubscriptionManager $subscriptionManager
      */
     public function __construct(SubscriptionManager $subscriptionManager)
     {

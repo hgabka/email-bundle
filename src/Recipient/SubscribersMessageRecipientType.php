@@ -26,8 +26,6 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
     /**
      * SubscribersMessageRecipientType constructor.
-     *
-     * @param SubscriptionManager $subscriptionManager
      */
     public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils, RouterInterface $router)
     {

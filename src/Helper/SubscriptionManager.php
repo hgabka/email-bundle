@@ -26,10 +26,6 @@ class SubscriptionManager
 
     /**
      * SubscriptionManager constructor.
-     *
-     * @param Registry    $doctrine
-     * @param HgabkaUtils $hgabkaUtils
-     * @param bool        $editableLists
      */
     public function __construct(Registry $doctrine, HgabkaUtils $hgabkaUtils, bool $editableLists, bool $useNames)
     {
@@ -166,9 +162,6 @@ class SubscriptionManager
         $subscriber->setToken($sku);
     }
 
-    /**
-     * @return bool
-     */
     public function isEditableLists(): bool
     {
         return $this->editableLists;
@@ -186,9 +179,6 @@ class SubscriptionManager
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isUseNames(): bool
     {
         return $this->useNames;

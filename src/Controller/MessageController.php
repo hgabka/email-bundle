@@ -23,8 +23,6 @@ class MessageController extends AbstractController
 
     /**
      * MessageController constructor.
-     *
-     * @param ManagerRegistry $doctrine
      */
     public function __construct(ManagerRegistry $doctrine)
     {
@@ -36,9 +34,8 @@ class MessageController extends AbstractController
      *
      * @Route("/{id}/webversion/{hash}", name="hgabka_email_message_webversion", requirements={"id" = "\d+"}, methods={"GET"})
      *
-     * @param Request $request
-     * @param mixed   $id
-     * @param mixed   $hash
+     * @param mixed $id
+     * @param mixed $hash
      *
      * @return Response
      */
@@ -78,8 +75,7 @@ class MessageController extends AbstractController
      *
      * @Route("/unsubscribe/{token}", name="hgabka_email_message_unsubscribe")
      *
-     * @param Request $request
-     * @param mixed   $token
+     * @param mixed $token
      *
      * @return Response
      */

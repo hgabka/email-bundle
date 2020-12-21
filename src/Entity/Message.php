@@ -19,8 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Message implements TranslatableInterface
 {
-    use TranslatableTrait;
     use TimestampableEntity;
+    use TranslatableTrait;
 
     /**
      * @ORM\Id
@@ -329,8 +329,6 @@ class Message implements TranslatableInterface
     /**
      * Add send list.
      *
-     * @param MessageSendList $sendList
-     *
      * @return Message
      */
     public function addSendList(MessageSendList $sendList)
@@ -346,8 +344,6 @@ class Message implements TranslatableInterface
 
     /**
      * Remove send list.
-     *
-     * @param MessageSendList $sendList
      */
     public function removeSendList(MessageSendList $sendList)
     {

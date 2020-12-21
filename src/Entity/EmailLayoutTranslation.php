@@ -81,9 +81,6 @@ class EmailLayoutTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;

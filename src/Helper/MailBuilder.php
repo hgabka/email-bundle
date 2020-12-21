@@ -63,13 +63,6 @@ class MailBuilder
 
     /**
      * MailBuilder constructor.
-     *
-     * @param Registry            $doctrine
-     * @param RequestStack        $requestStack
-     * @param ParamSubstituter    $paramSubstituter
-     * @param TranslatorInterface $translator
-     * @param HgabkaUtils         $hgabkaUtils
-     * @param RouterInterface     $router
      */
     public function __construct(
         Registry $doctrine,
@@ -105,9 +98,6 @@ class MailBuilder
         return $this->config;
     }
 
-    /**
-     * @param array $config
-     */
     public function setConfig(array $config)
     {
         $this->config = $config;
@@ -357,7 +347,6 @@ class MailBuilder
     }
 
     /**
-     * @param Message    $message
      * @param            $to
      * @param null       $locale
      * @param bool       $addCcs
@@ -577,7 +566,7 @@ class MailBuilder
             $type = $typeOrClass;
         }
 
-        if (!$type instanceof  EmailTemplateTypeInterface) {
+        if (!$type instanceof EmailTemplateTypeInterface) {
             throw new InvalidArgumentException('Invalid template type: '.$typeOrClass);
         }
 
@@ -642,7 +631,7 @@ class MailBuilder
                          $fromEmail,
                          $fromName,
                      ]
-                 ) as $fromToParamKey => $fromToParamValue) {
+        ) as $fromToParamKey => $fromToParamValue) {
             $params[$fromToParamKey] = $fromToParamValue;
         }
 

@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class MessageListAdmin extends AbstractAdmin
 {
     protected $baseRoutePattern = 'message-list';
-    
+
     protected $datagridValues = [
         '_page' => 1,
         '_sort_order' => 'ASC',

@@ -24,9 +24,6 @@ class TemplateTypeManager
 
     /**
      * TemplateTypeManager constructor.
-     *
-     * @param ManagerRegistry     $doctrine
-     * @param TranslatorInterface $translator
      */
     public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, HgabkaUtils $hgabkaUtils)
     {

@@ -24,9 +24,7 @@ class LayoutManager
     /**
      * LayoutManager constructor.
      *
-     * @param HgabkaUtils      $hgabkaUtils
-     * @param ParamSubstituter $paramSubstituter
-     * @param string           $layoutFile
+     * @param string $layoutFile
      */
     public function __construct(HgabkaUtils $hgabkaUtils, ParamSubstituter $paramSubstituter, $layoutFile)
     {

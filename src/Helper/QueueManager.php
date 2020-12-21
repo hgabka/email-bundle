@@ -77,8 +77,6 @@ class QueueManager
     }
 
     /**
-     * @param MailBuilder $mailBuilder
-     *
      * @return QueueManager
      */
     public function setMailBuilder(MailBuilder $mailBuilder)
@@ -103,9 +101,6 @@ class QueueManager
         $this->logger->getLogger()->info($message);
     }
 
-    /**
-     * @return bool
-     */
     public function isForceLog(): bool
     {
         return $this->forceLog;
@@ -113,8 +108,6 @@ class QueueManager
 
     /**
      * @param bool $forceLog
-     *
-     * @return MailBuilder
      */
     public function setForceLog($forceLog): MailBuilder
     {
@@ -425,8 +418,6 @@ class QueueManager
 
     /**
      * @param null|int $limit
-     *
-     * @return array
      */
     public function sendEmails($limit = null): array
     {
@@ -496,8 +487,6 @@ class QueueManager
 
     /**
      * @param null|int $limit
-     *
-     * @return array
      */
     public function sendMessages($limit = null): array
     {

@@ -18,8 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class EmailLayout implements TranslatableInterface
 {
-    use TranslatableTrait;
     use TimestampableEntity;
+    use TranslatableTrait;
 
     /**
      * @ORM\Id
@@ -159,8 +159,6 @@ class EmailLayout implements TranslatableInterface
     /**
      * Add template.
      *
-     * @param EmailTemplate $template
-     *
      * @return EmailLayout
      */
     public function addTemplate(EmailTemplate $template)
@@ -176,8 +174,6 @@ class EmailLayout implements TranslatableInterface
 
     /**
      * Remove template.
-     *
-     * @param EmailTemplate $template
      */
     public function removeTemplate(EmailTemplate $template)
     {
@@ -207,8 +203,6 @@ class EmailLayout implements TranslatableInterface
     /**
      * Add message.
      *
-     * @param Message $message
-     *
      * @return EmailLayout
      */
     public function addMessage(Message $message)
@@ -224,8 +218,6 @@ class EmailLayout implements TranslatableInterface
 
     /**
      * Remove message.
-     *
-     * @param Message $message
      */
     public function removeMessage(Message $message)
     {

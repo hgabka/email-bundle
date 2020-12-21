@@ -116,7 +116,7 @@ class MessageAdminController extends CRUDController
             $this->addFlash(
                 'sonata_flash_error',
                 $this->trans('hg_email.messages.prepare_error')
-                );
+            );
         }
         $formView = $form->createView();
         $this->setFormTheme($formView, $this->admin->getFormTheme());
@@ -207,7 +207,7 @@ class MessageAdminController extends CRUDController
             $this->addFlash(
                 'sonata_flash_error',
                 $this->trans('hg_email.messages.testmail_error')
-                );
+            );
         }
 
         $formView = $form->createView();
@@ -244,17 +244,20 @@ class MessageAdminController extends CRUDController
             ->setSentFail(0)
             ->setSentSuccess(0)
         ;
-
-        foreach ($utils->getAvailableLocales() as $locale) {
-            $copyText = $this->get('translator')->trans('hg_email.text.copy', [], 'messages', $locale);
-            $message->translate($locale)->setSubject($existingObject->translate($locale)->getSubject());
-            $message->translate($locale)->setContentText($existingObject->translate($locale)->getContentText());
-            $message->translate($locale)->setContentHtml($existingObject->translate($locale)->getContentHtml());
-            $message->translate($locale)->setName($existingObject->translate($locale)->getName().' - '.$copyText);
-        }
-
         $em = $this->getDoctrine()->getManager();
         $em->persist($message);
+        foreach ($utils->getAvailableLocales() as $loc) {
+            if (!empty($existingObject->translate($loc)->getName())) {
+                $copyText = $this->get('translator')->trans('hg_email.text.copy', [], 'messages', $loc);
+                $message->translate($loc)->setSubject($existingObject->translate($loc)->getSubject());
+                $message->translate($loc)->setContentText($existingObject->translate($loc)->getContentText());
+                $message->translate($loc)->setContentHtml($existingObject->translate($loc)->getContentHtml());
+                $message->translate($loc)->setName($existingObject->translate($loc)->getName().' - '.$copyText);
+            } else {
+                $existingObject->translate($loc)->setName('dummy');
+            }
+        }
+
         $em->flush();
 
         $attachments = $em->getRepository(Attachment::class)->getByMessage($existingObject);

@@ -36,7 +36,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     /** @var AuthorizationCheckerInterface */
     private $authChecker;
 
-    /** @var TemplateTypeManager $templateTypeManager */
+    /** @var TemplateTypeManager */
     private $templateTypeManager;
 
     public function setBuilder(MailBuilder $builder)
@@ -294,7 +294,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                                             </a>
                                          </h4>
                                      </div>
-                
+
                                 </div>
                             </div>',
                         'mapped' => false,

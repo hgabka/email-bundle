@@ -20,9 +20,6 @@ class BounceChecker
 
     /**
      * BounceChecker constructor.
-     *
-     * @param Registry      $doctrine
-     * @param MailboxReader $mailReader
      */
     public function __construct(Registry $doctrine, MailboxReader $mailReader)
     {
@@ -30,17 +27,12 @@ class BounceChecker
         $this->mailReader = $mailReader;
     }
 
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
         return $this->config;
     }
 
     /**
-     * @param array $config
-     *
      * @return BounceChecker
      */
     public function setConfig(array $config)

@@ -18,8 +18,6 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
 
     /**
      * @required
-     *
-     * @param TranslatorInterface $translator
      */
     public function setTranslator(TranslatorInterface $translator)
     {

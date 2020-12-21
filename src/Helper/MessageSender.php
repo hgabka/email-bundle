@@ -43,12 +43,7 @@ class MessageSender
     /**
      * MailBuilder constructor.
      *
-     * @param Registry            $doctrine
-     * @param \Swift_Mailer       $mailer
-     * @param QueueManager        $queueManager
-     * @param TranslatorInterface $translator
-     * @param HgabkaUtils         $hgabkaUtils  ,
-     * @param MailBuilder         $mailBuilder
+     * @param HgabkaUtils $hgabkaUtils ,
      */
     public function __construct(
         Registry $doctrine,
@@ -66,9 +61,6 @@ class MessageSender
         $this->mailBuilder = $mailBuilder;
     }
 
-    /**
-     * @return bool
-     */
     public function isForceLog(): bool
     {
         return $this->forceLog;
@@ -86,17 +78,11 @@ class MessageSender
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * @param array $config
-     */
     public function setConfig(array $config)
     {
         $this->config = $config;

@@ -13,8 +13,6 @@ class EmailLayoutAdminController extends CRUDController
 
     /**
      * EmailLayoutAdminController constructor.
-     *
-     * @param MailBuilder $mailBuilder
      */
     public function __construct(MailBuilder $mailBuilder)
     {

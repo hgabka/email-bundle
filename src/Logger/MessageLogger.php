@@ -18,9 +18,6 @@ class MessageLogger
         $this->logger->setHandlers([$handler]);
     }
 
-    /**
-     * @return LoggerInterface
-     */
     public function getLogger(): LoggerInterface
     {
         return $this->logger;

@@ -14,8 +14,6 @@ class MessageSubscriberEventSubscriber implements EventSubscriberInterface
 
     /**
      * MessageSubscriberEventSubscriber constructor.
-     *
-     * @param RecipientManager $recipientManager
      */
     public function __construct(RecipientManager $recipientManager)
     {

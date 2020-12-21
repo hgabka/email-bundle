@@ -15,8 +15,6 @@ class SendMessagesCommand extends Command
 
     /**
      * SendMessagesCommand constructor.
-     *
-     * @param MessageSender $messageSender
      */
     public function __construct(MessageSender $messageSender)
     {

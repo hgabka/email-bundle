@@ -93,9 +93,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getComment(): string
     {
         return $this->comment;
@@ -198,25 +195,16 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         return $vars;
     }
 
-    /**
-     * @return string
-     */
     public function getDefaultSubject(): string
     {
         return $this->defaultSubject;
     }
 
-    /**
-     * @return string
-     */
     public function getDefaultTextContent(): string
     {
         return $this->defaultTextContent;
     }
 
-    /**
-     * @return string
-     */
     public function getDefaultHtmlContent(): string
     {
         return $this->defaultHtmlContent;

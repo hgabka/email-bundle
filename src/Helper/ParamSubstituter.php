@@ -103,14 +103,21 @@ class ParamSubstituter
         }, $html);
 
         $pattern = '/(url\s*\()([^\)]+)/i';
-        $imagePath = trim($matches[2], " '\"");
 
-        $file = $this->projectDir.'/web/'.$imagePath;
-        if (!is_file($file)) {
-            $file = $this->projectDir.'/public/'.$path;
-        }
+        $encodedHtml = preg_replace_callback($pattern, function ($matches) {
+            $imagePath = trim($matches[2], " '\"");
+            $file = $this->projectDir.'/web/'.$imagePath;
+            if (!is_file($file)) {
+                $file = $this->projectDir.'/public/'.$imagePath;
+            }
 
-        $encodedHtml = $this->convertToBase64($pattern, $html, $file);
+            $res = $this->convertToBase64($file);
+            if (false !== $res) {
+                return $matches[1].$res;
+            }
+
+            return false;
+        }, $html);
 
         if (false !== $encodedHtml) {
             return $encodedHtml;
@@ -121,17 +128,6 @@ class ParamSubstituter
         }, $html);
 
         return $html;
-    }
-
-    protected function convertToBase64($pattern, $html, $file)
-    {
-        if (is_file($file) && function_exists('mime_content_type') && (false !== ($mime = @mime_content_type($file))) && false !== ($contents = file_get_contents($file))) {
-            return preg_replace_callback($pattern, function ($matches) use ($mime, $contents) {
-                return $matches[1].'data: '.$mime.';base64,'.base64_encode($contents);
-            }, $html);
-        }
-
-        return false;
     }
 
     public function transferRelativeLinks($html)
@@ -224,6 +220,15 @@ class ParamSubstituter
         return $res;
     }
 
+    protected function convertToBase64($file)
+    {
+        if (is_file($file) && \function_exists('mime_content_type') && (false !== ($mime = @mime_content_type($file))) && false !== ($contents = file_get_contents($file))) {
+            return 'data:'.$mime.';base64,'.base64_encode($contents);
+        }
+
+        return false;
+    }
+
     /**
      * Embeddel egy képet és visszaadja a cid-et.
      *
@@ -280,11 +285,11 @@ class ParamSubstituter
         if (!is_file($file)) {
             $file = $this->projectDir.'/public/'.$url;
         }
-        
+
         if (!is_file($file)) {
             return $url;
         }
-        
+
         return $this->getSchemeAndHttpHost().$url;
     }
 

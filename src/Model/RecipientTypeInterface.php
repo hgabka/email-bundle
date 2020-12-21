@@ -13,8 +13,6 @@ interface RecipientTypeInterface
     public function getName();
 
     /**
-     * @param FormBuilderInterface $formBuilder
-     *
      * @return mixed
      */
     public function addFormFields(FormBuilderInterface $formBuilder);
@@ -44,8 +42,6 @@ interface RecipientTypeInterface
     public function setStaticParams($staticParams);
 
     /**
-     * @param array $params
-     *
      * @return mixed
      */
     public function setParams(array $params);
@@ -66,8 +62,6 @@ interface RecipientTypeInterface
     public function getRecipientCount();
 
     /**
-     * @param RecipientManager $manager
-     *
      * @return mixed
      */
     public function setManager(RecipientManager $manager);

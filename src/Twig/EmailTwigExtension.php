@@ -40,8 +40,6 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
 
     /**
      * PublicTwigExtension constructor.
-     *
-     * @param MailBuilder $mailBuilder
      */
     public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager, SubscriptionManager $subscriptionManager, LayoutManager $layoutManager)
     {

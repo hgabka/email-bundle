@@ -19,8 +19,6 @@ class MessageRecipientsType extends AbstractType
 
     /**
      * RecipientsType constructor.
-     *
-     * @param RecipientManager $manager
      */
     public function __construct(RecipientManager $manager)
     {
@@ -30,7 +28,7 @@ class MessageRecipientsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
                 $data = $event->getData();
                 $form = $event->getForm();
 
@@ -48,7 +46,7 @@ class MessageRecipientsType extends AbstractType
                     }
                 }
             })
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                 $data = $event->getData();
                 $form = $event->getForm();
                 foreach ($form->all() as $name => $field) {

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class SubscriberAdmin extends AbstractAdmin
 {
     protected $baseRoutePattern = 'subscriber';
-    
+
     /** @var SubscriptionManager */
     protected $manager;
 

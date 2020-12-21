@@ -18,8 +18,6 @@ abstract class GeneralRecipientType extends AbstractRecipientType
 
     /**
      * GeneralEmailTemplateRecipientType constructor.
-     *
-     * @param HgabkaUtils $hgabkaUtils
      */
     public function __construct(HgabkaUtils $hgabkaUtils)
     {

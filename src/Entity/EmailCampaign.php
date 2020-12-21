@@ -215,8 +215,6 @@ class EmailCampaign
     /**
      * Add message.
      *
-     * @param EmailCampaignMessage $message
-     *
      * @return EmailCampaign
      */
     public function addMessage(EmailCampaignMessage $message)
@@ -232,8 +230,6 @@ class EmailCampaign
 
     /**
      * Remove message.
-     *
-     * @param EmailCampaignMessage $message
      */
     public function removeMessage(EmailCampaignMessage $message)
     {

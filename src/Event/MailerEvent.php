@@ -19,17 +19,12 @@ class MailerEvent extends Event
     /** @var mixed */
     private $returnValue;
 
-    /**
-     * @return \Swift_Message
-     */
     public function getMessage(): \Swift_Message
     {
         return $this->message;
     }
 
     /**
-     * @param \Swift_Message $message
-     *
      * @return MailerEvent
      */
     public function setMessage(\Swift_Message $message): self
@@ -39,9 +34,6 @@ class MailerEvent extends Event
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getParameters(): array
     {
         return $this->parameters;

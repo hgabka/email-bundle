@@ -17,8 +17,6 @@ class AttachmentType extends AbstractType
 
     /**
      * AttachmentType constructor.
-     *
-     * @param MediaAdmin $mediaAdmin
      */
     public function __construct(MediaAdmin $mediaAdmin)
     {

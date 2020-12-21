@@ -7,9 +7,6 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
     /** @var array */
     protected $config;
 
-    /**
-     * @return array
-     */
     public function getConfig(): array
     {
         return $this->config;
@@ -29,8 +26,6 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
 
     /**
      * Invoked immediately before the Message is sent.
-     *
-     * @param \Swift_Events_SendEvent $evt
      */
     public function beforeSendPerformed(\Swift_Events_SendEvent $evt)
     {
@@ -68,8 +63,6 @@ class AddRecipientsPlugin implements \Swift_Events_SendListener
 
     /**
      * Invoked immediately after the Message is sent.
-     *
-     * @param \Swift_Events_SendEvent $evt
      */
     public function sendPerformed(\Swift_Events_SendEvent $evt)
     {

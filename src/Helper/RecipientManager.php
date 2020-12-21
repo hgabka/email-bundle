@@ -43,9 +43,7 @@ class RecipientManager
     /**
      * RecipientManager constructor.
      *
-     * @param ManagerRegistry     $doctrine
-     * @param TranslatorInterface $translator
-     * @param mixed               $excludedRecipientClasses
+     * @param mixed $excludedRecipientClasses
      */
     public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
     {
@@ -57,9 +55,8 @@ class RecipientManager
     }
 
     /**
-     * @param EmailTemplateRecipientTypeInterface $type
-     * @param                                     $alias
-     * @param mixed                               $priority
+     * @param       $alias
+     * @param mixed $priority
      */
     public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type, $priority = null)
     {
@@ -78,9 +75,8 @@ class RecipientManager
     }
 
     /**
-     * @param MessageRecipientTypeInterface $type
-     * @param                               $alias
-     * @param mixed                         $priority
+     * @param       $alias
+     * @param mixed $priority
      */
     public function addMessageRecipientType(MessageRecipientTypeInterface $type, $priority = null)
     {
@@ -100,8 +96,6 @@ class RecipientManager
     }
 
     /**
-     * @param null|string $type
-     *
      * @return null|EmailTemplateRecipientTypeInterface|mixed
      */
     public function getTemplateRecipientType(string $type = null)
@@ -110,8 +104,6 @@ class RecipientManager
     }
 
     /**
-     * @param null|string $type
-     *
      * @return null|MessageRecipientTypeInterface|mixed
      */
     public function getMessageRecipientType(string $type = null)
@@ -120,7 +112,6 @@ class RecipientManager
     }
 
     /**
-     * @param string     $type
      * @param bool       $removable
      * @param mixed      $name
      * @param null|mixed $label
@@ -206,7 +197,6 @@ class RecipientManager
     }
 
     /**
-     * @param EmailTemplate              $template
      * @param EmailTemplateTypeInterface $templateType
      *
      * @return array|mixed
@@ -242,7 +232,6 @@ class RecipientManager
     }
 
     /**
-     * @param EmailTemplate              $template
      * @param EmailTemplateTypeInterface $templateType
      *
      * @return array|mixed
@@ -269,7 +258,6 @@ class RecipientManager
     }
 
     /**
-     * @param EmailTemplate              $template
      * @param EmailTemplateTypeInterface $templateType
      *
      * @return array|mixed

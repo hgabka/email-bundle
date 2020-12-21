@@ -27,9 +27,6 @@ class BuildMessageMailEvent extends Event
     /** @var string */
     protected $locale;
 
-    /**
-     * @return MailBuilder
-     */
     public function getBuilder(): MailBuilder
     {
         return $this->builder;
@@ -47,9 +44,6 @@ class BuildMessageMailEvent extends Event
         return $this;
     }
 
-    /**
-     * @return Message
-     */
     public function getMessage(): Message
     {
         return $this->message;
@@ -107,9 +101,6 @@ class BuildMessageMailEvent extends Event
         return $this;
     }
 
-    /**
-     * @return MessageRecipientTypeInterface
-     */
     public function getRecipientType(): MessageRecipientTypeInterface
     {
         return $this->recipientType;
@@ -127,9 +118,6 @@ class BuildMessageMailEvent extends Event
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLocale(): string
     {
         return $this->locale;

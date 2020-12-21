@@ -191,9 +191,6 @@ class Attachment
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFilename(): string
     {
         return $this->filename;
@@ -211,9 +208,6 @@ class Attachment
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getContent(): string
     {
         return $this->content;
@@ -231,9 +225,6 @@ class Attachment
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getContentType(): string
     {
         return $this->contentType;

@@ -17,8 +17,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  */
 class EmailTemplate implements TranslatableInterface
 {
-    use TranslatableTrait;
     use TimestampableEntity;
+    use TranslatableTrait;
 
     /**
      * @ORM\Id

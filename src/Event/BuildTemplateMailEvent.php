@@ -131,9 +131,6 @@ class BuildTemplateMailEvent extends Event
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getParams(): array
     {
         return $this->params;
@@ -151,9 +148,6 @@ class BuildTemplateMailEvent extends Event
         return $this;
     }
 
-    /**
-     * @return ParamSubstituter
-     */
     public function getParamSubstituter(): ParamSubstituter
     {
         return $this->paramSubstituter;

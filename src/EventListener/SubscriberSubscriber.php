@@ -22,8 +22,7 @@ class SubscriberSubscriber implements EventSubscriber
     /**
      * SubscriberSubscriber constructor.
      *
-     * @param SubscriptionManager $manager
-     * @param QueueManager        $queueManager
+     * @param QueueManager $queueManager
      */
     public function __construct(SubscriptionManager $manager)
     {

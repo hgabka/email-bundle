@@ -17,8 +17,6 @@ class MessageMailType extends AbstractType
 
     /**
      * MessageMailType constructor.
-     *
-     * @param HgabkaUtils $hgabkaUtils
      */
     public function __construct(HgabkaUtils $hgabkaUtils)
     {

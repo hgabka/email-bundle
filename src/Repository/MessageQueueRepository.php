@@ -9,8 +9,6 @@ use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 class MessageQueueRepository extends EntityRepository
 {
     /**
-     * @param Message $message
-     *
      * @return mixed
      */
     public function deleteMessageFromQueue(Message $message)
@@ -67,8 +65,6 @@ class MessageQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Message $message
-     *
      * @return array
      */
     public function getSendDataForMessage(Message $message)

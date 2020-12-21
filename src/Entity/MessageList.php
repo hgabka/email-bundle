@@ -18,8 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class MessageList implements TranslatableInterface
 {
-    use TranslatableTrait;
     use TimestampableEntity;
+    use TranslatableTrait;
 
     /**
      * @ORM\Id
@@ -191,8 +191,6 @@ class MessageList implements TranslatableInterface
     /**
      * Add send list.
      *
-     * @param MessageSendList $sendList
-     *
      * @return MessageList
      */
     public function addSendList(MessageSendList $sendList)
@@ -208,8 +206,6 @@ class MessageList implements TranslatableInterface
 
     /**
      * Remove send list.
-     *
-     * @param MessageSendList $sendList
      */
     public function removeSendList(MessageSendList $sendList)
     {
@@ -239,8 +235,6 @@ class MessageList implements TranslatableInterface
     /**
      * Add send list.
      *
-     * @param MessageListSubscription $listSubscription
-     *
      * @return MessageList
      */
     public function addListSubscription(MessageListSubscription $listSubscription)
@@ -256,8 +250,6 @@ class MessageList implements TranslatableInterface
 
     /**
      * Remove send list.
-     *
-     * @param MessageListSubscription $listSubscription
      */
     public function removeListSubscription(MessageListSubscription $listSubscription)
     {

@@ -46,9 +46,6 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         $this->params = $params;
     }
 
-    /**
-     * @return MailBuilder
-     */
     public function getBuilder(): MailBuilder
     {
         return $this->builder;
@@ -56,8 +53,6 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
 
     /**
      * @required
-     *
-     * @param MailBuilder $builder
      *
      * @return AbstractEmailTemplateRecipientType
      */

@@ -6,7 +6,7 @@ use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 
 class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 {
-    /** @var array $redirectConfig */
+    /** @var array */
     protected $redirectConfig;
 
     /** @var HgabkaUtils */
@@ -33,7 +33,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
      * Create a new RedirectingPlugin.
      *
      * @param mixed $recipient
-     * @param array $whitelist
      */
     public function __construct($recipient, array $whitelist = [])
     {
@@ -41,9 +40,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         $this->_whitelist = $whitelist;
     }
 
-    /**
-     * @return HgabkaUtils
-     */
     public function getHgabkaUtils(): HgabkaUtils
     {
         return $this->hgabkaUtils;
@@ -81,9 +77,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         return $this->_recipient;
     }
 
-    /**
-     * @return bool
-     */
     public function isDebug(): bool
     {
         return $this->debug;
@@ -101,9 +94,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getRedirectConfig(): array
     {
         return $this->redirectConfig;
@@ -123,8 +113,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
     /**
      * Invoked immediately before the Message is sent.
-     *
-     * @param \Swift_Events_SendEvent $evt
      */
     public function beforeSendPerformed(\Swift_Events_SendEvent $evt)
     {
@@ -175,9 +163,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         }
     }
 
-    /**
-     * @return bool
-     */
     protected function checkHost(): bool
     {
         $redirectConfig = $this->redirectConfig;
@@ -197,9 +182,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         return $this->isDebug() || $hostEnabled;
     }
 
-    /**
-     * @return bool
-     */
     protected function isEnabled(): bool
     {
         return $this->redirectConfig['enable'] && $this->checkHost();
@@ -256,10 +238,6 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
     /**
      * címzett tömb "név <email>" stringgé konvertálása.
-     *
-     * @param array $recipient
-     *
-     * @return string
      */
     private function recipientToString(array $recipient): string
     {
