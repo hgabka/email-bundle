@@ -292,8 +292,8 @@ class MailBuilder
                     $this->addCcToMail($mail, $paramBcc, RecipientManager::RECIPIENT_TYPE_BCC);
                 }
 
-                if (!empty($parameters['attachments'])) {
-                    $attachments = $parameters['attachments'];
+                if (!empty($sendParams['attachments'])) {
+                    $attachments = $sendParams['attachments'];
                     if (\is_string($attachments)) {
                         $attachments = [$attachments];
                     }
@@ -322,6 +322,15 @@ class MailBuilder
                         }
 
                         $mail->attach($part);
+                    }
+                }
+
+                if (!isset($sendParams['return_path'])) {
+                    $from = $mail->getFrom();
+                    $mail->setReturnPath(\is_array($from) ? key($from) : (string) $from);
+                } else {
+                    if (\is_string($sendParams['return_path'])) {
+                        $mail->setReturnPath($sendParams['return_path']);
                     }
                 }
 
