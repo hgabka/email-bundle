@@ -60,7 +60,7 @@ class LayoutManager
         return $locator->locate('layout.html');
     }
 
-    public function applyLayout($bodyHtml, EmailLayout $layout = null, $locale, $params = [], $layoutFile = null)
+    public function applyLayout($bodyHtml, EmailLayout $layout = null, $mail, $locale, $params = [], $layoutFile = null)
     {
         if ($layout && \strlen($bodyHtml) > 0) {
             $layoutHtml = $layout->translate($locale)->getContentHtml();
@@ -79,7 +79,7 @@ class LayoutManager
             }
         }
         if (!empty($layoutHtml)) {
-            $bodyHtml = $this->finalizeLayout($layoutHtml, $bodyHtml, $params, $locale);
+            $bodyHtml = $this->finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale);
         }
 
         return $bodyHtml;
@@ -107,10 +107,10 @@ class LayoutManager
      *
      * @return string
      */
-    protected function finalizeLayout($layoutHtml, $bodyHtml, $params, $locale)
+    protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale)
     {
         foreach ($this->layoutVars as $class => $layoutVar) {
-            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($bodyHtml, $params, $locale);
+            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($bodyHtml, $mail, $params, $locale);
         }
 
         $params = array_merge($params, [
