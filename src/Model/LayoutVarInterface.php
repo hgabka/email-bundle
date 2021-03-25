@@ -8,7 +8,7 @@ interface LayoutVarInterface
 
     public function getLabel();
 
-    public function getValue($bodyHtml, $params, $locale);
+    public function getValue($bodyHtml, $mail, $params, $locale);
 
     public function setPriority($priority);
 
