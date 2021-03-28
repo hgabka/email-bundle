@@ -25,7 +25,7 @@ class MessageAdminController extends CRUDController
     public function addRecipientAction(Request $request)
     {
         if (!$request->isXmlHttpRequest()) {
-            return $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
         $fieldName = $request->get('fieldType').'Data';
 
