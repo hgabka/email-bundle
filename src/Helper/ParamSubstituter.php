@@ -96,10 +96,10 @@ class ParamSubstituter
      */
     public function embedImages($html, $email)
     {
-        $pattern = '/(<img[^>]+src=["\'])([^"\']+)(["\'])([^>]*)/i';
+        $pattern = '/(<img[^>]+src=["\'])([^"\']+)/i';
 
         $html = preg_replace_callback($pattern, function ($matches) use ($email) {
-            return $matches[1].$this->embedImage($matches[2], $email).$matches[3].$matches[4];
+            return $matches[1].$this->embedImage($matches[2], $email);
         }, $html);
 
         $pattern = '/(url\s*\()([^\)]+)/i';
