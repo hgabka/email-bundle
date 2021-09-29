@@ -13,9 +13,11 @@ class MessageLogger
     public function __construct($path)
     {
         $this->logger = new Logger('message_logger');
-        $handler = new StreamHandler($path.'/'.date('Ymd').'.log');
-        $handler->setFormatter(new MessageLogFormatter());
-        $this->logger->setHandlers([$handler]);
+        if (!empty($path)) {
+            $handler = new StreamHandler($path.'/'.date('Ymd').'.log');
+            $handler->setFormatter(new MessageLogFormatter());
+            $this->logger->setHandlers([$handler]);
+        }
     }
 
     public function getLogger(): LoggerInterface
