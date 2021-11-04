@@ -615,8 +615,16 @@ class MailBuilder
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = \is_array($default) ? key($default) : $default;
-        $name = ($template ? $template->getFromName($locale) : null) ?? ($defaultName ?? null);
-        $email = ($template ? $template->getFromEmail($locale) : null) ?? $defaultEmail;
+        
+        $name = $template ? $template->getFromName($locale) : null;
+        if (empty($name)) {
+            $name = empty($defaultName) ? null : $defaultName;
+        }
+        
+        $email = $template ? $template->getFromEmail($locale) : null;
+        if (empty($email)) {
+            $email = $defaultEmail;
+        }
 
         return empty($name) ? $email : [$email => $name];
     }
