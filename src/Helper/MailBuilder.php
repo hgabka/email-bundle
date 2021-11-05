@@ -216,6 +216,10 @@ class MailBuilder
             return false;
         }
         $messages = [];
+        
+        if (isset($paramTos['to'])) {
+            $paramTos = [$paramTos];
+        }
 
         foreach ($paramTos as $paramToRow) {
             $locale = $this->hgabkaUtils->getCurrentLocale($paramToRow['locale'] ?? null);
