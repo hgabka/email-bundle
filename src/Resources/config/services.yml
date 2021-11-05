@@ -151,6 +151,9 @@ services:
         class: 'Hgabka\EmailBundle\Helper\ParamSubstituter'
         arguments: ["@request_stack", "@router", "%kernel.cache_dir%", "%kernel.project_dir%", []]
 
+    Hgabka\EmailBundle\Helper\ParamSubstituter:
+        alias: hg_email.param_substituter
+
     hg_email.email_subscriber:
         class: Hgabka\EmailBundle\EventListener\EmailSubscriber
         tags:
