@@ -110,7 +110,7 @@ class LayoutManager
     protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale)
     {
         foreach ($this->layoutVars as $class => $layoutVar) {
-            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($bodyHtml, $mail, $params, $locale);
+            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale);
         }
 
         $params = array_merge($params, [
