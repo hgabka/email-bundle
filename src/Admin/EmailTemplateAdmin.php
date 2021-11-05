@@ -253,7 +253,7 @@ class EmailTemplateAdmin extends AbstractAdmin
             'fields' => $transFields,
         ];
         if (!$type->isSenderEditable()) {
-            $options['exclude_fields'] = ['fromName', 'fromEmail'];
+            $options['excluded_fields'] = ['fromName', 'fromEmail'];
         }
 
         $form
