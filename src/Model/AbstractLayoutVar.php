@@ -44,7 +44,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         return $this->translator->trans($label);
     }
 
-    public function getValue($bodyHtml, $mail, $params, $locale)
+    public function getValue($layoutHtml, $bodyHtml, $mail, $params, $locale)
     {
         return $params[$this->getPlaceholder()];
     }
