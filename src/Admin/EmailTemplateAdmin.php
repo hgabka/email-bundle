@@ -6,6 +6,7 @@ use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailLayout;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
+use Hgabka\EmailBundle\Entity\EmailTemplateTranslation;
 use Hgabka\EmailBundle\Form\AttachmentType;
 use Hgabka\EmailBundle\Form\EmailTemplateRecipientsType;
 use Hgabka\EmailBundle\Helper\MailBuilder;
