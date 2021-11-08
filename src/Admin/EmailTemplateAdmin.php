@@ -66,6 +66,8 @@ class EmailTemplateAdmin extends AbstractAdmin
 
         $query = parent::createQuery($context);
         $alias = current($query->getRootAliases());
+        
+        $query->leftJoin(EmailTemplateTranslation::class, 'et', 'WITH', 'et.id = '.$alias.'.id AND et.locale = :curlang')->setParameter('curlang', $this->getRequest()->getLocale());
 
         $orx = $query->expr()->orX();
         $orx->add($alias.'.type IS NULL');
@@ -75,6 +77,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         }
 
         $query->andWhere($orx);
+        $query->orderBy('et.comment');
 
         return $query;
     }
