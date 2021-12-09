@@ -51,14 +51,14 @@ class MessageLoggerPlugin implements \Swift_Events_SendListener
         $event->setMessage($message);
         // spool transport
         if ($transport instanceof \Swift_SpoolTransport) {
-            $this->dispatcher->dispatch(MailerEvent::EVENT_SEND_CALLED, $event);
+            $this->dispatcher->dispatch($event, MailerEvent::EVENT_SEND_CALLED);
         }
         // any other
         else {
             if (!isset($message->loggedByHgabkaEmailBundle)) {
-                $this->dispatcher->dispatch(MailerEvent::EVENT_SEND_CALLED, $event);
+                $this->dispatcher->dispatch($event, MailerEvent::EVENT_SEND_CALLED);
             }
-            $this->dispatcher->dispatch(MailerEvent::EVENT_MAIL_SENT, $event);
+            $this->dispatcher->dispatch($event, MailerEvent::EVENT_MAIL_SENT);
         }
     }
 }
