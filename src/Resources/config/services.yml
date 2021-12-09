@@ -26,7 +26,8 @@ services:
         calls:
           - [setBuilder, ["@hg_email.mail_builder"]]
           - [setAuthChecker, ["@security.authorization_checker"]]
-          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
+          - [setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
+          - [setUtils, ["@hgabka_utils.hgabka_utils"]]
 
     hg_email.admin.email_layout:
         class: Hgabka\EmailBundle\Admin\EmailLayoutAdmin
