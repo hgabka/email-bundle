@@ -3,7 +3,7 @@
 namespace Hgabka\EmailBundle\Event;
 
 use Hgabka\EmailBundle\Helper\MailBuilder;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class MailSenderEvent extends Event
 {
