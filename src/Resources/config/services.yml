@@ -377,3 +377,16 @@ services:
     Hgabka\EmailBundle\Controller\MessageAdminController:
         autowire: true
         autoconfigure: true
+    
+    Hgabka\EmailBundle\Controller\EmailLayoutAdminController:
+        autowire: true
+        autoconfigure: true
+        
+    Hgabka\EmailBundle\Controller\MessageListAdminController:
+        autowire: true
+        autoconfigure: true
+        
+    Hgabka\EmailBundle\Controller\SubscriberAdminController:
+        autowire: true
+        autoconfigure: true
+        
