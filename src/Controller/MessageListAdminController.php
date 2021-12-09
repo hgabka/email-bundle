@@ -20,7 +20,7 @@ class MessageListAdminController extends CRUDController
         $this->subscriptionManager = $subscriptionManager;
     }
 
-    protected function preList(Request $request)
+    protected function preList(Request $request): ?Response
     {
         if (!$this->subscriptionManager->isEditableLists()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
