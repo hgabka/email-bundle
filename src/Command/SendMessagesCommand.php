@@ -56,6 +56,8 @@ class SendMessagesCommand extends Command
         $time_end = microtime(true);
         $time = $time_end - $time_start;
         $output->writeln("Execution time: $time seconds");
+        
+        return Command::SUCCESS;
     }
 
     protected function send($limit, OutputInterface $output)
