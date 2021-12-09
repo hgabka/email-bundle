@@ -10,6 +10,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendEmailsCommand extends Command
 {
+    protected static $defaultName = 'hgabka:email:send-emails';
+    
     /** @var MessageSender */
     protected $messageSender;
 
@@ -26,7 +28,7 @@ class SendEmailsCommand extends Command
     {
         $this
             // the name of the command (the part after "bin/console")
-            ->setName('hgabka:email:send-emails')
+            ->setName(static::$defaultName)
 
             // the short description shown while running "php bin/console list"
             ->setDescription('Sends emails in queue')
@@ -56,6 +58,8 @@ class SendEmailsCommand extends Command
         $time_end = microtime(true);
         $time = $time_end - $time_start;
         $output->writeln("Execution time: $time seconds");
+        
+        return Command::SUCCESS;
     }
 
     protected function send($limit, OutputInterface $output)
