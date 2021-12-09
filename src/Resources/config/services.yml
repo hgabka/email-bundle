@@ -273,7 +273,7 @@ services:
 
     hg_email.email_voter:
         class:  Hgabka\EmailBundle\Security\EmailVoter
-        arguments: ['@security.access.decision_manager', '']
+        arguments: ['@security.access.decision_manager', '@hg_email.template_type_manager', '']
         tags:
             - { name: security.voter }
         public: false
