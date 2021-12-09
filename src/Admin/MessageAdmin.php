@@ -58,7 +58,7 @@ class MessageAdmin extends AbstractAdmin
         $this->builder = $builder;
     }
 
-    public function getBatchActions()
+    protected function configureBatchActions(array $actions): array
     {
         return [];
     }
