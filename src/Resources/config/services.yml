@@ -352,16 +352,14 @@ services:
     Hgabka\EmailBundle\Controller\MessageController:
         arguments: ['@doctrine']
         tags: ['controller.service_arguments']
-    Hgabka\EmailBundle\Controller\MessageAdminController:
-        tags: ['controller.service_arguments']
-    Hgabka\EmailBundle\Controller\SubscriberAdminController:
-        tags: ['controller.service_arguments']
+
     Hgabka\EmailBundle\Controller\MessageListAdminController:
-        arguments: ['@hg_email.subscription_manager']
-        tags: ['controller.service_arguments']
+        autowire: true
+        autoconfigure: true
+        
     Hgabka\EmailBundle\Controller\EmailLayoutAdminController:
-        arguments: ['@hg_email.mail_builder']
-        tags: ['controller.service_arguments']
+        autowire: true
+        autoconfigure: true
 
     Hgabka\EmailBundle\Command\SendMessagesCommand:
         autowire: true
@@ -376,14 +374,6 @@ services:
         autoconfigure: true
         
     Hgabka\EmailBundle\Controller\MessageAdminController:
-        autowire: true
-        autoconfigure: true
-    
-    Hgabka\EmailBundle\Controller\EmailLayoutAdminController:
-        autowire: true
-        autoconfigure: true
-        
-    Hgabka\EmailBundle\Controller\MessageListAdminController:
         autowire: true
         autoconfigure: true
         
