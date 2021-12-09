@@ -11,7 +11,7 @@ use Hgabka\EmailBundle\Helper\ParamSubstituter;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\Environment;
