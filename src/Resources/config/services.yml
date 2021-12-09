@@ -369,3 +369,11 @@ services:
     Hgabka\EmailBundle\Command\SendEmailsCommand:
         autowire: true
         autoconfigure: true
+        
+    Hgabka\EmailBundle\Controller\EmailTemplateAdminController:
+        autowire: true
+        autoconfigure: true
+        
+    Hgabka\EmailBundle\Controller\MessageAdminController:
+        autowire: true
+        autoconfigure: true
