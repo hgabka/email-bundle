@@ -117,11 +117,6 @@ class MessageController extends AbstractController
         return $this->render('@HgabkaEmail/Message/unsubscribe.html.twig');
     }
 
-    protected function getDoctrine()
-    {
-        return $this->doctrine;
-    }
-
     /**
      * @param $layout
      * @param $subject
