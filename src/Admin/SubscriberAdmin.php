@@ -11,6 +11,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Filter\Model\FilterData;
 use Sonata\DoctrineORMAdminBundle\Filter\CallbackFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -52,22 +53,22 @@ class SubscriberAdmin extends AbstractAdmin
         return $this;
     }
 
-    public function toString($object)
+    public function toString(object $object): string
     {
-        return $this->trans('hg_email.label.subscriber', ['%name%' => $object->getName()]);
+        return $this->getTranslator()->trans('hg_email.label.subscriber', ['%name%' => (string)$object->getName()]);
     }
 
-    public function postPersist($object)
-    {
-        $this->manager->updateListSubscriptions($object, true);
-    }
-
-    public function postUpdate($object)
+    public function postPersist(object $object): void
     {
         $this->manager->updateListSubscriptions($object, true);
     }
 
-    protected function configureListFields(ListMapper $list)
+    public function postUpdate(object $object): void
+    {
+        $this->manager->updateListSubscriptions($object, true);
+    }
+
+    protected function configureListFields(ListMapper $list): void
     {
         if ($this->manager->isUseNames()) {
             $list
@@ -91,7 +92,7 @@ class SubscriberAdmin extends AbstractAdmin
             ;
         }
         $list
-            ->add('_action', null, [
+            ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'edit' => [],
                     'delete' => [],
@@ -100,7 +101,7 @@ class SubscriberAdmin extends AbstractAdmin
         ;
     }
 
-    protected function configureDatagridFilters(DatagridMapper $filter)
+    protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         if ($this->manager->isUseNames()) {
             $filter
@@ -133,20 +134,26 @@ class SubscriberAdmin extends AbstractAdmin
                                 ;
                         },
                     ],
-                    'callback' => function ($query, $alias, $field, $value) {
+                    'callback' => static function ($query, $alias, $field, FilterData $value) {
+                        if (empty($value->getValue()) {
+                            return false;
+                        }
+                            
                         $query
                             ->leftJoin($alias.'.listSubscriptions', 'sl')
                             ->andWhere('sl.list IN (:lists)')
-                            ->setParameter('lists', $value['value'])
+                            ->setParameter('lists', $value->getValue())
                            // ->groupBy($alias.'.id')
                         ;
+                            
+                        return true;
                     },
                 ])
             ;
         }
     }
 
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         if ($this->manager->isUseNames()) {
             $form
