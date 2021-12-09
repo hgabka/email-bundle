@@ -17,6 +17,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -43,6 +44,14 @@ class MessageAdmin extends AbstractAdmin
 
     /** @var AuthorizationCheckerInterface */
     private $authChecker;
+    
+    /** @var HgabkaUtils */
+    protected $utils;
+
+    public function setUtils(HgabkaUtils $utils)
+    {
+        $this->utils = $utils;
+    }
 
     public function setBuilder(MailBuilder $builder)
     {
@@ -59,9 +68,9 @@ class MessageAdmin extends AbstractAdmin
         $this->authChecker = $authChecker;
     }
 
-    public function prePersist($object)
+    public function prePersist(object $object): void
     {
-        $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
+        $em = $this->getModelManager()->getEntityManager($object);
 
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
@@ -79,9 +88,10 @@ class MessageAdmin extends AbstractAdmin
         }
     }
 
-    public function preUpdate($object)
+    public function preUpdate(object $object): void
     {
-        $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
+        $em = $this->getModelManager()->getEntityManager($object);
+        
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
             foreach ($attRepo->getByMessage($trans->getTranslatable(), $trans->getLocale()) as $att) {
@@ -98,9 +108,10 @@ class MessageAdmin extends AbstractAdmin
         }
     }
 
-    public function postPersist($object)
+    public function postPersist(object $object): void
     {
-        $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
+        $em = $this->getModelManager()->getEntityManager($object);
+        
         foreach ($object->getTranslations() as $trans) {
             foreach ($trans->getAttachments() as $att) {
                 $att
@@ -112,14 +123,14 @@ class MessageAdmin extends AbstractAdmin
         $em->flush();
     }
 
-    public function toString($object)
+    public function toString(object $object): string
     {
-        $name = $object ? $object->getName($this->getConfigurationPool()->getContainer()->get(HgabkaUtils::class)->getCurrentLocale()) : null;
+        $name = $object ? $object->getName($this->utils->getCurrentLocale()) : null;
 
-        return $name ?: $this->trans('breadcrumb.link_message_create');
+        return $name ?: $this->getTranslator()->trans('breadcrumb.link_message_create');
     }
 
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection)
     {
         $collection->clearExcept(['create', 'edit', 'list', 'delete']);
         $collection->add('add_recipient', 'addRecipient');
@@ -130,7 +141,7 @@ class MessageAdmin extends AbstractAdmin
         $collection->add('copy', $this->getRouterIdParameter().'/copy');
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper
             ->add('translations.name', null, [
@@ -142,7 +153,7 @@ class MessageAdmin extends AbstractAdmin
                 'label' => 'hg_email.label.status',
                 'template' => '@HgabkaEmail/Admin/Message/list_status.html.twig',
             ])
-            ->add('_action', null, [
+            ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'edit' => [
                         'template' => '@HgabkaEmail/Admin/Message/list_edit.html.twig',
@@ -165,7 +176,7 @@ class MessageAdmin extends AbstractAdmin
         ;
     }
 
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $transFields = [
             'name' => [
@@ -235,7 +246,7 @@ class MessageAdmin extends AbstractAdmin
                     'label' => 'hg_email.label.layout',
                     'required' => false,
                     'class' => EmailLayout::class,
-                    'placeholder' => $this->trans('hg_email.placeholder.email_layout'),
+                    'placeholder' => $this->getTranslator()->trans('hg_email.placeholder.email_layout'),
                 ])
             ;
         }
