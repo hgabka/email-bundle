@@ -7,7 +7,7 @@ use Hgabka\EmailBundle\Annotation\TemplateVar;
 use Hgabka\EmailBundle\Helper\MessageSender;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 {
