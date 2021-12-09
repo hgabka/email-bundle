@@ -126,7 +126,7 @@ class MailBuilder
         $event = new MailSenderEvent($this);
         $event->setSenderData($senderData);
 
-        $this->eventDispatcher->dispatch(MailBuilderEvents::SET_DEFAULT_SENDER, $event);
+        $this->eventDispatcher->dispatch($event, MailBuilderEvents::SET_DEFAULT_SENDER);
 
         return $this->translateEmailAddress($event->getSenderData());
     }
@@ -142,7 +142,7 @@ class MailBuilder
         $event = new MailRecipientEvent($this);
         $event->setRecipientData($recipientData);
 
-        $this->eventDispatcher->dispatch(MailBuilderEvents::SET_DEFAULT_RECIPIENT, $event);
+        $this->eventDispatcher->dispatch($event, MailBuilderEvents::SET_DEFAULT_RECIPIENT);
 
         $recipientData = $event->getRecipientData();
         $recipientData['locale'] = $recipientData['locale'] ?? null;
@@ -262,7 +262,7 @@ class MailBuilder
                 ->setParams($params)
                 ->setParamSubstituter($this->paramSubstituter)
             ;
-            $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_TEMPLATE_MAIL, $event);
+            $this->eventDispatcher->dispatch($event, MailBuilderEvents::BUILD_TEMPLATE_MAIL);
             if (!empty($event->getBody())) {
                 $bodyHtml = $event->getBody();
             }
@@ -414,7 +414,7 @@ class MailBuilder
             ->setLocale($locale)
         ;
 
-        $this->eventDispatcher->dispatch(MailBuilderEvents::BUILD_MESSAGE_MAIL, $event);
+        $this->eventDispatcher->dispatch($event, MailBuilderEvents::BUILD_MESSAGE_MAIL);
         if (!empty($event->getBody())) {
             $bodyHtml = $event->getBody();
         }
