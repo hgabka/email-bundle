@@ -14,6 +14,8 @@ use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
+use Twig\Environment;
+use Twig\TwigFunction;
 
 class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
 {
@@ -63,35 +65,35 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
     /**
      * @return array
      */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_template_usable_vars',
                 [$this, 'renderTemplateUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_message_usable_vars',
                 [$this, 'renderMessageUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_layout_usable_vars',
                 [$this, 'renderLayoutUsableVars'],
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_template_recipient_selector',
                 [$this, 'renderTemplateRecipientSelector'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_message_recipient_selector',
                 [$this, 'renderMessageRecipientSelector'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'render_subscriber_lists',
                 [$this, 'renderSubscriberLists'],
                 ['is_safe' => ['html']]
@@ -99,7 +101,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         ];
     }
 
-    public function renderTemplateUsableVars(\Twig_Environment $environment, EmailTemplate $template)
+    public function renderTemplateUsableVars(Environment $environment, EmailTemplate $template)
     {
         $type = $this->templateTypeManager->getTemplateType($template->getType());
 
@@ -118,7 +120,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderMessageUsableVars(\Twig_Environment $environment, Message $message = null)
+    public function renderMessageUsableVars(Environment $environment, Message $message = null)
     {
         $vars = array_flip($this->mailBuilder->getMessageVars($message));
 
@@ -127,7 +129,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderLayoutUsableVars(\Twig_Environment $environment)
+    public function renderLayoutUsableVars(Environment $environment)
     {
         $vars = $this->layoutManager->getVariables();
 
@@ -175,13 +177,5 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         $html .= '</ul>';
 
         return $html;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'hgabka_emailbundle_twig_extension';
     }
 }
