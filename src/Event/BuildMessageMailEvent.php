@@ -5,7 +5,7 @@ namespace Hgabka\EmailBundle\Event;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class BuildMessageMailEvent extends Event
 {
