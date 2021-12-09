@@ -6,7 +6,7 @@ use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\ParamSubstituter;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class BuildTemplateMailEvent extends Event
 {
