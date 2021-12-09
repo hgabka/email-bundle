@@ -130,7 +130,7 @@ class MessageAdmin extends AbstractAdmin
         return $name ?: $this->getTranslator()->trans('breadcrumb.link_message_create');
     }
 
-    protected function configureRoutes(RouteCollectionInterface $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->clearExcept(['create', 'edit', 'list', 'delete']);
         $collection->add('add_recipient', 'addRecipient');
