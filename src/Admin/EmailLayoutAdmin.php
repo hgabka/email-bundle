@@ -25,7 +25,7 @@ class EmailLayoutAdmin extends AbstractAdmin
     /** @var MailBuilder */
     protected $mailBuilder;
 
-    public function getBatchActions()
+    protected function configureBatchActions(array $actions): array
     {
         return [];
     }
@@ -50,9 +50,9 @@ class EmailLayoutAdmin extends AbstractAdmin
         return $this;
     }
 
-    public function toString($object)
+    public function toString(object $object): string
     {
-        return $this->trans('hg_email.label.message_list', ['%name%' => $object->getName()]);
+        return $this->trans('hg_email.label.message_list', ['%name%' => (string)$object->getName()]);
     }
 
     /**
