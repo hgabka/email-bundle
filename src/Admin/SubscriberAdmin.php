@@ -29,7 +29,7 @@ class SubscriberAdmin extends AbstractAdmin
     /** @var HgabkaUtils */
     protected $utils;
 
-    public function getBatchActions()
+    protected function configureBatchActions(array $actions): array
     {
         return [];
     }
@@ -135,7 +135,7 @@ class SubscriberAdmin extends AbstractAdmin
                         },
                     ],
                     'callback' => static function ($query, $alias, $field, FilterData $value) {
-                        if (empty($value->getValue()) {
+                        if (empty($value->getValue())) {
                             return false;
                         }
                             
