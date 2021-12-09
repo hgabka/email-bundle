@@ -54,7 +54,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         $this->layoutManager = $layoutManager;
     }
 
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return [
             'mail_builder' => $this->mailBuilder,
