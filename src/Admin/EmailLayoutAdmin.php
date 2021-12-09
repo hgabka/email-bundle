@@ -9,7 +9,7 @@ use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmailLayoutAdmin extends AbstractAdmin
@@ -60,19 +60,19 @@ class EmailLayoutAdmin extends AbstractAdmin
      *
      * @return array
      */
-    public function getDashboardActions()
+    protected function configureDashboardActions(array $actions): array
     {
-        $actions = $this->mailBuilder->layoutsEditable() ? parent::getDashboardActions() : [];
+        $actions = $this->mailBuilder->layoutsEditable() ? parent::onfigureDashboardActions($actions) : [];
 
         return $actions;
     }
 
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection)
     {
         $collection->remove('export');
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper
             ->add('translations.name', null, [
@@ -80,7 +80,7 @@ class EmailLayoutAdmin extends AbstractAdmin
                 'sortable' => true,
                 'template' => '@HgabkaEmail/Admin/MessageList/list_name.html.twig',
             ])
-            ->add('_action', null, [
+            ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'edit' => [],
                     'delete' => [],
@@ -89,7 +89,7 @@ class EmailLayoutAdmin extends AbstractAdmin
         ;
     }
 
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $form
             ->with('hg_email.block.layout.usable_vars')
