@@ -16,9 +16,12 @@ use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
+use Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -60,12 +63,11 @@ class EmailTemplateAdmin extends AbstractAdmin
         $this->authChecker = $authChecker;
     }
 
-    public function createQuery($context = 'list')
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
     {
         $this->templateTypeManager->getTemplateTypeEntities(true);
         $types = $this->templateTypeManager->getTemplateTypeClasses(true);
 
-        $query = parent::createQuery($context);
         $alias = current($query->getRootAliases());
         
         $query->leftJoin(EmailTemplateTranslation::class, 'et', 'WITH', 'et.id = '.$alias.'.id AND et.locale = :curlang')->setParameter('curlang', $this->getRequest()->getLocale());
@@ -83,47 +85,9 @@ class EmailTemplateAdmin extends AbstractAdmin
         return $query;
     }
 
-    public function hasAccess($action, $object = null)
+    public function prePersist(object $object): void
     {
-        if ('edit' === $action) {
-            if ($object) {
-                $type = $this->templateTypeManager->getTemplateType($object->getType());
-                if ($type && !$type->isPublic()) {
-                    return false;
-                }
-            }
-
-            return $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
-        }
-
-        return parent::hasAccess($action, $object);
-    }
-
-    public function checkAccess($action, $object = null)
-    {
-        if ('edit' === $action) {
-            $isEditor = $this->authChecker->isGranted($this->getConfigurationPool()->getContainer()->getParameter('hg_email.editor_role'));
-            if ($object) {
-                $type = $this->templateTypeManager->getTemplateType($object->getType());
-
-                if ($type && !$type->isPublic()) {
-                    throw new AccessDeniedException($this->trans('hg_email.messages.access_denied'));
-                }
-
-                if ($isEditor) {
-                    return;
-                }
-            } elseif ($isEditor) {
-                return;
-            }
-        }
-
-        parent::checkAccess($action, $object);
-    }
-
-    public function prePersist($object)
-    {
-        $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
+        $em = $this->getModelManager()->getEntityManager($object);
 
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
@@ -141,9 +105,9 @@ class EmailTemplateAdmin extends AbstractAdmin
         }
     }
 
-    public function preUpdate($object)
+    public function preUpdate($object): void
     {
-        $em = $this->getConfigurationPool()->getContainer()->get('doctrine')->getManager();
+        $em = $this->getModelManager()->getEntityManager($object);
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
             foreach ($attRepo->getByTemplate($trans->getTranslatable(), $trans->getLocale()) as $att) {
@@ -160,20 +124,20 @@ class EmailTemplateAdmin extends AbstractAdmin
         }
     }
 
-    public function toString($object)
+    public function toString(object $object): string
     {
         $type = $object->getType();
 
-        return $type ? $this->templateTypeManager->getTitleByType($type) : $template->getComment();
+        return $type ? $this->templateTypeManager->getTitleByType($type) : (string)$template->getComment();
     }
 
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->clearExcept(['edit', 'list', 'delete']);
         $collection->add('add_recipient', 'addRecipient');
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper
             ->add('comment', null, [
@@ -188,7 +152,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         ;
     }
 
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $type = $this->templateTypeManager->getTemplateType($this->getSubject()->getType());
         $transFields = [
