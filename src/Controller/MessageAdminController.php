@@ -292,14 +292,13 @@ class MessageAdminController extends CRUDController
      *
      * @return RedirectResponse
      */
-    protected function redirectTo($object)
+    protected function redirectTo(Request $request, object $object): RedirectResponse
     {
-        $request = $this->getRequest();
         if (null !== $request->get('btn_update_and_prepare')) {
             return $this->redirect($this->admin->generateObjectUrl('prepare', $object));
         }
 
-        return parent::redirectTo($object);
+        return parent::redirectTo($request, $object);
     }
 
     protected function preEdit(Request $request, $object)
