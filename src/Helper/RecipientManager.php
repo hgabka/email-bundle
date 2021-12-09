@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Helper;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Form\Type\MessageRecipientFormType;
 use Hgabka\EmailBundle\Form\Type\TemplateRecipientFormType;
@@ -19,7 +19,7 @@ class RecipientManager
     const RECIPIENT_TYPE_CC = 'cc';
     const RECIPIENT_TYPE_BCC = 'bcc';
 
-    /** @var ManagerRegistry */
+    /** @var Registry */
     protected $doctrine;
 
     /** @var TranslatorInterface */
@@ -45,7 +45,7 @@ class RecipientManager
      *
      * @param mixed $excludedRecipientClasses
      */
-    public function __construct(ManagerRegistry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
+    public function __construct(Registry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
     {
         $this->doctrine = $doctrine;
         $this->translator = $translator;
