@@ -67,7 +67,7 @@ class EmailLayoutAdmin extends AbstractAdmin
         return $actions;
     }
 
-    protected function configureRoutes(RouteCollectionInterface $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->remove('export');
     }
