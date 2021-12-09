@@ -290,7 +290,7 @@ class EmailLog
      *
      * @param Swift_Message $message
      */
-    public function fromMessage(\Swift_Message $message)
+    public function fromMessage(Email $message)
     {
         $this->setFrom($this->addressToString($message->getFrom()));
         $this->setTo($this->addressToString($message->getTo()));
@@ -299,16 +299,14 @@ class EmailLog
         $this->setCc($this->addressToString($message->getCc()));
         $this->setBcc($this->addressToString($message->getBcc()));
 
-        $children = $message->getChildren();
+        $children = $message->getAttachments();
+        $this->setHtmlBody($message->getHtmlBody());
+        
         foreach ($children as $child) {
-            if ('text/html' === $child->getContentType()) {
-                $this->setHtmlBody($child->getBody());
-            } elseif ($child instanceof \Swift_Attachment) {
-                $attachment = (string) $this->getAttachment();
-                $this->setAttachment((empty($attachment) ? '' : ($attachment.',')).$child->getFilename());
-            }
+            $attachment = (string) $this->getAttachment();
+            $this->setAttachment((empty($attachment) ? '' : ($attachment.',')).$child->getName());
         }
-        $this->setMime($message->getContentType());
+        $this->setMime($message->getMediaType().'/'.$message>getMediaSubType());
     }
 
     /**
