@@ -12,7 +12,7 @@ use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageSender
 {
