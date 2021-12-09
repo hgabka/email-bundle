@@ -18,17 +18,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class MessageController extends AbstractController
 {
-    /** @var ManagerRegistry */
-    protected $doctrine;
-
-    /**
-     * MessageController constructor.
-     */
-    public function __construct(ManagerRegistry $doctrine)
-    {
-        $this->doctrine = $doctrine;
-    }
-
     /**
      * The webversion action.
      *
