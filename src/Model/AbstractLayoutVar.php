@@ -3,7 +3,7 @@
 namespace Hgabka\EmailBundle\Model;
 
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractLayoutVar implements LayoutVarInterface
 {
