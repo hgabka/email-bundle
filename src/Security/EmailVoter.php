@@ -6,6 +6,7 @@ use Hgabka\EmailBundle\Entity\EmailLayout;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
+use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -19,15 +20,19 @@ class EmailVoter extends Voter
 
     /** @var AccessDecisionManagerInterface */
     protected $decisionManager;
+    
+    /** @var TemplateTypeManager */
+    protected $templateTypeManager;
 
     /**
      * BannerVoter constructor.
      *
      * @param string $editorRole
      */
-    public function __construct(AccessDecisionManagerInterface $decisionManager, $editorRole)
+    public function __construct(AccessDecisionManagerInterface $decisionManager, TemplateTypeManager $templateTypeManager, $editorRole)
     {
         $this->decisionManager = $decisionManager;
+        $this->templateTypeManager = $templateTypeManager;
         $this->editorRole = $editorRole;
     }
 
@@ -50,6 +55,13 @@ class EmailVoter extends Voter
 
         switch ($attribute) {
             case self::EDIT:
+                if ($subject instanceof EmailTemplate) {
+                    $type = $this->templateTypeManager->getTemplateType($object->getType());
+                    if ($type && !$type->isPublic()) {
+                        return false;
+                    }
+                }
+                
                 return $this->canEdit($subject, $token);
         }
 
