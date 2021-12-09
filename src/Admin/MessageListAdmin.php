@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageListAdmin extends AbstractAdmin
@@ -23,7 +24,7 @@ class MessageListAdmin extends AbstractAdmin
     /** @var SubscriptionManager */
     protected $manager;
 
-    public function getBatchActions()
+    protected function configureBatchActions(array $actions): array
     {
         return [];
     }
@@ -40,9 +41,9 @@ class MessageListAdmin extends AbstractAdmin
         return $this;
     }
 
-    public function toString($object)
+    public function toString(object $object): string
     {
-        return $this->trans('hg_email.label.message_list', ['%name%' => $object->getName()]);
+        return $this->getTranslator()->trans('hg_email.label.message_list', ['%name%' => (string)$object->getName()]);
     }
 
     /**
@@ -50,19 +51,19 @@ class MessageListAdmin extends AbstractAdmin
      *
      * @return array
      */
-    public function getDashboardActions()
+    protected function configureDashboardActions(array $actions): array
     {
-        $actions = $this->manager->isEditableLists() ? parent::getDashboardActions() : [];
+        $actions = $this->manager->isEditableLists() ? parent::configureDashboardActions() : [];
 
         return $actions;
     }
 
-    protected function configureRoutes(RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->remove('export');
     }
 
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper
             ->add('translations.name', null, [
@@ -74,7 +75,7 @@ class MessageListAdmin extends AbstractAdmin
                 'label' => 'hg_email.label.subscribers',
                 'template' => '@HgabkaEmail/Admin/MessageList/list_subscribers.html.twig',
             ])
-            ->add('_action', null, [
+            ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'edit' => [],
                     'delete' => [],
@@ -83,7 +84,7 @@ class MessageListAdmin extends AbstractAdmin
         ;
     }
 
-    protected function configureFormFields(FormMapper $form)
+    protected function configureFormFields(FormMapper $form): void
     {
         $form
             ->add('translations', TranslationsType::class, [
