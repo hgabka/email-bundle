@@ -11,7 +11,7 @@ use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RecipientManager
 {
