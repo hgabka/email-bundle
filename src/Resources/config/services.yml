@@ -350,7 +350,8 @@ services:
     Hgabka\EmailBundle\Helper\LayoutManager: '@hg_email.layout_manager'
 
     Hgabka\EmailBundle\Controller\MessageController:
-        arguments: ['@doctrine']
+        autowire: true
+        autoconfigure: true
         tags: ['controller.service_arguments']
 
     Hgabka\EmailBundle\Controller\MessageListAdminController:
