@@ -11,7 +11,7 @@ services:
         class: Hgabka\EmailBundle\Admin\EmailTemplateAdmin
         tags:
             - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.email_template.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
-        arguments: [null, Hgabka\EmailBundle\Entity\EmailTemplate, HgabkaEmailBundle:EmailTemplateAdmin]
+        arguments: [null, Hgabka\EmailBundle\Entity\EmailTemplate, Hgabka\EmailBundle\Controller\EmailTemplateAdminController]
         calls:
           - [setBuilder, ["@hg_email.mail_builder"]]
           - [setTemplateTypeManager, ["@hg_email.template_type_manager"]]
@@ -22,7 +22,7 @@ services:
         class: Hgabka\EmailBundle\Admin\MessageAdmin
         tags:
             - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.message.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
-        arguments: [null, Hgabka\EmailBundle\Entity\Message, HgabkaEmailBundle:MessageAdmin]
+        arguments: [null, Hgabka\EmailBundle\Entity\Message, Hgabka\EmailBundle\Controller\MessageAdminController]
         calls:
           - [setBuilder, ["@hg_email.mail_builder"]]
           - [setAuthChecker, ["@security.authorization_checker"]]
@@ -32,7 +32,7 @@ services:
         class: Hgabka\EmailBundle\Admin\EmailLayoutAdmin
         tags:
         - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.email_layout.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
-        arguments: [null, Hgabka\EmailBundle\Entity\EmailLayout, HgabkaEmailBundle:EmailLayoutAdmin]
+        arguments: [null, Hgabka\EmailBundle\Entity\EmailLayout, Hgabka\EmailBundle\Controller\EmailLayoutAdminController]
         calls:
         - [setMailBuilder, ["@hg_email.mail_builder"]]
         - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailLayout/edit.html.twig']]
@@ -41,7 +41,7 @@ services:
         class: Hgabka\EmailBundle\Admin\MessageListAdmin
         tags:
         - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.message_list.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
-        arguments: [null, Hgabka\EmailBundle\Entity\MessageList, HgabkaEmailBundle:MessageListAdmin]
+        arguments: [null, Hgabka\EmailBundle\Entity\MessageList, Hgabka\EmailBundle\Controller\MessageListAdminController]
         calls:
         - [setManager, ["@hg_email.subscription_manager"]]
 
@@ -49,7 +49,7 @@ services:
         class: Hgabka\EmailBundle\Admin\SubscriberAdmin
         tags:
         - { name: sonata.admin, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-newspaper"></i>', label: hg_email.admin.subscriber.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
-        arguments: [null, Hgabka\EmailBundle\Entity\MessageSubscriber, HgabkaEmailBundle:SubscriberAdmin]
+        arguments: [null, Hgabka\EmailBundle\Entity\MessageSubscriber, Hgabka\EmailBundle\Controller\SubscriberAdminController]
         calls:
         - [setManager, ["@hg_email.subscription_manager"]]
         - [setUtils, ["@hgabka_utils.hgabka_utils"]]
@@ -363,12 +363,9 @@ services:
         tags: ['controller.service_arguments']
 
     Hgabka\EmailBundle\Command\SendMessagesCommand:
-        arguments: ['@hg_email.message_sender']
-        tags:
-        - { name: console.command }
+        autowire: true
+        autoconfigure: true
 
     Hgabka\EmailBundle\Command\SendEmailsCommand:
-        arguments: ['@hg_email.message_sender']
-        tags:
-        - { name: console.command }
-
+        autowire: true
+        autoconfigure: true
