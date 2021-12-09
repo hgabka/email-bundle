@@ -53,7 +53,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         $this->templateTypeManager = $templateTypeManager;
     }
 
-    public function getBatchActions()
+    protected function configureBatchActions(array $actions): array
     {
         return [];
     }
