@@ -135,7 +135,7 @@ class SubscriberAdmin extends AbstractAdmin
                         },
                     ],
                     'callback' => static function ($query, $alias, $field, FilterData $value) {
-                        if (empty($value->getValue())) {
+                        if (!$value->hasValue() || empty($value->getValue())) {
                             return false;
                         }
                             
