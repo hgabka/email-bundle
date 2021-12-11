@@ -353,4 +353,9 @@ class MessageAdmin extends AbstractAdmin
 
         return $query;
     }
+
+    protected function getAccessMapping(): array
+    {
+        return $this->accessMapping;
+    }
 }
