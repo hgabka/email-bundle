@@ -13,14 +13,14 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EmailVoter extends Voter
 {
-    const EDIT = 'edit';
+    public const EDIT = 'edit';
 
     /** @var string */
     protected $editorRole;
 
     /** @var AccessDecisionManagerInterface */
     protected $decisionManager;
-    
+
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
 
@@ -61,7 +61,7 @@ class EmailVoter extends Voter
                         return false;
                     }
                 }
-                
+
                 return $this->canEdit($subject, $token);
         }
 

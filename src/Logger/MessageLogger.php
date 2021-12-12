@@ -14,7 +14,7 @@ class MessageLogger
     {
         $this->logger = new Logger('message_logger');
         if (!empty($path)) {
-            $handler = new StreamHandler($path.'/'.date('Ymd').'.log');
+            $handler = new StreamHandler($path . '/' . date('Ymd') . '.log');
             $handler->setFormatter(new MessageLogFormatter());
             $this->logger->setHandlers([$handler]);
         }

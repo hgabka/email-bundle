@@ -135,7 +135,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 if ($annotation) {
                     $usName = Container::underscore($property->getName());
                     $placeholder = $annotation->getPlaceholder() ?: $usName;
-                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.variable.'.$usName;
+                    $label = $annotation->getLabel() ?: 'mail_template.' . $this->getKey() . '.variable.' . $usName;
                     $params = [
                         'label' => $label,
                         'value' => $property->getName(),
@@ -154,7 +154,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 if ($annotation) {
                     $usName = Container::underscore(str_replace('get', '', $method->getName()));
                     $placeholder = $annotation->getPlaceholder() ?: $usName;
-                    $label = $annotation->getLabel() ?: 'mail_template.'.$this->getKey().'.variable.'.$usName;
+                    $label = $annotation->getLabel() ?: 'mail_template.' . $this->getKey() . '.variable.' . $usName;
                     $params = [
                         'label' => $label,
                         'value' => [$this, $method->getName()],
@@ -257,7 +257,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 
     public function getTitle()
     {
-        return $this->translator->trans('mail_template.'.$this->getKey().'.title');
+        return $this->translator->trans('mail_template.' . $this->getKey() . '.title');
     }
 
     public function isPublic()

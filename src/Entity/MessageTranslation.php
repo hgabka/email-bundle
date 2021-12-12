@@ -27,7 +27,7 @@ class MessageTranslation implements TranslationInterface
     /**
      * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\Attachment", mappedBy="message")
      *
-     * @var ArrayCollection |Attachment[]
+     * @var ArrayCollection|Attachment[]
      */
     protected $attachments;
 

@@ -16,7 +16,6 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
-use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -39,14 +38,14 @@ class MessageAdmin extends AbstractAdmin
         'prepare' => 'PREPARE',
     ];
 
+    /** @var HgabkaUtils */
+    protected $utils;
+
     /** @var MailBuilder */
     private $builder;
 
     /** @var AuthorizationCheckerInterface */
     private $authChecker;
-    
-    /** @var HgabkaUtils */
-    protected $utils;
 
     public function setUtils(HgabkaUtils $utils)
     {
@@ -56,11 +55,6 @@ class MessageAdmin extends AbstractAdmin
     public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
-    }
-
-    protected function configureBatchActions(array $actions): array
-    {
-        return [];
     }
 
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
@@ -91,7 +85,7 @@ class MessageAdmin extends AbstractAdmin
     public function preUpdate(object $object): void
     {
         $em = $this->getModelManager()->getEntityManager($object);
-        
+
         foreach ($object->getTranslations() as $trans) {
             $attRepo = $em->getRepository(Attachment::class);
             foreach ($attRepo->getByMessage($trans->getTranslatable(), $trans->getLocale()) as $att) {
@@ -111,7 +105,7 @@ class MessageAdmin extends AbstractAdmin
     public function postPersist(object $object): void
     {
         $em = $this->getModelManager()->getEntityManager($object);
-        
+
         foreach ($object->getTranslations() as $trans) {
             foreach ($trans->getAttachments() as $att) {
                 $att
@@ -130,15 +124,20 @@ class MessageAdmin extends AbstractAdmin
         return $name ?: $this->getTranslator()->trans('breadcrumb.link_message_create');
     }
 
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
+    }
+
     protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->clearExcept(['create', 'edit', 'list', 'delete']);
         $collection->add('add_recipient', 'addRecipient');
         $collection->add('render_usable_vars', 'renderUsableVars');
-        $collection->add('prepare', $this->getRouterIdParameter().'/prepare');
-        $collection->add('unprepare', $this->getRouterIdParameter().'/unprepare');
-        $collection->add('testmail', $this->getRouterIdParameter().'/testmail');
-        $collection->add('copy', $this->getRouterIdParameter().'/copy');
+        $collection->add('prepare', $this->getRouterIdParameter() . '/prepare');
+        $collection->add('unprepare', $this->getRouterIdParameter() . '/unprepare');
+        $collection->add('testmail', $this->getRouterIdParameter() . '/testmail');
+        $collection->add('copy', $this->getRouterIdParameter() . '/copy');
     }
 
     protected function configureListFields(ListMapper $listMapper): void
@@ -332,7 +331,7 @@ class MessageAdmin extends AbstractAdmin
 
             foreach ($mappings as $parentMapping) {
                 $fieldName = $parentMapping['fieldName'];
-                $query->leftJoin($currentAlias.'.'.$fieldName, $fieldName);
+                $query->leftJoin($currentAlias . '.' . $fieldName, $fieldName);
 
                 $currentAlias = $fieldName;
             }
@@ -340,11 +339,11 @@ class MessageAdmin extends AbstractAdmin
 
         $query
             ->leftJoin(
-                $currentAlias.'.translations',
+                $currentAlias . '.translations',
                 'tr',
                 'with',
                 'tr.locale = :lang OR
-                (NOT EXISTS(SELECT t.id FROM '.$entityClass.'Translation t WHERE t.translatable = tr.translatable AND t.locale = :lang)
+                (NOT EXISTS(SELECT t.id FROM ' . $entityClass . 'Translation t WHERE t.translatable = tr.translatable AND t.locale = :lang)
                 AND tr.locale = :lang_default)'
             )
             ->addOrderBy('tr.name', $parameters['_sort_order'])

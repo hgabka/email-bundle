@@ -20,7 +20,7 @@ class EmailTemplateAdminController extends CRUDController
 
         $this->admin->setSubject($existingObject);
         $recipientManager = $this->get(RecipientManager::class);
-        $fieldName = $request->get('fieldType').'Data';
+        $fieldName = $request->get('fieldType') . 'Data';
 
         $type = $request->get('type');
         $recType = $recipientManager->getTemplateRecipientType($type);

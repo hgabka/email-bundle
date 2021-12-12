@@ -4,11 +4,11 @@ namespace Hgabka\EmailBundle\Enum;
 
 abstract class QueueStatusEnum
 {
-    const STATUS_INIT = 'init';
-    const STATUS_ELKULDVE = 'elkuldve';
-    const STATUS_HIBA = 'hiba';
-    const STATUS_SIKERTELEN = 'sikertelen';
-    const STATUS_VISSZAPATTANT = 'visszapattant';
+    public const STATUS_INIT = 'init';
+    public const STATUS_ELKULDVE = 'elkuldve';
+    public const STATUS_HIBA = 'hiba';
+    public const STATUS_SIKERTELEN = 'sikertelen';
+    public const STATUS_VISSZAPATTANT = 'visszapattant';
 
     /** @var array user friendly named type */
     protected static $statusName = [

@@ -27,12 +27,12 @@ class MessageListAdminController extends CRUDController
         }
     }
 
-    protected function preCreate(Request $request, object $object): ?Response 
+    protected function preCreate(Request $request, object $object): ?Response
     {
         if (!$this->subscriptionManager->isEditableLists()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -41,7 +41,7 @@ class MessageListAdminController extends CRUDController
         if (!$this->subscriptionManager->isEditableLists()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -50,7 +50,7 @@ class MessageListAdminController extends CRUDController
         if (!$this->subscriptionManager->isEditableLists()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -59,7 +59,7 @@ class MessageListAdminController extends CRUDController
         if (!$this->subscriptionManager->isEditableLists()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 }

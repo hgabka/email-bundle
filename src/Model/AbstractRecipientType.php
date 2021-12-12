@@ -189,7 +189,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
             }
         }
 
-        return current($recipient).' ('.key($recipient).')';
+        return current($recipient) . ' (' . key($recipient) . ')';
     }
 
     protected function getRecipientText($email, $name)
@@ -202,6 +202,6 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
             return $email;
         }
 
-        return $name.' ('.$email.')';
+        return $name . ' (' . $email . ')';
     }
 }

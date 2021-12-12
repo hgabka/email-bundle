@@ -57,7 +57,7 @@ class MessageQueueRepository extends EntityRepository
         if (!empty($days)) {
             $q
                 ->andWhere('q.updatedAt <= :date')
-                ->setParameter('date', new \DateTime('-'.$days.'days'))
+                ->setParameter('date', new \DateTime('-' . $days . 'days'))
             ;
         }
 

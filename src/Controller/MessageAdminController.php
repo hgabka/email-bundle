@@ -14,8 +14,6 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Recipient\GeneralMessageRecipientType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Controller\CRUDController;
-use Symfony\Component\Form\FormRenderer;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +26,7 @@ class MessageAdminController extends CRUDController
         if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException();
         }
-        $fieldName = $request->get('fieldType').'Data';
+        $fieldName = $request->get('fieldType') . 'Data';
 
         $recipientManager = $this->get(RecipientManager::class);
         $type = $request->get('type');
@@ -189,7 +187,7 @@ class MessageAdminController extends CRUDController
                 $params = [
                     'vars' => [
                         'unsubscribe_url' => '#',
-                        'unsubscribe_link' => '<a href="#">'.$text.'</a>',
+                        'unsubscribe_link' => '<a href="#">' . $text . '</a>',
                         'webversion' => '',
                     ],
                 ];
@@ -253,7 +251,7 @@ class MessageAdminController extends CRUDController
                 $message->translate($loc)->setSubject($existingObject->translate($loc)->getSubject());
                 $message->translate($loc)->setContentText($existingObject->translate($loc)->getContentText());
                 $message->translate($loc)->setContentHtml($existingObject->translate($loc)->getContentHtml());
-                $message->translate($loc)->setName($existingObject->translate($loc)->getName().' - '.$copyText);
+                $message->translate($loc)->setName($existingObject->translate($loc)->getName() . ' - ' . $copyText);
             } else {
                 $existingObject->translate($loc)->setName('dummy');
             }

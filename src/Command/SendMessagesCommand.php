@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SendMessagesCommand extends Command
 {
     protected static $defaultName = 'hgabka:email:send-messages';
-    
+
     /** @var MessageSender */
     protected $messageSender;
 
@@ -58,7 +58,7 @@ class SendMessagesCommand extends Command
         $time_end = microtime(true);
         $time = $time_end - $time_start;
         $output->writeln("Execution time: $time seconds");
-        
+
         return Command::SUCCESS;
     }
 

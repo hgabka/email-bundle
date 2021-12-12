@@ -19,14 +19,11 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
-use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
-use Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -53,36 +50,9 @@ class EmailTemplateAdmin extends AbstractAdmin
         $this->templateTypeManager = $templateTypeManager;
     }
 
-    protected function configureBatchActions(array $actions): array
-    {
-        return [];
-    }
-
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
-    }
-
-    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
-    {
-        $this->templateTypeManager->getTemplateTypeEntities(true);
-        $types = $this->templateTypeManager->getTemplateTypeClasses(true);
-
-        $alias = current($query->getRootAliases());
-        
-        $query->leftJoin(EmailTemplateTranslation::class, 'et', 'WITH', 'et.id = '.$alias.'.id AND et.locale = :curlang')->setParameter('curlang', $this->getRequest()->getLocale());
-
-        $orx = $query->expr()->orX();
-        $orx->add($alias.'.type IS NULL');
-
-        if (!empty($types)) {
-            $orx->add($query->expr()->in($alias.'.type', $types));
-        }
-
-        $query->andWhere($orx);
-        $query->orderBy('et.comment');
-
-        return $query;
     }
 
     public function prePersist(object $object): void
@@ -128,7 +98,34 @@ class EmailTemplateAdmin extends AbstractAdmin
     {
         $type = $object->getType();
 
-        return $type ? $this->templateTypeManager->getTitleByType($type) : (string)$template->getComment();
+        return $type ? $this->templateTypeManager->getTitleByType($type) : (string) $template->getComment();
+    }
+
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
+    }
+
+    protected function configureQuery(ProxyQueryInterface $query): ProxyQueryInterface
+    {
+        $this->templateTypeManager->getTemplateTypeEntities(true);
+        $types = $this->templateTypeManager->getTemplateTypeClasses(true);
+
+        $alias = current($query->getRootAliases());
+
+        $query->leftJoin(EmailTemplateTranslation::class, 'et', 'WITH', 'et.id = ' . $alias . '.id AND et.locale = :curlang')->setParameter('curlang', $this->getRequest()->getLocale());
+
+        $orx = $query->expr()->orX();
+        $orx->add($alias . '.type IS NULL');
+
+        if (!empty($types)) {
+            $orx->add($query->expr()->in($alias . '.type', $types));
+        }
+
+        $query->andWhere($orx);
+        $query->orderBy('et.comment');
+
+        return $query;
     }
 
     protected function configureRoutes(RouteCollectionInterface $collection): void
@@ -258,7 +255,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
                                             <a>
-                                                 '.$this->trans($type->getSenderText()).'
+                                                 ' . $this->trans($type->getSenderText()) . '
                                             </a>
                                          </h4>
                                      </div>

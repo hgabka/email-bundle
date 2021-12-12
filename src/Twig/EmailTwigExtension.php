@@ -12,9 +12,9 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
-use Twig\Environment;
 use Twig\TwigFunction;
 
 class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
@@ -141,10 +141,10 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
     public function renderTemplateRecipientSelector($id)
     {
         $choices = $this->recipientManager->getTemplateRecipientTypeChoices();
-        $html = '<select id="rectype-select_'.$id.'">
+        $html = '<select id="rectype-select_' . $id . '">
                      <option value=""></option>';
         foreach ($choices as $label => $type) {
-            $html .= '<option value="'.$type.'">'.$this->translator->trans($label).'</option>';
+            $html .= '<option value="' . $type . '">' . $this->translator->trans($label) . '</option>';
         }
 
         $html .= '</select>';
@@ -155,10 +155,10 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
     public function renderMessageRecipientSelector($id)
     {
         $choices = $this->recipientManager->getMessageRecipientTypeChoices();
-        $html = '<select id="rectype-select_'.$id.'">
+        $html = '<select id="rectype-select_' . $id . '">
                      <option value=""></option>';
         foreach ($choices as $label => $type) {
-            $html .= '<option value="'.$type.'">'.$this->translator->trans($label).'</option>';
+            $html .= '<option value="' . $type . '">' . $this->translator->trans($label) . '</option>';
         }
 
         $html .= '</select>';
@@ -171,7 +171,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         $lists = $this->subscriptionManager->getListsForSubscriber($subscriber);
         $html = '<ul>';
         foreach ($lists as $list) {
-            $html .= ('<li>'.$list->getName().'</li>');
+            $html .= ('<li>' . $list->getName() . '</li>');
         }
 
         $html .= '</ul>';

@@ -176,7 +176,7 @@ class MailBuilder
         if ($class instanceof EmailTemplateTypeInterface) {
             $templateType = $class;
         } elseif (!$templateType = $this->templateTypeManager->getTemplateType($class)) {
-            throw new \InvalidArgumentException('Invalid template type: '.$class);
+            throw new \InvalidArgumentException('Invalid template type: ' . $class);
         }
 
         $template = $this->templateTypeManager->getTemplateEntity($templateType);
@@ -225,7 +225,7 @@ class MailBuilder
             return false;
         }
         $messages = [];
-        
+
         if (isset($paramTos['to'])) {
             $paramTos = [$paramTos];
         }
@@ -274,11 +274,11 @@ class MailBuilder
             ]);
             $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams, $sendParams['layout_file'] ?? null);
 
-            if (\strlen($bodyText) > 0) {
+            if ('' !== $bodyText) {
                 $mail->addPart($bodyText, 'text/plain');
             }
 
-            if (\strlen($bodyHtml) > 0) {
+            if ('' !== $bodyHtml) {
                 $mail->addPart($bodyHtml, 'text/html');
             }
 
@@ -318,7 +318,7 @@ class MailBuilder
                             }
                             $part = \Swift_Attachment::fromPath($attachment);
                         } else {
-                            $filename = isset($attachment['path']) ? $attachment['path'] : '';
+                            $filename = $attachment['path'] ?? '';
                             if (!is_file($filename)) {
                                 continue;
                             }
@@ -426,11 +426,11 @@ class MailBuilder
 
         $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams);
 
-        if (\strlen($bodyText) > 0) {
+        if ('' !== $bodyText) {
             $mail->addPart($bodyText, 'text/plain');
         }
 
-        if (\strlen($bodyHtml) > 0) {
+        if ('' !== $bodyHtml) {
             $mail->addPart($bodyHtml, 'text/html');
         }
 
@@ -456,7 +456,7 @@ class MailBuilder
 
         $mail->setFrom($paramFrom);
         if (!empty($params['unsubscribe_url'])) {
-            $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<'.$params['unsubscribe_url'].'>');
+            $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<' . $params['unsubscribe_url'] . '>');
         }
 
         if ($addCcs) {
@@ -540,11 +540,11 @@ class MailBuilder
 
     public function getFromToParams()
     {
-        $toNameLabel = $this->translateDefaultVariable('hg_email.variables.to').'_'.$this->translateDefaultVariable('hg_email.variables.name');
-        $toEmailLabel = $this->translateDefaultVariable('hg_email.variables.to').'_'.$this->translateDefaultVariable('hg_email.variables.email');
+        $toNameLabel = $this->translateDefaultVariable('hg_email.variables.to') . '_' . $this->translateDefaultVariable('hg_email.variables.name');
+        $toEmailLabel = $this->translateDefaultVariable('hg_email.variables.to') . '_' . $this->translateDefaultVariable('hg_email.variables.email');
 
-        $fromNameLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.name');
-        $fromEmailLabel = $this->translateDefaultVariable('hg_email.variables.from').'_'.$this->translateDefaultVariable('hg_email.variables.email');
+        $fromNameLabel = $this->translateDefaultVariable('hg_email.variables.from') . '_' . $this->translateDefaultVariable('hg_email.variables.name');
+        $fromEmailLabel = $this->translateDefaultVariable('hg_email.variables.from') . '_' . $this->translateDefaultVariable('hg_email.variables.email');
 
         return [
             $this->translator->trans('hg_email.variables.labels.to_email') => $toEmailLabel,
@@ -589,7 +589,7 @@ class MailBuilder
         }
 
         if (!$type instanceof EmailTemplateTypeInterface) {
-            throw new InvalidArgumentException('Invalid template type: '.$typeOrClass);
+            throw new InvalidArgumentException('Invalid template type: ' . $typeOrClass);
         }
 
         return $this->templateTypeManager->getTemplateEntity($type);
@@ -599,7 +599,7 @@ class MailBuilder
     {
         $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'Bcc' : 'Cc';
         if (\is_string($paramCc)) {
-            $mail->{'set'.$method}($paramCc);
+            $mail->{'set' . $method}($paramCc);
 
             return;
         }
@@ -607,12 +607,12 @@ class MailBuilder
         if (\is_array($paramCc)) {
             reset($paramCc);
             if (is_numeric(key($paramCc))) {
-                $mail->{'set'.$method}([]);
+                $mail->{'set' . $method}([]);
                 foreach ($paramCc as $cc) {
                     if (\is_array($cc)) {
-                        $mail->{'add'.$method}(key($cc), current($cc));
+                        $mail->{'add' . $method}(key($cc), current($cc));
                     } else {
-                        $mail->{'add'.$method}($cc);
+                        $mail->{'add' . $method}($cc);
                     }
                 }
 
@@ -620,7 +620,7 @@ class MailBuilder
             }
         }
 
-        $mail->{'set'.$method}($paramCc);
+        $mail->{'set' . $method}($paramCc);
     }
 
     protected function getFromFromTemplate(EmailTemplate $template = null, $locale = null)
@@ -628,12 +628,12 @@ class MailBuilder
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = \is_array($default) ? key($default) : $default;
-        
+
         $name = $template ? $template->getFromName($locale) : null;
         if (empty($name)) {
             $name = empty($defaultName) ? null : $defaultName;
         }
-        
+
         $email = $template ? $template->getFromEmail($locale) : null;
         if (empty($email)) {
             $email = $defaultEmail;

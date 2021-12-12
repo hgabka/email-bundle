@@ -29,7 +29,7 @@ abstract class AbstractMessageRecipientType extends AbstractRecipientType implem
                 continue;
             }
 
-            $result[$placeholder] = \is_callable($varData['value']) ? \call_user_func($varData['value'], $params) : $accessor->getValue($params, '['.$varData['value'].']');
+            $result[$placeholder] = \is_callable($varData['value']) ? \call_user_func($varData['value'], $params) : $accessor->getValue($params, '[' . $varData['value'] . ']');
         }
 
         return $result;

@@ -10,8 +10,8 @@ use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Filter\Model\FilterData;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\DoctrineORMAdminBundle\Filter\CallbackFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -28,11 +28,6 @@ class SubscriberAdmin extends AbstractAdmin
 
     /** @var HgabkaUtils */
     protected $utils;
-
-    protected function configureBatchActions(array $actions): array
-    {
-        return [];
-    }
 
     public function getManager()
     {
@@ -55,7 +50,7 @@ class SubscriberAdmin extends AbstractAdmin
 
     public function toString(object $object): string
     {
-        return $this->getTranslator()->trans('hg_email.label.subscriber', ['%name%' => (string)$object->getName()]);
+        return $this->getTranslator()->trans('hg_email.label.subscriber', ['%name%' => (string) $object->getName()]);
     }
 
     public function postPersist(object $object): void
@@ -66,6 +61,11 @@ class SubscriberAdmin extends AbstractAdmin
     public function postUpdate(object $object): void
     {
         $this->manager->updateListSubscriptions($object, true);
+    }
+
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
     }
 
     protected function configureListFields(ListMapper $list): void
@@ -138,14 +138,14 @@ class SubscriberAdmin extends AbstractAdmin
                         if (!$value->hasValue() || empty($value->getValue())) {
                             return false;
                         }
-                            
+
                         $query
-                            ->leftJoin($alias.'.listSubscriptions', 'sl')
+                            ->leftJoin($alias . '.listSubscriptions', 'sl')
                             ->andWhere('sl.list IN (:lists)')
                             ->setParameter('lists', $value->getValue())
                            // ->groupBy($alias.'.id')
                         ;
-                            
+
                         return true;
                     },
                 ])

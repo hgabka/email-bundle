@@ -6,9 +6,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class MailerEvent extends Event
 {
-    const EVENT_SEND_CALLED = 'email.log.mail_send_called';
-    const EVENT_MAIL_SENT = 'email.log.mail_sent';
-    const EVENT_ADD_HEADERS = 'email.add_headers';
+    public const EVENT_SEND_CALLED = 'email.log.mail_send_called';
+    public const EVENT_MAIL_SENT = 'email.log.mail_sent';
+    public const EVENT_ADD_HEADERS = 'email.add_headers';
 
     /** @var \Swift_Message */
     private $message;
@@ -43,7 +43,7 @@ class MailerEvent extends Event
     {
         $params = $this->getParameters();
 
-        return isset($params[$key]) ? $params[$key] : null;
+        return $params[$key] ?? null;
     }
 
     /**

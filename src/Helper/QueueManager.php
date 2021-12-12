@@ -326,7 +326,7 @@ class QueueManager
             }
 
             $to = $recipient['to'];
-            $locale = isset($recipient['locale']) ? $recipient['locale'] : null;
+            $locale = $recipient['locale'] ?? null;
 
             $existing = $this
                 ->doctrine
@@ -425,7 +425,7 @@ class QueueManager
             $limit = $this->sendLimit;
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
 
         $count = $sent = $fail = 0;
 
@@ -439,11 +439,11 @@ class QueueManager
             $email = \is_array($to) ? key($to) : $to;
 
             if ($this->sendEmailQueue($queue)) {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
                 $this->doctrine->getManager()->remove($queue);
                 ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$queue->getLastError());
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
                 ++$fail;
             }
         }
@@ -462,7 +462,7 @@ class QueueManager
 
             $email = \is_array($to) ? key($to) : $to;
             if ($this->sendEmailQueue($queue)) {
-                $this->log('Email kuldese sikeres. Email: '.$email);
+                $this->log('Email kuldese sikeres. Email: ' . $email);
 
                 $days = $this->deleteSentMessagesAfter;
 
@@ -471,7 +471,7 @@ class QueueManager
                 }
                 ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $this->getLastError());
                 ++$fail;
             }
         }
@@ -494,7 +494,7 @@ class QueueManager
             $limit = $this->sendLimit;
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
 
         $count = $sent = $fail = 0;
 
@@ -506,10 +506,10 @@ class QueueManager
             $email = $queue->getToEmail();
 
             if ($this->sendMessageQueue($queue)) {
-                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: '.$email);
+                $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
                 ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $this->getLastError());
                 ++$fail;
             }
         }
@@ -526,10 +526,10 @@ class QueueManager
             ++$count;
             $email = $queue->getToEmail();
             if ($this->sendMessageQueue($queue)) {
-                $this->log('Email kuldese sikeres. Email: '.$email);
+                $this->log('Email kuldese sikeres. Email: ' . $email);
                 ++$sent;
             } else {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$this->getLastError());
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $this->getLastError());
                 ++$fail;
             }
         }

@@ -38,7 +38,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
     {
         $label = $this->label;
         if (empty($label)) {
-            $label = 'hg_email.layout_var.'.$this->getKey();
+            $label = 'hg_email.layout_var.' . $this->getKey();
         }
 
         return $this->translator->trans($label);

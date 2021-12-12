@@ -258,23 +258,23 @@ class MessageSender
                 continue;
             }
             $to = $rec['to'];
-            $locale = isset($rec['locale']) ? $rec['locale'] : $this->hgabkaUtils->getDefaultLocale();
+            $locale = $rec['locale'] ?? $this->hgabkaUtils->getDefaultLocale();
 
             $email = \is_array($to) ? key($to) : $to;
 
             try {
                 $mail = $this->mailBuilder->createMessageMail($message, $to, $locale, true, $rec);
                 if ($mailer->send($mail)) {
-                    $this->log('Email kuldese sikeres. Email: '.$email);
+                    $this->log('Email kuldese sikeres. Email: ' . $email);
 
                     $message->setSentAt(new \DateTime());
                     ++$sent;
                 } else {
-                    $this->log('Email kuldes sikertelen. Email: '.$email);
+                    $this->log('Email kuldes sikertelen. Email: ' . $email);
                     ++$fail;
                 }
             } catch (\Exception $e) {
-                $this->log('Email kuldes sikertelen. Email: '.$email.' Hiba: '.$e->getMessage());
+                $this->log('Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $e->getMessage());
 
                 ++$fail;
             }
@@ -436,7 +436,7 @@ class MessageSender
             $limit = $this->config['send_limit'];
         }
 
-        $this->log('Uzenetek kuldese (limit: '.$limit.')');
+        $this->log('Uzenetek kuldese (limit: ' . $limit . ')');
         $messages = $this->getMessageRepository()->getMessagesToSend();
 
         $sent = 0;

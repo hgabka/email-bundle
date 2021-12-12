@@ -2,10 +2,10 @@
 
 namespace Hgabka\EmailBundle\Helper;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TemplateTypeManager

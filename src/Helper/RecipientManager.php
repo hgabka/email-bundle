@@ -15,9 +15,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RecipientManager
 {
-    const RECIPIENT_TYPE_TO = 'to';
-    const RECIPIENT_TYPE_CC = 'cc';
-    const RECIPIENT_TYPE_BCC = 'bcc';
+    public const RECIPIENT_TYPE_TO = 'to';
+    public const RECIPIENT_TYPE_CC = 'cc';
+    public const RECIPIENT_TYPE_BCC = 'bcc';
 
     /** @var Registry */
     protected $doctrine;
@@ -299,7 +299,7 @@ class RecipientManager
             $toData = $sendParams['to'];
         } else {
             if (!$templateType->isToEditable()) {
-                throw new \InvalidArgumentException('The template type '.\get_class($templateType).' has no recipient set. Provide recipient for the email.');
+                throw new \InvalidArgumentException('The template type ' . \get_class($templateType) . ' has no recipient set. Provide recipient for the email.');
             }
 
             $toData = $this->getToDataByTemplate($template);
@@ -345,7 +345,7 @@ class RecipientManager
      */
     public function translateEmailAddress($address)
     {
-        if (\is_string($address) || ((!isset($address['name']) || 0 === \strlen($address['name'])) && (!isset($address['email']) || 0 === \strlen($address['email'])))) {
+        if (\is_string($address) || ((!isset($address['name']) || '' === $address['name']) && (!isset($address['email']) || '' === $address['email']))) {
             return $address;
         }
 

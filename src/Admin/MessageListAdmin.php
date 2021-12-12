@@ -7,7 +7,6 @@ use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -24,11 +23,6 @@ class MessageListAdmin extends AbstractAdmin
     /** @var SubscriptionManager */
     protected $manager;
 
-    protected function configureBatchActions(array $actions): array
-    {
-        return [];
-    }
-
     public function getManager()
     {
         return $this->manager;
@@ -43,7 +37,12 @@ class MessageListAdmin extends AbstractAdmin
 
     public function toString(object $object): string
     {
-        return $this->getTranslator()->trans('hg_email.label.message_list', ['%name%' => (string)$object->getName()]);
+        return $this->getTranslator()->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);
+    }
+
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
     }
 
     /**

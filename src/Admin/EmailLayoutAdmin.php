@@ -25,11 +25,6 @@ class EmailLayoutAdmin extends AbstractAdmin
     /** @var MailBuilder */
     protected $mailBuilder;
 
-    protected function configureBatchActions(array $actions): array
-    {
-        return [];
-    }
-
     /**
      * @return MailBuilder
      */
@@ -52,7 +47,12 @@ class EmailLayoutAdmin extends AbstractAdmin
 
     public function toString(object $object): string
     {
-        return $this->trans('hg_email.label.message_list', ['%name%' => (string)$object->getName()]);
+        return $this->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);
+    }
+
+    protected function configureBatchActions(array $actions): array
+    {
+        return [];
     }
 
     /**

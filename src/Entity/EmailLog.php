@@ -305,12 +305,11 @@ class EmailLog
                 $this->setHtmlBody($child->getBody());
             } elseif ($child instanceof \Swift_Attachment) {
                 $attachment = (string) $this->getAttachment();
-                $this->setAttachment((empty($attachment) ? '' : ($attachment.',')).$child->getFilename());
+                $this->setAttachment((empty($attachment) ? '' : ($attachment . ',')) . $child->getFilename());
             }
         }
         $this->setMime($message->getContentType());
     }
-
 
     /**
      * Convert address or addresses to string.
@@ -333,7 +332,7 @@ class EmailLog
         foreach ($addr as $key => $val) {
             $to = trim($val);
             if (empty($to)) {
-                $str .= ($key.', ');
+                $str .= ($key . ', ');
             } else {
                 $str .= sprintf('%s <%s>, ', $val, $key);
             }

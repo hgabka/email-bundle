@@ -4,10 +4,10 @@ namespace Hgabka\EmailBundle\Enum;
 
 abstract class MessageStatusEnum
 {
-    const STATUS_INIT = 'init';
-    const STATUS_KULDENDO = 'kuldendo';
-    const STATUS_FOLYAMATBAN = 'folyamatban';
-    const STATUS_ELKULDVE = 'elkuldve';
+    public const STATUS_INIT = 'init';
+    public const STATUS_KULDENDO = 'kuldendo';
+    public const STATUS_FOLYAMATBAN = 'folyamatban';
+    public const STATUS_ELKULDVE = 'elkuldve';
 
     /** @var array user friendly named type */
     protected static $statusName = [
@@ -53,7 +53,7 @@ abstract class MessageStatusEnum
         $res = [];
 
         foreach (self::getAvailableStatuses() as $status) {
-            $res[$status] = 'hg_email.statuses.'.$status;
+            $res[$status] = 'hg_email.statuses.' . $status;
         }
 
         return $res;

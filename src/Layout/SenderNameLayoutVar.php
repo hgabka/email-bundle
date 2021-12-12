@@ -22,6 +22,6 @@ class SenderNameLayoutVar extends AbstractLayoutVar
 
     public function getPlaceholder()
     {
-        return $this->mailBuilder->translateDefaultVariable('hg_email.variables.from').'_'.$this->mailBuilder->translateDefaultVariable('hg_email.variables.name');
+        return $this->mailBuilder->translateDefaultVariable('hg_email.variables.from') . '_' . $this->mailBuilder->translateDefaultVariable('hg_email.variables.name');
     }
 }

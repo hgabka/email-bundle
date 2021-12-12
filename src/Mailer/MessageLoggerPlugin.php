@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MessageLoggerPlugin implements \Swift_Events_SendListener
 {
-    const LOGGED_HEADER = 'X-WtLogger-Logged';
+    public const LOGGED_HEADER = 'X-WtLogger-Logged';
 
     /** @var EventDispatcher */
     protected $dispatcher;

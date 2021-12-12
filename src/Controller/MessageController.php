@@ -2,7 +2,6 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageQueue;

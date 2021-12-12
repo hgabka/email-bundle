@@ -13,11 +13,11 @@ class MailboxReader
     {
         $ssl = false === $ssl ? '/novalidate-cert' : '/ssl';
 
-        $connStr = '{'."$host:$port/$type$ssl"."}$folder";
+        $connStr = '{' . "$host:$port/$type$ssl" . "}$folder";
         $this->handle = @imap_open($connStr, $user, $pass);
 
         if (false === $this->handle) {
-            throw new sfException('Failed to connect '.$type.' server at '.$connStr);
+            throw new sfException('Failed to connect ' . $type . ' server at ' . $connStr);
         }
 
         $this->parser = $parser;
@@ -49,7 +49,7 @@ class MailboxReader
             $range = $message;
         } else {
             $MC = imap_check($this->handle);
-            $range = '1:'.$MC->Nmsgs;
+            $range = '1:' . $MC->Nmsgs;
         }
         $response = imap_fetch_overview($this->handle, $range);
 
@@ -103,7 +103,7 @@ class MailboxReader
 
         $res = [];
         foreach ($headerInfo->from as $from) {
-            $address = $from->mailbox.'@'.$from->host;
+            $address = $from->mailbox . '@' . $from->host;
             if (empty($from->personal)) {
                 $thisFrom = $address;
             } else {
@@ -126,7 +126,7 @@ class MailboxReader
 
         $res = [];
         foreach ($headerInfo->to as $to) {
-            $address = $to->mailbox.'@'.$to->host;
+            $address = $to->mailbox . '@' . $to->host;
             if (empty($to->personal)) {
                 $thisTo = $address;
             } else {
@@ -175,7 +175,7 @@ class MailboxReader
 
         $res = [];
         foreach ($struct as $data) {
-            $address = $data->mailbox.'@'.$data->host;
+            $address = $data->mailbox . '@' . $data->host;
             if (empty($data->personal)) {
                 $thisTo = $address;
             } else {
@@ -198,8 +198,8 @@ class MailboxReader
         $boundary = preg_match_all('/boundary="(.+)"/', $body, $matches);
 
         if ($boundary) {
-            $parts = explode("\n".'--'.$matches[1][0], $body);
-            $body = $parts[0]."\n";
+            $parts = explode("\n" . '--' . $matches[1][0], $body);
+            $body = $parts[0] . "\n";
 
             return $this->parseHeaders($body, false);
         }
@@ -219,7 +219,7 @@ class MailboxReader
         $boundary = preg_match_all('/boundary="(.+)"/', $body, $matches);
 
         if ($boundary) {
-            $parts = explode("\n".'--'.$matches[1][0], $origBody);
+            $parts = explode("\n" . '--' . $matches[1][0], $origBody);
 
             return preg_replace('/\r\n\s+/m', '', $parts[0]);
         }
@@ -312,21 +312,21 @@ class MailboxReader
         }
 
         foreach ($this->getAttachmentsData($message) as $attachment) {
-            $content = isset($attachment['content']) ? $attachment['content'] : @file_get_contents($attachment['filename']);
+            $content = $attachment['content'] ?? @file_get_contents($attachment['filename']);
 
             if (empty($content)) {
                 continue;
             }
 
-            $name = isset($attachment['name']) ? $attachment['name'] : '';
+            $name = $attachment['name'] ?? '';
 
             if (isset($attachment['filename']) && empty($name)) {
-                $name = pathinfo($attachment['filename'], PATHINFO_BASENAME);
+                $name = pathinfo($attachment['filename'], \PATHINFO_BASENAME);
             }
 
             if (!empty($name)) {
-                file_put_contents($dir.'/'.$name, $content);
-                chmod($dir.'/'.$name, $chmod);
+                file_put_contents($dir . '/' . $name, $content);
+                chmod($dir . '/' . $name, $chmod);
             }
         }
     }

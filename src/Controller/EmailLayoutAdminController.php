@@ -25,7 +25,7 @@ class EmailLayoutAdminController extends CRUDController
         if (!$this->mailBuilder->layoutsEditable()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -34,7 +34,7 @@ class EmailLayoutAdminController extends CRUDController
         if (!$this->mailBuilder->layoutsEditable()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -43,7 +43,7 @@ class EmailLayoutAdminController extends CRUDController
         if (!$this->mailBuilder->layoutsEditable()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -52,7 +52,7 @@ class EmailLayoutAdminController extends CRUDController
         if (!$this->mailBuilder->layoutsEditable()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 
@@ -61,7 +61,7 @@ class EmailLayoutAdminController extends CRUDController
         if (!$this->mailBuilder->layoutsEditable()) {
             return $this->redirectToRoute('sonata_admin_dashboard');
         }
-        
+
         return null;
     }
 }

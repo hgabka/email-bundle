@@ -144,9 +144,9 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
         if (isset($redirectConfig['subject_append']) && (true === $redirectConfig['subject_append'])) {
             $message->setSubject(
                 $message->getSubject()
-                .($message->getTo() ? (' - Eredeti to: '.$this->recipientToString($message->getTo())) : '')
-                .($message->getCc() ? (' - Eredeti cc: '.$this->recipientToString($message->getCc())) : '')
-                .($message->getBcc() ? (' - Eredeti bcc: '.$this->recipientToString($message->getBcc())) : '')
+                . ($message->getTo() ? (' - Eredeti to: ' . $this->recipientToString($message->getTo())) : '')
+                . ($message->getCc() ? (' - Eredeti cc: ' . $this->recipientToString($message->getCc())) : '')
+                . ($message->getBcc() ? (' - Eredeti bcc: ' . $this->recipientToString($message->getBcc())) : '')
             );
         }
 
@@ -249,7 +249,7 @@ class RedirectPlugin extends \Swift_Plugins_RedirectingPlugin
 
         foreach ($recipient as $mail => $name) {
             if (\strlen($name)) {
-                $result[] = $name.' <'.$mail.'>';
+                $result[] = $name . ' <' . $mail . '>';
             } else {
                 $result[] = $mail;
             }

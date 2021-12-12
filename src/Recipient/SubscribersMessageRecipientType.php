@@ -62,7 +62,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
             $formBuilder
                 ->add(
-                    'linkText_'.$locale,
+                    'linkText_' . $locale,
                     TextType::class,
                     [
                 'label' => $this->translator->trans('hg_email.label.unsubscribe_link_text', ['%locale%' => $this->hgabkaUtils->getIntlLocale($locale)]),
@@ -111,7 +111,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         ];
 
         foreach ($this->hgabkaUtils->getAvailableLocales() as $locale) {
-            $defaults['linkText_'.$locale] = $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
+            $defaults['linkText_' . $locale] = $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
         }
 
         return $defaults;
@@ -124,9 +124,9 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
             return $html;
         }
 
-        $text = $this->getParams()['linkText_'.$locale] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
+        $text = $this->getParams()['linkText_' . $locale] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
 
-        return $html.'<br /><a href="'.$params['unsubscribeUrl'].'">'.$text.'</a>';
+        return $html . '<br /><a href="' . $params['unsubscribeUrl'] . '">' . $text . '</a>';
     }
 
     public function getFormTemplate()
@@ -142,14 +142,14 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
         $result = [];
         foreach ($subscribers as $subscriber) {
             /** @var MessageSubscriber $subscriber */
-            $text = $this->getParams()['linkText_'.$subscriber->getLocale()] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $subscriber->getLocale());
+            $text = $this->getParams()['linkText_' . $subscriber->getLocale()] ?? $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $subscriber->getLocale());
             $unsubscribeUrl = $this->router->generate('hgabka_email_message_unsubscribe', ['token' => $subscriber->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
 
             /** @var MessageSubscriber $subscriber */
             $params = [
                 'token' => $subscriber->getToken(),
                 'unsubscribeUrl' => $unsubscribeUrl,
-                'unsubscribeLink' => '<a href="'.$unsubscribeUrl.'">'.$text.'</a>',
+                'unsubscribeLink' => '<a href="' . $unsubscribeUrl . '">' . $text . '</a>',
             ];
 
             $result[] = [

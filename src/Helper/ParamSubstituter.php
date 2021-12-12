@@ -57,7 +57,7 @@ class ParamSubstituter
                     $text = str_replace($key, $param['value'], $text);
                 } else {
                     $value = $param['value'];
-                    $pattern = '/<p*>(.*)'.preg_quote($key, '/').'(.*)<\/p>/i';
+                    $pattern = '/<p*>(.*)' . preg_quote($key, '/') . '(.*)<\/p>/i';
                     $text = preg_replace($pattern, $value, $text);
                 }
             }
@@ -78,13 +78,13 @@ class ParamSubstituter
         $pattern = '/(<img[^>]+src=["\'])([^"\':]+)(["\'])/i';
 
         $html = preg_replace_callback($pattern, function ($matches) {
-            return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];
+            return $matches[1] . $this->addHost(trim($matches[2], " '\"")) . $matches[3];
         }, $html);
 
         $pattern = '/(<input[^>]+src=["\'])([^"\':]+)(["\'])/i';
 
         return preg_replace_callback($pattern, function ($matches) {
-            return $matches[1].$this->addHost(trim($matches[2], " '\"")).$matches[3];
+            return $matches[1] . $this->addHost(trim($matches[2], " '\"")) . $matches[3];
         }, $html);
     }
 
@@ -99,21 +99,21 @@ class ParamSubstituter
         $pattern = '/(<img[^>]+src=["\'])([^"\']+)/i';
 
         $html = preg_replace_callback($pattern, function ($matches) use ($email) {
-            return $matches[1].$this->embedImage($matches[2], $email);
+            return $matches[1] . $this->embedImage($matches[2], $email);
         }, $html);
 
         $pattern = '/(url\s*\()([^\)]+)/i';
 
         $encodedHtml = preg_replace_callback($pattern, function ($matches) {
             $imagePath = trim($matches[2], " '\"");
-            $file = $this->projectDir.'/web/'.$imagePath;
+            $file = $this->projectDir . '/web/' . $imagePath;
             if (!is_file($file)) {
-                $file = $this->projectDir.'/public/'.$imagePath;
+                $file = $this->projectDir . '/public/' . $imagePath;
             }
 
             $res = $this->convertToBase64($file);
             if (false !== $res) {
-                return $matches[1].$res;
+                return $matches[1] . $res;
             }
 
             return false;
@@ -124,7 +124,7 @@ class ParamSubstituter
         }
 
         $html = preg_replace_callback($pattern, function ($matches) {
-            return $matches[1].$this->addHost($imagePath);
+            return $matches[1] . $this->addHost($imagePath);
         }, $html);
 
         return $html;
@@ -134,7 +134,7 @@ class ParamSubstituter
     {
         $pattern = '/(<a[^>]+href=["\'])([^"\']+)(["\'])(.*)/i';
         $html = preg_replace_callback($pattern, function ($matches) {
-            return $matches[1].$this->addHostToUrl(trim($matches[2], " '\"")).$matches[3].$matches[4];
+            return $matches[1] . $this->addHostToUrl(trim($matches[2], " '\"")) . $matches[3] . $matches[4];
         }, $html);
 
         return $html;
@@ -160,7 +160,7 @@ class ParamSubstituter
             return ['prefix' => $varChars, 'postfix' => $varChars];
         }
 
-        return ['prefix' => isset($varChars['prefix']) ? $varChars['prefix'] : '', 'postfix' => isset($varChars['postfix']) ? $varChars['postfix'] : ''];
+        return ['prefix' => $varChars['prefix'] ?? '', 'postfix' => $varChars['postfix'] ?? ''];
     }
 
     public function normalizeParams($params)
@@ -170,13 +170,13 @@ class ParamSubstituter
         foreach ($this->removeVarChars($params) as $key => $value) {
             if (\is_object($value)) {
                 foreach (get_object_vars($value) as $field => $val) {
-                    if (!isset($normalized[$key.'.'.strtolower($field)])) {
-                        $normalized[$key.'.'.strtolower($field)] = (string) $val;
+                    if (!isset($normalized[$key . '.' . strtolower($field)])) {
+                        $normalized[$key . '.' . strtolower($field)] = (string) $val;
                     }
                 }
                 foreach (get_class_methods($value) as $field) {
-                    if (!isset($normalized[$key.'.'.$field]) && method_exists($value, $field)) {
-                        $normalized[$key.'.'.$field] = (string) $value->$field();
+                    if (!isset($normalized[$key . '.' . $field]) && method_exists($value, $field)) {
+                        $normalized[$key . '.' . $field] = (string) $value->$field();
                     }
                 }
             }
@@ -223,7 +223,7 @@ class ParamSubstituter
     protected function convertToBase64($file)
     {
         if (is_file($file) && \function_exists('mime_content_type') && (false !== ($mime = @mime_content_type($file))) && false !== ($contents = file_get_contents($file))) {
-            return 'data:'.$mime.';base64,'.base64_encode($contents);
+            return 'data:' . $mime . ';base64,' . base64_encode($contents);
         }
 
         return false;
@@ -240,9 +240,9 @@ class ParamSubstituter
     protected function embedImage($url, $email)
     {
         if (0 !== strpos('http://', $url) && 0 !== strpos('https://', $url)) {
-            $file = $this->projectDir.'/web/'.$url;
+            $file = $this->projectDir . '/web/' . $url;
             if (!is_file($file)) {
-                $file = $this->projectDir.'/public/'.$url;
+                $file = $this->projectDir . '/public/' . $url;
 
                 if (!is_file($file)) {
                     return $url;
@@ -255,11 +255,11 @@ class ParamSubstituter
             }
             $p = pathinfo($url);
 
-            $dir = $this->cacheDir.'/mailimages/'.$email->getHeaders('Message-ID');
+            $dir = $this->cacheDir . '/mailimages/' . $email->getHeaders('Message-ID');
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
-            $file = $dir.'/'.$p['basename'];
+            $file = $dir . '/' . $p['basename'];
             file_put_contents($file, $content);
         }
 
@@ -281,16 +281,16 @@ class ParamSubstituter
             return $url;
         }
 
-        $file = $this->projectDir.'/web/'.$url;
+        $file = $this->projectDir . '/web/' . $url;
         if (!is_file($file)) {
-            $file = $this->projectDir.'/public/'.$url;
+            $file = $this->projectDir . '/public/' . $url;
         }
 
         if (!is_file($file)) {
             return $url;
         }
 
-        return $this->getSchemeAndHttpHost().$url;
+        return $this->getSchemeAndHttpHost() . $url;
     }
 
     protected function getSchemeAndHttpHost()
@@ -298,7 +298,7 @@ class ParamSubstituter
         $request = $this->requestStack->getCurrentRequest();
         $context = $this->router->getContext();
 
-        return $request ? $request->getSchemeAndHttpHost() : ($context->getScheme().'://'.$context->getHost());
+        return $request ? $request->getSchemeAndHttpHost() : ($context->getScheme() . '://' . $context->getHost());
     }
 
     /**
@@ -314,7 +314,7 @@ class ParamSubstituter
             return $url;
         }
 
-        return $this->getSchemeAndHttpHost().$url;
+        return $this->getSchemeAndHttpHost() . $url;
     }
 
     protected function removeVarCharsFromString($string)
@@ -350,10 +350,10 @@ class ParamSubstituter
         $varChars = $this->getVarChars();
 
         if (!empty($varChars['prefix'])) {
-            $string = $varChars['prefix'].$string;
+            $string = $varChars['prefix'] . $string;
         }
         if (!empty($varChars['postfix'])) {
-            $string = $string.$varChars['postfix'];
+            $string = $string . $varChars['postfix'];
         }
 
         return $string;

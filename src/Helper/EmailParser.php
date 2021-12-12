@@ -4,8 +4,8 @@ namespace Hgabka\EmailBundle\Helper;
 
 class EmailParser
 {
-    const PLAINTEXT = 1;
-    const HTML = 2;
+    public const PLAINTEXT = 1;
+    public const HTML = 2;
 
     /**
      * @var associative array
@@ -166,7 +166,7 @@ class EmailParser
                         break;
                     }
                 }
-                $body .= $line."\n";
+                $body .= $line . "\n";
             }
         }
 
@@ -245,7 +245,7 @@ class EmailParser
         $line = str_replace("\r", '', $line);
         $line = str_replace("\n", '', $line);
 
-        return 0 === \strlen($line);
+        return '' === $line;
     }
 
     private function extractHeadersAndRawBody()
@@ -266,7 +266,7 @@ class EmailParser
             if ($this->isLineStartingWithPrintableChar($line)) { // start of new header
                 preg_match('/([^:]+): ?(.*)$/', $line, $matches);
                 $newHeader = isset($matches[1]) ? strtolower($matches[1]) : '';
-                $value = isset($matches[2]) ? $matches[2] : '';
+                $value = $matches[2] ?? '';
                 $this->rawFields[$newHeader] = $value;
                 $currentHeader = $newHeader;
             } else { // more lines related to the current header

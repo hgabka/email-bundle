@@ -57,7 +57,7 @@ class BounceChecker
                 continue;
             }
             $config = $this->config;
-            $action = isset($config['after_process']) ? $config['after_process'] : 'leave_as_is';
+            $action = $config['after_process'] ?? 'leave_as_is';
             if (isset($headers['Hg-Message-Id'])) {
                 $queue = $this->doctrine->getRepository(MessageQueue::class)->find($headers['Hg-Message-Id']);
 

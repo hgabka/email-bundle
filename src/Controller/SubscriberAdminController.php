@@ -11,7 +11,7 @@ class SubscriberAdminController extends CRUDController
     protected function preEdit(Request $request, object $object): ?Response
     {
         $object->setLists($this->admin->getManager()->getListsForSubscriber($object));
-        
+
         return parent::preEdit($request, $object);
     }
 }

@@ -55,16 +55,16 @@ class LayoutManager
      */
     public function getDefaultLayoutPath()
     {
-        $locator = new FileLocator(__DIR__.'/../Resources/layout');
+        $locator = new FileLocator(__DIR__ . '/../Resources/layout');
 
         return $locator->locate('layout.html');
     }
 
     public function applyLayout($bodyHtml, EmailLayout $layout = null, $mail, $locale, $params = [], $layoutFile = null)
     {
-        if ($layout && \strlen($bodyHtml) > 0) {
+        if ($layout && '' !== $bodyHtml) {
             $layoutHtml = $layout->translate($locale)->getContentHtml();
-        } elseif (\strlen($bodyHtml) > 0 && (false !== $this->layoutFile || !empty($layoutFile))) {
+        } elseif ('' !== $bodyHtml && (false !== $this->layoutFile || !empty($layoutFile))) {
             $layoutFile = !empty($layoutFile) || (isset($layoutFile) && false === $layoutFile) ? $layoutFile : $this->layoutFile;
 
             if (false !== $layoutFile && !is_file($layoutFile)) {
@@ -104,6 +104,7 @@ class LayoutManager
      * @param mixed $layoutHtml
      * @param mixed $params
      * @param mixed $locale
+     * @param mixed $mail
      *
      * @return string
      */
