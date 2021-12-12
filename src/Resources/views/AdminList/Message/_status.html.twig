@@ -3,5 +3,5 @@
     {{ 'hgabka_kuma_email.statuses.send_data' | trans({'%recipient%' : row.sentMail, '%success%' : row.sentSuccess, '%fail%' : row.sentFail}) }}
 {% endif %}
 {% if row.isPrepared() %}
-    {{ ' (' ~ ('hgabka_kuma_email.statuses.send_date' | trans({'%date%' : ( row.sendAt is not empty ? (row.sendAt() | localizeddate('long', 'short')) : ('hgabka_kuma_email.statuses.immidiately' | trans ))})) ~ ')' }}
+    {{ ' (' ~ ('hgabka_kuma_email.statuses.send_date' | trans({'%date%' : ( row.sendAt is not empty ? (row.sendAt() | format_datetime('long', 'short')) : ('hgabka_kuma_email.statuses.immidiately' | trans ))})) ~ ')' }}
 {% endif %}
