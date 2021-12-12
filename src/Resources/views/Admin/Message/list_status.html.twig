@@ -5,6 +5,6 @@
     {{ 'hg_email.statuses.send_data' | trans({'%recipient%' : object.sentMail, '%success%' : object.sentSuccess, '%fail%' : object.sentFail}) }}
 {% endif %}
 {% if object.prepared %}
-    {{ ' (' ~ ('hg_email.statuses.send_date' | trans({'%date%' : ( object.sendAt is not empty ? (object.sendAt | localizeddate('long', 'short')) : ('hg_email.statuses.immidiately' | trans ))})) ~ ')' }}
+    {{ ' (' ~ ('hg_email.statuses.send_date' | trans({'%date%' : ( object.sendAt is not empty ? (object.sendAt | format_datetime('long', 'short')) : ('hg_email.statuses.immidiately' | trans ))})) ~ ')' }}
 {% endif %}
 {% endblock %}
