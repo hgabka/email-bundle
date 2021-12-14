@@ -21,16 +21,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MessageAdminController extends CRUDController
 {
-    public function addRecipientAction(Request $request)
+    public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
         if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException();
         }
         $fieldName = $request->get('fieldType') . 'Data';
 
-        $recipientManager = $this->get(RecipientManager::class);
         $type = $request->get('type');
-
         $recType = $recipientManager->getMessageRecipientType($type);
 
         $builder = $this
