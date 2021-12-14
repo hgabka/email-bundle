@@ -1,5 +1,5 @@
 {% extends '@SonataAdmin/CRUD/base_edit.html.twig' %}
-{% import 'HgabkaEmailBundle:Admin:edit_form_macro.html.twig' as form_helper %}
+{% import '@HgabkaEmail/Admin/edit_form_macro.html.twig' as form_helper %}
 
 {% block title %}
     {% if objectId|default(admin.id(object)) is not null %}
