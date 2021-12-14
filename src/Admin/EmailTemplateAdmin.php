@@ -166,13 +166,13 @@ class EmailTemplateAdmin extends AbstractAdmin
                 'fromName' => [
                     'field_type' => TextType::class,
                     'label' => 'hg_email.label.from_name',
-                    'sonata_help' => $this->trans('hg_email.help.from_name', ['%current%' => $this->builder->getDefaultFromName()]),
+                    'sonata_help' => $this->getTranslator()->trans('hg_email.help.from_name', ['%current%' => $this->builder->getDefaultFromName()]),
                     'required' => false,
                 ],
                 'fromEmail' => [
                     'field_type' => TextType::class,
                     'label' => 'hg_email.label.from_email',
-                    'sonata_help' => $this->trans('hg_email.help.from_email', ['%current%' => $this->builder->getDefaultFromEmail()]),
+                    'sonata_help' => $this->getTranslator()->trans('hg_email.help.from_email', ['%current%' => $this->builder->getDefaultFromEmail()]),
                     'required' => false,
                     'constraints' => new Email(),
                 ],
@@ -231,7 +231,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                     'label' => 'hg_email.label.layout',
                     'required' => false,
                     'class' => EmailLayout::class,
-                    'placeholder' => $this->trans('hg_email.placeholder.email_layout'),
+                    'placeholder' => $this->getTranslator()->trans('hg_email.placeholder.email_layout'),
                 ])
             ;
         }
@@ -255,7 +255,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
                                             <a>
-                                                 ' . $this->trans($type->getSenderText()) . '
+                                                 ' . $this->getTranslator()->trans($type->getSenderText()) . '
                                             </a>
                                          </h4>
                                      </div>
