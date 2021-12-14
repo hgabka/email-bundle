@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EmailTemplateAdminController extends CRUDController
 {
-    public function addRecipientAction(Request $request)
+    public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
         if (!$request->isXmlHttpRequest()) {
             return $this->createNotFoundException();
@@ -19,7 +19,6 @@ class EmailTemplateAdminController extends CRUDController
         $existingObject = $this->admin->getObject($id);
 
         $this->admin->setSubject($existingObject);
-        $recipientManager = $this->get(RecipientManager::class);
         $fieldName = $request->get('fieldType') . 'Data';
 
         $type = $request->get('type');
