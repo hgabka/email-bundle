@@ -140,7 +140,7 @@ class EmailTemplateAdmin extends AbstractAdmin
             ->add('comment', null, [
                 'label' => 'hg_email.label.comment',
             ])
-            ->add('_action', null, [
+            ->add(ListMapper::NAME_ACTIONS, null, [
                 'actions' => [
                     'edit' => [],
                     'delete' => [],
