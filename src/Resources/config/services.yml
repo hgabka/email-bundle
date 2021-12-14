@@ -357,10 +357,12 @@ services:
     Hgabka\EmailBundle\Controller\MessageListAdminController:
         autowire: true
         autoconfigure: true
+        tags: ['controller.service_arguments']
         
     Hgabka\EmailBundle\Controller\EmailLayoutAdminController:
         autowire: true
         autoconfigure: true
+        tags: ['controller.service_arguments']
 
     Hgabka\EmailBundle\Command\SendMessagesCommand:
         autowire: true
@@ -373,12 +375,15 @@ services:
     Hgabka\EmailBundle\Controller\EmailTemplateAdminController:
         autowire: true
         autoconfigure: true
+        tags: ['controller.service_arguments']
         
     Hgabka\EmailBundle\Controller\MessageAdminController:
         autowire: true
         autoconfigure: true
+        tags: ['controller.service_arguments']
         
     Hgabka\EmailBundle\Controller\SubscriberAdminController:
         autowire: true
         autoconfigure: true
+        tags: ['controller.service_arguments']
         
