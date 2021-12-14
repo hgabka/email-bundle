@@ -187,13 +187,13 @@ class MessageAdmin extends AbstractAdmin
             'fromName' => [
                 'field_type' => TextType::class,
                 'label' => 'hg_email.label.from_name',
-                'sonata_help' => $this->getTranslator()->trans('hg_email.help.from_name', ['%current%' => $this->builder->getDefaultFromName()]),
+                'help' => $this->getTranslator()->trans('hg_email.help.from_name', ['%current%' => $this->builder->getDefaultFromName()]),
                 'required' => false,
             ],
             'fromEmail' => [
                 'field_type' => TextType::class,
                 'label' => 'hg_email.label.from_email',
-                'sonata_help' => $this->getTranslator()->trans('hg_email.help.from_email', ['%current%' => $this->builder->getDefaultFromEmail()]),
+                'help' => $this->getTranslator()->trans('hg_email.help.from_email', ['%current%' => $this->builder->getDefaultFromEmail()]),
                 'required' => false,
                 'constraints' => new Email(),
             ],
