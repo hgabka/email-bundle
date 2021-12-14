@@ -1,6 +1,7 @@
 {% macro render_groups(admin, form, groups, has_tab) %}
     <div class="row">
-        {% for code in groups if admin.formgroups[code] is defined %}
+        {% for code in groups %}
+            {% if admin.formgroups[code] is defined %}
             {% set form_group = admin.formgroups[code] %}
 
             <div class="{{ form_group.class|default('col-md-12') }}">
@@ -19,8 +20,10 @@
                                 or code == 'hg_email.tab.general.hg_email.form_block.from_data_static'
                                 or code == 'hg_email.tab.general.hg_email.form_block.cc_data'
                                 or code == 'hg_email.tab.general.hg_email.form_block.bcc_data' %}
-                                {% for field_name in form_group.fields if form[field_name] is defined %}
+                                {% for field_name in form_group.fields %}
+                                    {% if form[field_name] is defined %}
                                     {{ form_row(form[field_name]) }}
+                                    {% endif %}
                                 {% endfor %}
                             {% else %}
                                 {% if code == 'hg_email.tab.general.hg_email.form_block.general' %}
@@ -48,6 +51,7 @@
                     </div>
                 </div>
             </div>
+        {% endif %}
         {% endfor %}
     </div>
 {% endmacro %}
