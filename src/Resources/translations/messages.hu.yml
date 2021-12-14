@@ -187,3 +187,17 @@ hg_email:
         send_data: '( %recipient% címzett, %success% üzenet kiküldve, %fail% sikertelen )'
         immidiately: Azonnal
         send_date: 'Küldés ideje: %date%'
+
+form:
+    group_hg_email_tab_general: Általános adatok
+    group_hg_email_form_block_general: Általános adatok
+    group_hg_email_tab_content: Tárgy, tartalom
+    group_hg_email_form_block_content: Tárgy, tartalom
+    group_hg_email_tab_recipients: Levél adatai
+    group_hg_email_form_block_recipients: Levél adatai
+    group_hg_email_tab_attachments: Csatolmányok
+    group_hg_email_form_block_attachments: Csatolmányok
+    group_hg_email_form_block_from_data: Feladó adatai
+    group_hg_email_form_block_to_data: Címzettek
+    group_hg_email_form_block_cc_data: Másolat címzettek
+    group_hg_email_form_block_bcc_data: Titkos másolat címzettek
