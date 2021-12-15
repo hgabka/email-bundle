@@ -29,12 +29,6 @@ class MessageAdmin extends AbstractAdmin
 {
     protected $baseRoutePattern = 'message';
 
-    protected $datagridValues = [
-        '_page' => 1,
-        '_sort_order' => 'ASC',
-        '_sort_by' => 'translations.name',
-    ];
-
     protected $accessMapping = [
         'prepare' => 'PREPARE',
     ];
