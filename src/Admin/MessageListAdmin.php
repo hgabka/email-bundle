@@ -15,12 +15,6 @@ class MessageListAdmin extends AbstractAdmin
 {
     protected $baseRoutePattern = 'message-list';
 
-    protected $datagridValues = [
-        '_page' => 1,
-        '_sort_order' => 'ASC',
-        '_sort_by' => 'translations.name',
-    ];
-
     /** @var SubscriptionManager */
     protected $manager;
 
