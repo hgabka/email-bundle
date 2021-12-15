@@ -7,6 +7,7 @@ use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
@@ -48,6 +49,11 @@ class EmailLayoutAdmin extends AbstractAdmin
     public function toString(object $object): string
     {
         return $this->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);
+    }
+
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $sortValues[Datagrid::SORT_BY] = 'translations.name';
     }
 
     protected function configureBatchActions(array $actions): array
