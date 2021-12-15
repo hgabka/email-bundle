@@ -17,12 +17,6 @@ class EmailLayoutAdmin extends AbstractAdmin
 {
     protected $baseRoutePattern = 'email-layout';
 
-    protected $datagridValues = [
-        '_page' => 1,
-        '_sort_order' => 'ASC',
-        '_sort_by' => 'translations.name',
-    ];
-
     /** @var MailBuilder */
     protected $mailBuilder;
 
