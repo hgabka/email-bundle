@@ -13,6 +13,7 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\UtilsBundle\Form\WysiwygType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Form\Type\CollectionType;
@@ -60,6 +61,11 @@ class MessageAdmin extends AbstractAdmin
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
+    }
+    
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $sortValues[Datagrid::SORT_BY] = 'translations.name';
     }
 
     public function prePersist(object $object): void
