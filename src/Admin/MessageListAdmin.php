@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Admin;
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollectionInterface;
@@ -55,6 +56,11 @@ class MessageListAdmin extends AbstractAdmin
         $actions = $this->manager->isEditableLists() ? parent::configureDashboardActions() : [];
 
         return $actions;
+    }
+
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $sortValues[Datagrid::SORT_BY] = 'translations.name';
     }
 
     protected function configureRoutes(RouteCollectionInterface $collection): void
