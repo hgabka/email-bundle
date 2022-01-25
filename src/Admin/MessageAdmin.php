@@ -56,11 +56,6 @@ class MessageAdmin extends AbstractAdmin
     {
         $this->authChecker = $authChecker;
     }
-    
-    protected function configureDefaultSortValues(array &$sortValues): void
-    {
-        $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
-    }
 
     public function prePersist(object $object): void
     {
@@ -122,6 +117,11 @@ class MessageAdmin extends AbstractAdmin
         $name = $object ? $object->getName($this->utils->getCurrentLocale()) : null;
 
         return $name ?: $this->getTranslator()->trans('breadcrumb.link_message_create');
+    }
+
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
     }
 
     protected function configureBatchActions(array $actions): array
