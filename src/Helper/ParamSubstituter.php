@@ -44,6 +44,7 @@ class ParamSubstituter
         $params = $normalized ? $params : $this->normalizeParams($params);
 
         $params = $this->addVarChars($params);
+        $pattern = '/(<p*>)([\s\S]*?)(<\/p>)/i';
 
         foreach ($params as $key => $param) {
             if (\is_string($param)) {
@@ -53,13 +54,17 @@ class ParamSubstituter
                     continue;
                 }
 
-                if (!isset($param['type']) || 'block' !== $param['type']) {
-                    $text = str_replace($key, $param['value'], $text);
-                } else {
-                    $value = $param['value'];
-                    $pattern = '/<p*>(.*)'.preg_quote($key, '/').'(.*)<\/p>/i';
-                    $text = preg_replace($pattern, $value, $text);
+                if (isset($param['type']) && 'block' === $param['type']) {
+                    $text = preg_replace_callback($pattern, function ($matches) use ($key, $param) {
+                        if (false === mb_strpos($matches[2], $key)) {
+                            return $matches[0];
+                        }
+
+                        return '<div>' . str_replace($key, $param['value'], $matches[2]) . '</div>';
+                    }, $text);
                 }
+
+                $text = str_replace($key, $param['value'], $text);
             }
         }
 
