@@ -57,7 +57,7 @@ class ParamSubstituter
                     $text = str_replace($key, $param['value'], $text);
                 } else {
                     $value = $param['value'];
-                    $pattern = '/<p*>(.*)' . preg_quote($key, '/') . '(.*)<\/p>/i';
+                    $pattern = '/<p*>(.*)'.preg_quote($key, '/').'(.*)<\/p>/i';
                     $text = preg_replace($pattern, $value, $text);
                 }
             }
