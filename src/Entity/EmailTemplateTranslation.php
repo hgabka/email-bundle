@@ -170,7 +170,7 @@ class EmailTemplateTranslation implements TranslationInterface
      */
     public function setContentText($contentText)
     {
-        $this->contentHtml = $contentText;
+        $this->contentText = $contentText;
 
         return $this;
     }
