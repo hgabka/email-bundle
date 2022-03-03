@@ -27,6 +27,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->booleanNode('auto_create_text_parts')->defaultTrue()->end()
                 ->booleanNode('email_templates_enabled')->defaultTrue()->end()
                 ->booleanNode('messages_enabled')->defaultTrue()->end()
                 ->booleanNode('subscribers_enabled')->defaultTrue()->end()
