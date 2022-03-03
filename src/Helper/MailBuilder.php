@@ -267,6 +267,10 @@ class MailBuilder
                 $bodyHtml = $event->getBody();
             }
 
+            if (!empty(trim($bodyHtml)) && empty(trim($bodyText))) {
+                $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
+            }
+
             $layout = $template->getLayout();
 
             $layoutParams = array_merge($params, [
