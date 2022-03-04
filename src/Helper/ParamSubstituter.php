@@ -151,7 +151,7 @@ class ParamSubstituter
         if ($embedImages) {
             $html = $this->embedImages($html, $mail);
         }
-        
+
         return $this->transferRelativeLinks($html);
     }
 

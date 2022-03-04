@@ -422,7 +422,7 @@ class MailBuilder
         if (!empty($event->getBody())) {
             $bodyHtml = $event->getBody();
         }
-        
+
         if ($this->config['auto_create_text_parts'] && !empty(trim($bodyHtml)) && empty(trim($bodyText))) {
             $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
         }
