@@ -58,12 +58,12 @@ class EmailTemplateTranslation implements TranslationInterface
     protected $subject;
 
     /**
-     * @ORM\Column(name="content_text", type="text")
+     * @ORM\Column(name="content_text", type="text", nullable=true)
      */
     protected $contentText = '';
 
     /**
-     * @ORM\Column(name="content_html", type="text")
+     * @ORM\Column(name="content_html", type="text", nullable=true)
      */
     protected $contentHtml = '';
 
