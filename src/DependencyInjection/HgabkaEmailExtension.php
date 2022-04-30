@@ -51,25 +51,10 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $queueDefinition->replaceArgument(11, $config['email_return_path']);
 
         $substituterDefinition = $container->getDefinition('hg_email.param_substituter');
-        $substituterDefinition->replaceArgument(4, $config['template_var_chars']);
-
-        $mailerSubscriberDefinition = $container->getDefinition('hg_email.mailer_subscriber');
-        $mailerSubscriberDefinition->replaceArgument(1, $config['email_logging_strategy']);
+        $substituterDefinition->replaceArgument(5, $config['template_var_chars']);
 
         $emailLoggerDefinition = $container->getDefinition('hg_email.email_logger');
-        $emailLoggerDefinition->replaceArgument(1, $config['use_email_logging']);
-
-        $redirectPluginDefinition = $container->getDefinition('hg_email.redirect_plugin');
-        $redirectPluginDefinition->replaceArgument(0, $config['redirect']['recipients'] ?? []);
-        $redirectPluginDefinition->addMethodCall('setRedirectConfig', [$config['redirect']]);
-        $addHeadersPluginDefinition = $container->getDefinition('hg_email.add_headers_plugin');
-        $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_headers']]);
-
-        $addHeadersPluginDefinition = $container->getDefinition('hg_email.add_recipients_plugin');
-        $addHeadersPluginDefinition->addMethodCall('setConfig', [$config['add_recipients']]);
-
-        $addReturnPathPluginDefinition = $container->getDefinition('hg_email.add_return_path_plugin');
-        $addReturnPathPluginDefinition->addMethodCall('setConfig', [$config['return_path']]);
+        $emailLoggerDefinition->replaceArgument(2, $config['use_email_logging']);
 
         $mailReaderDefinition = $container->getDefinition('hg_email.mailbox_reader');
         $bcConfig = $config['bounce_checking'];
@@ -86,7 +71,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $voterDefinition->replaceArgument(2, $config['editor_role']);
 
         $recipientManagerDefinition = $container->getDefinition(RecipientManager::class);
-        $recipientManagerDefinition->replaceArgument(4, $config['excluded_recipient_classes']);
+        $recipientManagerDefinition->replaceArgument(5, $config['excluded_recipient_classes']);
 
         $subscriptionManagerDefinition = $container->getDefinition('hg_email.subscription_manager');
         $subscriptionManagerDefinition->replaceArgument(2, $config['editable_lists']);
@@ -97,9 +82,10 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $container->setParameter('hg_email.subscriptions.use_names', $subscrConfig['use_names']);
 
         $layoutManagerDefinition = $container->getDefinition('hg_email.layout_manager');
-        $layoutManagerDefinition->replaceArgument(2, $config['layout_file']);
+        $layoutManagerDefinition->replaceArgument(3, $config['layout_file']);
 
         $container->setParameter('hg_email.editor_role', $config['editor_role']);
+        $container->setParameter('hg_email.redirect_config', $config['redirect']);
 
         $container
             ->registerForAutoconfiguration(EmailTemplateTypeInterface::class)

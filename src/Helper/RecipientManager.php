@@ -10,7 +10,9 @@ use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\RecipientTypeInterface;
+use function is_string;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RecipientManager
@@ -40,18 +42,22 @@ class RecipientManager
     /** @var array */
     protected $excludedRecipientClasses;
 
+    /** @var MailHelper */
+    protected $mailHelper;
+
     /**
      * RecipientManager constructor.
      *
      * @param mixed $excludedRecipientClasses
      */
-    public function __construct(Registry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, $excludedRecipientClasses)
+    public function __construct(Registry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, MailHelper $mailHelper, $excludedRecipientClasses)
     {
         $this->doctrine = $doctrine;
         $this->translator = $translator;
         $this->formFactory = $formFactory;
         $this->templateTypeManager = $templateTypeManager;
         $this->excludedRecipientClasses = $excludedRecipientClasses;
+        $this->mailHelper = $mailHelper;
     }
 
     /**
@@ -327,10 +333,7 @@ class RecipientManager
             $paramTo = $ccRow['to'];
             $to = $this->translateEmailAddress($paramTo);
 
-            $toName = \is_array($to) ? current($to) : null;
-            $toEmail = \is_array($to) ? key($to) : $to;
-
-            $paramCc[] = $toName ? [$toEmail => $toName] : $toEmail;
+            $paramCc[] = $to;
         }
 
         return $paramCc;
@@ -341,19 +344,11 @@ class RecipientManager
      *
      * @param array $address
      *
-     * @return array|string
+     * @return Address
      */
-    public function translateEmailAddress($address)
+    public function translateEmailAddress($address): Address
     {
-        if (\is_string($address) || ((!isset($address['name']) || '' === $address['name']) && (!isset($address['email']) || '' === $address['email']))) {
-            return $address;
-        }
-
-        if (isset($address['name']) && \strlen($address['name'])) {
-            return [$address['email'] => $address['name']];
-        }
-
-        return $address['email'];
+        return $this->mailHelper->translateEmailAddress($address);
     }
 
     /**
@@ -368,7 +363,7 @@ class RecipientManager
             return false;
         }
 
-        if (\is_string($toData)) {
+        if (is_string($toData)) {
             return [
                 ['to' => $toData, 'locale' => $locale],
             ];
@@ -402,7 +397,7 @@ class RecipientManager
             return $type->getRecipients();
         }
 
-        if (\is_string(current($toData))) {
+        if (is_string(current($toData))) {
             return [
                 ['to' => $toData, 'locale' => $locale],
             ];

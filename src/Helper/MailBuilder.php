@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Persistence\ObjectRepository;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
@@ -13,12 +14,13 @@ use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
-use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -61,6 +63,9 @@ class MailBuilder
     /** @var LayoutManager */
     protected $layoutManager;
 
+    /** @var MailHelper */
+    protected $mailHelper;
+
     /**
      * MailBuilder constructor.
      */
@@ -75,7 +80,8 @@ class MailBuilder
         RecipientManager $recipientManager,
         EventDispatcherInterface $eventDispatcher,
         TemplateTypeManager $templateTypeManager,
-        LayoutManager $layoutManager
+        LayoutManager $layoutManager,
+        MailHelper $mailHelper
     ) {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -88,6 +94,7 @@ class MailBuilder
         $this->eventDispatcher = $eventDispatcher;
         $this->templateTypeManager = $templateTypeManager;
         $this->layoutManager = $layoutManager;
+        $this->mailHelper = $mailHelper;
     }
 
     /**
@@ -103,22 +110,22 @@ class MailBuilder
         $this->config = $config;
     }
 
-    public function getDefaultFromName()
+    public function getDefaultFromName(): ?string
     {
         $default = $this->getDefaultFrom();
 
-        return \is_array($default) ? current($default) : null;
+        return $default->getName();
     }
 
-    public function getDefaultFromEmail()
+    public function getDefaultFromEmail(): string
     {
         $default = $this->getDefaultFrom();
 
-        return \is_array($default) ? key($default) : $default;
+        return $default->getAddress();
     }
 
     /**
-     * @return array|string
+     * @return Address
      */
     public function getDefaultFrom()
     {
@@ -155,9 +162,9 @@ class MailBuilder
      *
      * @param array $address
      *
-     * @return array|string
+     * @return Address
      */
-    public function translateEmailAddress($address)
+    public function translateEmailAddress($address): Address
     {
         return $this->recipientManager->translateEmailAddress($address);
     }
@@ -169,7 +176,7 @@ class MailBuilder
      * @param mixed                             $sendParams
      * @param mixed                             $embedImages
      *
-     * @return bool|\Swift_Message
+     * @return array|false
      */
     public function createTemplateMessage($class, $parameters = [], $sendParams = [], $locale = null, $embedImages = true)
     {
@@ -250,7 +257,9 @@ class MailBuilder
 
             $subject = $this->paramSubstituter->substituteParams($template->translate($locale)->getSubject(), $params, true);
 
-            $mail = new \Swift_Message($subject);
+            $mail = new Email();
+            $mail->subject($subject);
+
             $bodyText = $this->paramSubstituter->substituteParams($template->translate($locale)->getContentText(), $params, true);
             $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $template->translate($locale)->getContentHtml(), $params, true, $embedImages);
             $event = new BuildTemplateMailEvent();
@@ -279,11 +288,11 @@ class MailBuilder
             $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams, $sendParams['layout_file'] ?? null);
 
             if ('' !== $bodyText) {
-                $mail->addPart($bodyText, 'text/plain');
+                $mail->text($bodyText);
             }
 
             if ('' !== $bodyHtml) {
-                $mail->addPart($bodyHtml, 'text/html');
+                $mail->html($bodyHtml);
             }
 
             $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $locale);
@@ -293,13 +302,15 @@ class MailBuilder
                 $media = $attachment->getMedia();
 
                 if ($media) {
-                    $mail->attach($this->createSwiftAttachment($media));
+                    $path = $this->mediaManager->getMediaPath($media);
+                    $name = $media->translate($this->hgabkaUtils->getCurrentLocale())->getName();
+                    $mail->attachFromPath($path, empty($name) ? $media->getOriginalFilename() : $name, $media->getContentType());
                 }
             }
 
             try {
-                $mail->setFrom($this->translateEmailAddress($paramFrom));
-                $mail->setTo($this->translateEmailAddress($paramTo));
+                $mail->from($this->translateEmailAddress($paramFrom));
+                $mail->to($this->translateEmailAddress($paramTo));
 
                 if (!empty($paramCc)) {
                     $this->addCcToMail($mail, $paramCc, RecipientManager::RECIPIENT_TYPE_CC);
@@ -344,10 +355,10 @@ class MailBuilder
 
                 if (!isset($sendParams['return_path'])) {
                     $from = $mail->getFrom();
-                    $mail->setReturnPath(\is_array($from) ? key($from) : (string) $from);
+                    $mail->returnPath(current($from));
                 } else {
                     if (\is_string($sendParams['return_path'])) {
-                        $mail->setReturnPath($sendParams['return_path']);
+                        $mail->returnPath($sendParams['return_path']);
                     }
                 }
 
@@ -403,7 +414,8 @@ class MailBuilder
         }
 
         $subject = $this->paramSubstituter->substituteParams($message->translate($locale)->getSubject(), $params);
-        $mail = new \Swift_Message($subject);
+        $mail = new Email();
+        $mail->subject($subject);
 
         $bodyText = $this->paramSubstituter->substituteParams($message->translate($locale)->getContentText(), $params);
         $bodyHtml = $this->paramSubstituter->prepareHtml($mail, $message->translate($locale)->getContentHtml(), $params, false, $embedImages);
@@ -435,11 +447,11 @@ class MailBuilder
         $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams);
 
         if ('' !== $bodyText) {
-            $mail->addPart($bodyText, 'text/plain');
+            $mail->text($bodyText);
         }
 
         if ('' !== $bodyHtml) {
-            $mail->addPart($bodyHtml, 'text/html');
+            $mail->html($bodyHtml);
         }
 
         $attachments = $this
@@ -453,16 +465,15 @@ class MailBuilder
             $media = $attachment->getMedia();
 
             if ($media) {
-                $mail->attach($this->createSwiftAttachment($media));
+                $path = $this->mediaManager->getMediaPath($media);
+                $name = $media->translate($this->hgabkaUtils->getCurrentLocale())->getName();
+                $mail->attachFromPath($path, empty($name) ? $media->getOriginalFilename() : $name, $media->getContentType());
             }
         }
 
-        $mail
-            ->setSubject($subject)
-            ->setTo($to)
-        ;
+        $mail->to($this->translateEmailAddress($to));
 
-        $mail->setFrom($paramFrom);
+        $mail->from($this->translateEmailAddress($paramFrom));
         if (!empty($params['unsubscribe_url'])) {
             $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<' . $params['unsubscribe_url'] . '>');
         }
@@ -478,7 +489,7 @@ class MailBuilder
                     $oneCc = $oneCcData['to'];
 
                     if (\is_array($oneCc)) {
-                        $mail->addCc(key($oneCc), current($oneCc));
+                        $mail->addCc(new Address(key($oneCc), current($oneCc)));
                     } else {
                         $mail->addCc($oneCc);
                     }
@@ -494,7 +505,7 @@ class MailBuilder
                     }
                     $oneBcc = $oneBccData['to'];
                     if (\is_array($oneBcc)) {
-                        $mail->addCc(key($oneBcc), current($oneBcc));
+                        $mail->addCc(new Address(key($oneBcc), current($oneBcc)));
                     } else {
                         $mail->addCc($oneBcc);
                     }
@@ -605,9 +616,9 @@ class MailBuilder
 
     protected function addCcToMail($mail, $paramCc, $type)
     {
-        $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'Bcc' : 'Cc';
+        $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'bcc' : 'cc';
         if (\is_string($paramCc)) {
-            $mail->{'set' . $method}($paramCc);
+            $mail->{$method}(Address::create($paramCc));
 
             return;
         }
@@ -615,12 +626,11 @@ class MailBuilder
         if (\is_array($paramCc)) {
             reset($paramCc);
             if (is_numeric(key($paramCc))) {
-                $mail->{'set' . $method}([]);
                 foreach ($paramCc as $cc) {
                     if (\is_array($cc)) {
-                        $mail->{'add' . $method}(key($cc), current($cc));
+                        $mail->{'add' . ucfirst($method)}($this->translateEmailAddress($cc));
                     } else {
-                        $mail->{'add' . $method}($cc);
+                        $mail->{'add' . ucfirst($method)}(Address::create($cc));
                     }
                 }
 
@@ -628,14 +638,13 @@ class MailBuilder
             }
         }
 
-        $mail->{'set' . $method}($paramCc);
+        $mail->{$method}($this->translateEmailAddress($paramCc));
     }
 
     protected function getFromFromTemplate(EmailTemplate $template = null, $locale = null)
     {
-        $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
-        $defaultEmail = \is_array($default) ? key($default) : $default;
+        $defaultEmail = $this->getDefaultFromEmail();
 
         $name = $template ? $template->getFromName($locale) : null;
         if (empty($name)) {
@@ -647,7 +656,7 @@ class MailBuilder
             $email = $defaultEmail;
         }
 
-        return empty($name) ? $email : [$email => $name];
+        return empty($name) ? new Address($email) : new Address($email, $name);
     }
 
     protected function addDefaultParams($paramFrom, $paramTo, &$params)
@@ -655,11 +664,11 @@ class MailBuilder
         $to = $this->translateEmailAddress($paramTo);
         $from = $this->translateEmailAddress($paramFrom);
 
-        $toName = \is_array($to) ? current($to) : $to;
-        $toEmail = \is_array($to) ? key($to) : $to;
+        $toName = $to->getName();
+        $toEmail = $to->getAddress();
 
-        $fromName = \is_array($from) ? current($from) : $from;
-        $fromEmail = \is_array($from) ? key($from) : $from;
+        $fromName = $from->getName();
+        $fromEmail = $from->getAddress();
 
         foreach (array_combine(
             array_values($this->getFromToParams()),
@@ -674,25 +683,12 @@ class MailBuilder
         }
 
         return [
-            'name' => \is_array($to) ? current($to) : '',
-            'email' => $toEmail,
+            'name' => (string) $to->getName(),
+            'email' => $to->getAddress(),
         ];
     }
 
-    protected function createSwiftAttachment(Media $media)
-    {
-        return (new \Swift_Attachment())
-            ->setBody($this->getMediaContent($media))
-            ->setFilename($media->getOriginalFilename())
-            ->setContentType($media->getContentType())
-            ->setSize($this->mediaManager->getMediaSize($media))
-        ;
-    }
-
-    /**
-     * @return \Doctrine\Common\Persistence\ObjectRepository
-     */
-    protected function getSubscriberRepository()
+    protected function getSubscriberRepository(): ?ObjectRepository
     {
         return $this->doctrine->getRepository(MessageSubscriber::class);
     }

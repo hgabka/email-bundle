@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Event;
 
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class MailerEvent extends Event
@@ -10,7 +11,7 @@ class MailerEvent extends Event
     public const EVENT_MAIL_SENT = 'email.log.mail_sent';
     public const EVENT_ADD_HEADERS = 'email.add_headers';
 
-    /** @var \Swift_Message */
+    /** @var Email */
     private $message;
 
     /** @var array */
@@ -19,7 +20,7 @@ class MailerEvent extends Event
     /** @var mixed */
     private $returnValue;
 
-    public function getMessage(): \Swift_Message
+    public function getMessage(): Email
     {
         return $this->message;
     }
@@ -27,7 +28,7 @@ class MailerEvent extends Event
     /**
      * @return MailerEvent
      */
-    public function setMessage(\Swift_Message $message): self
+    public function setMessage(Email $message): self
     {
         $this->message = $message;
 

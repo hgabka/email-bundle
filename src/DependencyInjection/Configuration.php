@@ -105,7 +105,6 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('message_logging')->defaultTrue()->end()
                 ->scalarNode('log_path')->defaultValue($this->container->getParameter('kernel.logs_dir') . '/message')->end()
                 ->booleanNode('use_email_logging')->defaultTrue()->end()
-                ->enumNode('email_logging_strategy')->values(['real_send', 'mailer_send'])->defaultValue('mailer_send')->end()
                 ->integerNode('delete_sent_messages_after')->defaultValue(2)->end()
                 ->arrayNode('redirect')
                     ->addDefaultsIfNotSet()

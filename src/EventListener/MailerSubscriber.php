@@ -11,9 +11,6 @@ class MailerSubscriber implements EventSubscriberInterface
     /** @var EmailLogger */
     protected $logger;
 
-    /** @var string */
-    protected $strategy;
-
     /**
      * MailerSubscriber constructor.
      */
@@ -26,24 +23,14 @@ class MailerSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            MailerEvent::EVENT_SEND_CALLED => 'onSendCalled',
             MailerEvent::EVENT_MAIL_SENT => 'onMailSent',
             MailerEvent::EVENT_ADD_HEADERS => 'onAddHeaders',
         ];
     }
 
-    public function onSendCalled(MailerEvent $event)
-    {
-        if ('mailer_send' === $this->strategy) {
-            $this->logger->logMessage($event);
-        }
-    }
-
     public function onMailSent(MailerEvent $event)
     {
-        if ('mailer_send' !== $this->strategy) {
-            $this->logger->logMessage($event);
-        }
+        $this->logger->logMessage($event);
     }
 
     public function onAddHeaders(MailerEvent $event)

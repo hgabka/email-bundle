@@ -34,7 +34,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         return $placeholder;
     }
 
-    public function getLabel()
+    public function getLabel(): string
     {
         $label = $this->label;
         if (empty($label)) {
@@ -69,7 +69,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         return $this;
     }
 
-    protected function getKey()
+    protected function getKey(): string
     {
         $fcqn = explode('\\', static::class);
         $class = array_pop($fcqn);

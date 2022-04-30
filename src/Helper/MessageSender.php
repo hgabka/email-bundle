@@ -12,6 +12,7 @@ use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageSender
@@ -22,7 +23,7 @@ class MessageSender
     /** @var array */
     protected $config;
 
-    /** @var \Swift_Mailer */
+    /** @var MailerInterface */
     protected $mailer;
 
     /** @var TranslatorInterface */
@@ -47,7 +48,7 @@ class MessageSender
      */
     public function __construct(
         Registry $doctrine,
-        \Swift_Mailer $mailer,
+        MailerInterface $mailer,
         QueueManager $queueManager,
         TranslatorInterface $translator,
         HgabkaUtils $hgabkaUtils,

@@ -6,6 +6,8 @@ use Hgabka\EmailBundle\Entity\EmailLayout;
 use Hgabka\EmailBundle\Model\LayoutVarInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Config\FileLocator;
+use Throwable;
+use Twig\Environment;
 
 class LayoutManager
 {
@@ -14,6 +16,9 @@ class LayoutManager
 
     /** @var ParamSubstituter */
     protected $paramSubstituter;
+
+    /** @var Environment */
+    protected $environment;
 
     /** @var string */
     protected $layoutFile;
@@ -26,11 +31,12 @@ class LayoutManager
      *
      * @param string $layoutFile
      */
-    public function __construct(HgabkaUtils $hgabkaUtils, ParamSubstituter $paramSubstituter, $layoutFile)
+    public function __construct(HgabkaUtils $hgabkaUtils, ParamSubstituter $paramSubstituter, Environment $environment, $layoutFile)
     {
         $this->hgabkaUtils = $hgabkaUtils;
         $this->paramSubstituter = $paramSubstituter;
         $this->layoutFile = $layoutFile;
+        $this->environment = $environment;
     }
 
     public function addLayoutVar(LayoutVarInterface $layoutVar, $priority = null)
@@ -60,32 +66,43 @@ class LayoutManager
         return $locator->locate('layout.html');
     }
 
-    public function applyLayout($bodyHtml, EmailLayout $layout = null, $mail, $locale, $params = [], $layoutFile = null)
+    public function applyLayout($bodyHtml, ?EmailLayout $layout, $mail, $locale, $params = [], $layoutFile = null)
     {
+        $isTwig = false;
         if ($layout && '' !== $bodyHtml) {
             $layoutHtml = $layout->translate($locale)->getContentHtml();
         } elseif ('' !== $bodyHtml && (false !== $this->layoutFile || !empty($layoutFile))) {
             $layoutFile = !empty($layoutFile) || (isset($layoutFile) && false === $layoutFile) ? $layoutFile : $this->layoutFile;
-
-            if (false !== $layoutFile && !is_file($layoutFile)) {
-                $layoutFile = $this->getDefaultLayoutPath();
-            }
-
             if (!empty($layoutFile)) {
                 $layoutFile = strtr($layoutFile, ['%locale%' => $locale]);
-                $layoutHtml = @file_get_contents($layoutFile);
+                $ext = pathinfo($layoutFile, \PATHINFO_EXTENSION);
+                if ('twig' === $ext) {
+                    $isTwig = true;
+
+                    try {
+                        $layoutHtml = $this->environment->render($layoutFile, $this->getLayoutParams('', $bodyHtml, $mail, $params, $locale));
+                    } catch (Throwable $e) {
+                        $layoutHtml = null;
+                    }
+                } else {
+                    if (!is_file($layoutFile)) {
+                        $layoutFile = $this->getDefaultLayoutPath();
+                    }
+                    $layoutHtml = @file_get_contents($layoutFile);
+                }
             } else {
                 $layoutHtml = null;
             }
         }
+
         if (!empty($layoutHtml)) {
-            $bodyHtml = $this->finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale);
+            $bodyHtml = !$isTwig ? $this->finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale) : $layoutHtml;
         }
 
         return $bodyHtml;
     }
 
-    public function getVariables()
+    public function getVariables(): array
     {
         $result = [];
         foreach ($this->layoutVars as $layoutVar) {
@@ -93,6 +110,20 @@ class LayoutManager
         }
 
         return $result;
+    }
+
+    public function getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale): array
+    {
+        foreach ($this->layoutVars as $layoutVar) {
+            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale);
+        }
+
+        return array_merge($params, [
+            'host' => $this->hgabkaUtils->getSchemeAndHttpHost(),
+            'styles' => '',
+            'title' => $params['subject'],
+            'content' => $bodyHtml,
+        ]);
     }
 
     /**
@@ -108,19 +139,8 @@ class LayoutManager
      *
      * @return string
      */
-    protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale)
+    protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale): string
     {
-        foreach ($this->layoutVars as $class => $layoutVar) {
-            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale);
-        }
-
-        $params = array_merge($params, [
-            'host' => $this->hgabkaUtils->getSchemeAndHttpHost(),
-            'styles' => '',
-            'title' => $params['subject'],
-            'content' => $bodyHtml,
-        ]);
-
-        return $this->paramSubstituter->substituteParams($layoutHtml, $params);
+        return $this->paramSubstituter->substituteParams($layoutHtml, $this->getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale));
     }
 }

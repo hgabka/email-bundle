@@ -3,12 +3,16 @@
 namespace Hgabka\EmailBundle\Helper;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\RouterInterface;
 
 class ParamSubstituter
 {
     /** @var RequestStack */
     protected $requestStack;
+
+    /** @var MailHelper */
+    protected $mailHelper;
 
     /** @var RouterInterface */
     protected $router;
@@ -21,25 +25,26 @@ class ParamSubstituter
     /** @var string */
     protected $projectDir;
 
-    public function __construct(RequestStack $requestStack, RouterInterface $router, string $cacheDir, string $projectDir, $varChars)
+    public function __construct(RequestStack $requestStack, RouterInterface $router, MailHelper $mailHelper, string $cacheDir, string $projectDir, $varChars)
     {
         $this->requestStack = $requestStack;
         $this->cacheDir = $cacheDir;
         $this->projectDir = $projectDir;
         $this->varChars = $varChars;
         $this->router = $router;
+        $this->mailHelper = $mailHelper;
     }
 
     /**
      * Szöveg paraméterek behelyettesítése.
      *
-     * @param string $text
-     * @param array  $params
-     * @param bool   $normalized
+     * @param string       $text
+     * @param array|string $params
+     * @param bool         $normalized
      *
      * @return string
      */
-    public function substituteParams($text, $params, $normalized = false)
+    public function substituteParams(string $text, $params, bool $normalized = false): string
     {
         $params = $normalized ? $params : $this->normalizeParams($params);
 
@@ -128,11 +133,11 @@ class ParamSubstituter
             return $encodedHtml;
         }
 
-        $html = preg_replace_callback($pattern, function ($matches) {
+        return preg_replace_callback($pattern, function ($matches) {
+            $imagePath = trim($matches[2], " '\"");
+
             return $matches[1] . $this->addHost($imagePath);
         }, $html);
-
-        return $html;
     }
 
     public function transferRelativeLinks($html)
@@ -155,7 +160,7 @@ class ParamSubstituter
         return $this->transferRelativeLinks($html);
     }
 
-    public function getVarChars()
+    public function getVarChars(): array
     {
         $varChars = $this->varChars;
         if (empty($varChars)) {
@@ -168,7 +173,7 @@ class ParamSubstituter
         return ['prefix' => $varChars['prefix'] ?? '', 'postfix' => $varChars['postfix'] ?? ''];
     }
 
-    public function normalizeParams($params)
+    public function normalizeParams($params): array
     {
         $normalized = [];
 
@@ -238,7 +243,7 @@ class ParamSubstituter
      * Embeddel egy képet és visszaadja a cid-et.
      *
      * @param string $url
-     * @param mixed  $email
+     * @param Email  $email
      *
      * @return string
      */
@@ -268,9 +273,10 @@ class ParamSubstituter
             file_put_contents($file, $content);
         }
 
-        $img = \Swift_Image::fromPath($file);
+        $embedId = $this->mailHelper->generateEmbedId();
+        $email->embedFromPath($file, $embedId);
 
-        return $email->embed($img);
+        return 'cid:' . $embedId;
     }
 
     /**
@@ -313,7 +319,7 @@ class ParamSubstituter
      *
      * @return string
      */
-    protected function addHostToUrl($url)
+    protected function addHostToUrl(string $url): string
     {
         if (0 === strpos($url, 'http://') || 0 === strpos($url, 'https://')) {
             return $url;

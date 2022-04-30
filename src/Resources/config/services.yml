@@ -57,7 +57,7 @@ services:
 
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true
-        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager", '']
+        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager", '@Hgabka\EmailBundle\Helper\MailHelper', '']
 
     hg_email.recipient_manager:
         alias: Hgabka\EmailBundle\Helper\RecipientManager
@@ -122,15 +122,15 @@ services:
 
     hg_email.layout_manager:
         class: Hgabka\EmailBundle\Helper\LayoutManager
-        arguments: ["@hgabka_utils.hgabka_utils", "@hg_email.param_substituter", '']
+        arguments: ['@hgabka_utils.hgabka_utils', '@hg_email.param_substituter', '@twig', '']
 
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
-        arguments: ["@doctrine", "@request_stack", "@hg_email.param_substituter", "@translator", "@hgabka_utils.hgabka_utils", "@router", '@hgabka_media.media_manager', "@hg_email.recipient_manager", "@event_dispatcher", "@hg_email.template_type_manager", "@hg_email.layout_manager"]
+        arguments: ['@doctrine', '@request_stack', '@hg_email.param_substituter', '@translator', '@hgabka_utils.hgabka_utils', '@router', '@hgabka_media.media_manager', '@hg_email.recipient_manager', '@event_dispatcher', '@hg_email.template_type_manager', '@hg_email.layout_manager', '@Hgabka\EmailBundle\Helper\MailHelper']
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'
-        arguments: ["@doctrine", "@mailer", "@hg_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hg_email.mail_builder"]
+        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hg_email.mail_builder"]
 
     hg_email.message_logger:
         class: '%hg_email.message_logger.class%'
@@ -138,11 +138,11 @@ services:
 
     hg_email.email_logger:
         class: 'Hgabka\EmailBundle\Logger\EmailLogger'
-        arguments: ["@doctrine", '']
+        arguments: ["@doctrine", '@Hgabka\EmailBundle\Helper\MailHelper', '']
 
     hg_email.queue_manager:
         class: '%hg_email.queue_manager.class%'
-        arguments: ["@doctrine", "@mailer", "@hg_email.message_logger", '@hg_email.recipient_manager', '@router', '', '', '', '', '', '', '']
+        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.message_logger", '@hg_email.recipient_manager', '@router', '', '', '', '', '', '', '']
         calls:
             - method: setMailBuilder
               arguments:
@@ -150,7 +150,7 @@ services:
 
     hg_email.param_substituter:
         class: 'Hgabka\EmailBundle\Helper\ParamSubstituter'
-        arguments: ["@request_stack", "@router", "%kernel.cache_dir%", "%kernel.project_dir%", []]
+        arguments: ["@request_stack", "@router", '@Hgabka\EmailBundle\Helper\MailHelper', "%kernel.cache_dir%", "%kernel.project_dir%", []]
 
     Hgabka\EmailBundle\Helper\ParamSubstituter:
         alias: hg_email.param_substituter
@@ -171,43 +171,6 @@ services:
         arguments: ["@hg_email.recipient_manager"]
         tags:
             - { name: kernel.event_subscriber }
-
-    hg_email.mail_logger_plugin:
-        class: Hgabka\EmailBundle\Mailer\MessageLoggerPlugin
-        arguments: ["@event_dispatcher"]
-        tags:
-            - { name: "swiftmailer.default.plugin" }
-
-    hg_email.redirect_plugin:
-        class: Hgabka\EmailBundle\Mailer\RedirectPlugin
-        arguments: [""]
-        calls:
-            - method: setHgabkaUtils
-              arguments:
-                  - "@hgabka_utils.hgabka_utils"
-
-            - method: setDebug
-              arguments:
-                  - "%kernel.debug%"
-        tags:
-            - { name: "swiftmailer.default.plugin" }
-
-
-    hg_email.add_headers_plugin:
-        class: Hgabka\EmailBundle\Mailer\AddHeadersPlugin
-        arguments: ["@event_dispatcher"]
-        tags:
-            - { name: "swiftmailer.default.plugin" }
-
-    hg_email.add_recipients_plugin:
-        class: Hgabka\EmailBundle\Mailer\AddRecipientsPlugin
-        tags:
-            - { name: "swiftmailer.default.plugin" }
-
-    hg_email.add_return_path_plugin:
-        class: Hgabka\EmailBundle\Mailer\AddReturnPathPlugin
-        tags:
-            - { name: "swiftmailer.default.plugin" }
 
     hg_email.mailbox_reader:
         class: Hgabka\EmailBundle\Helper\MailboxReader
@@ -386,4 +349,19 @@ services:
         autowire: true
         autoconfigure: true
         tags: ['controller.service_arguments']
-        
+
+    Hgabka\EmailBundle\EventListener\RedirectMailerSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $redirectConfig: '%hg_email.redirect_config%'
+            $debug: '%kernel.debug%'
+
+    Hgabka\EmailBundle\EventListener\MailerEventSubscriber:
+        autowire: true
+        autoconfigure: true
+
+    Hgabka\EmailBundle\Helper\MailHelper:
+        autowire: true
+        autoconfigure: true
+

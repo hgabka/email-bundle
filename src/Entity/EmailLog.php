@@ -3,7 +3,9 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Helper\MailHelper;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
+use Symfony\Component\Mime\Email;
 
 /**
  * Email log.
@@ -288,27 +290,22 @@ class EmailLog
     /**
      * Populate fields with $message data.
      *
-     * @param Swift_Message $message
+     * @param Email $message
      */
-    public function fromMessage(\Swift_Message $message)
+    public function fromMessage(Email $message, MailHelper $mailHelper)
     {
-        $this->setFrom($this->addressToString($message->getFrom()));
-        $this->setTo($this->addressToString($message->getTo()));
+        $this->setFrom($mailHelper->displayAddresses($message->getFrom()));
+        $this->setTo($mailHelper->displayAddresses($message->getTo()));
         $this->setSubject($message->getSubject());
-        $this->setTextBody($message->getBody());
-        $this->setCc($this->addressToString($message->getCc()));
-        $this->setBcc($this->addressToString($message->getBcc()));
+        $this->setTextBody($message->getTextBody());
+        $this->setCc($mailHelper->displayAddresses($message->getCc()));
+        $this->setBcc($mailHelper->displayAddresses($message->getBcc()));
+        $this->setHtmlBody($message->getHtmlBody());
 
-        $children = $message->getChildren();
-        foreach ($children as $child) {
-            if ('text/html' === $child->getContentType()) {
-                $this->setHtmlBody($child->getBody());
-            } elseif ($child instanceof \Swift_Attachment) {
-                $attachment = (string) $this->getAttachment();
-                $this->setAttachment((empty($attachment) ? '' : ($attachment . ',')) . $child->getFilename());
-            }
+        foreach ($message->getAttachments() as $attachmentPart) {
+            $attachment = (string) $this->getAttachment();
+            $this->setAttachment((empty($attachment) ? '' : ($attachment . ',')) . $attachmentPart->asDebugString());
         }
-        $this->setMime($message->getContentType());
     }
 
     /**

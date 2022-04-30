@@ -11,6 +11,10 @@ use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Logger\MessageLogger;
 use Hgabka\MediaBundle\Entity\Media;
+use Symfony\Component\Mailer\Exception\TransportException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -21,7 +25,7 @@ class QueueManager
 
     protected $lastError;
 
-    /** @var \Swift_Mailer */
+    /** @var MailerInterface */
     protected $mailer;
 
     /** @var MessageLogger */
@@ -60,7 +64,7 @@ class QueueManager
     /** @var string */
     protected $emailReturnPath;
 
-    public function __construct(Registry $doctrine, \Swift_Mailer $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter, $messageReturnPath, $emailReturnPath)
+    public function __construct(Registry $doctrine, MailerInterface $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter, $messageReturnPath, $emailReturnPath)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -132,40 +136,34 @@ class QueueManager
 
         try {
             $message =
-                (new \Swift_Message($queue->getSubject()))
-                    ->setFrom($from)
-                    ->setTo($to)
+                (new Email())
+                    ->from($from)
+                    ->to($to)
             ;
 
             if (!empty($cc)) {
-                $message->setCc($cc);
+                $message->cc($cc);
             }
 
             if (!empty($bcc)) {
-                $message->setBcc($bcc);
+                $message->bcc($bcc);
             }
 
             $contentText = $queue->getContentText();
             $contentHtml = $this->mailBuilder->embedImages($queue->getContentHtml(), $message);
 
             if (!empty($contentText)) {
-                $message->setBody($contentText);
+                $message->text($contentText);
             }
             if (!empty($contentHtml)) {
-                $message->addPart($contentHtml, 'text/html');
+                $message->html($contentHtml);
             }
 
             foreach ($this->getAttachments($queue) as $attachment) {
                 $content = $attachment->getContent();
 
                 if ($content) {
-                    $message->attach(
-                        (new \Swift_Attachment())
-                            ->setBody($content)
-                            ->setFilename($attachment->getFilename())
-                            ->setContentType($attachment->getContentType())
-                            ->setSize(\strlen($content))
-                    );
+                    $message->attach($content, $attachment->getFilename(), $attachment->getContentType());
                 }
             }
 
@@ -173,16 +171,18 @@ class QueueManager
             $headers->addTextHeader('Hg-Email-Id', $queue->getId());
 
             if (isset($this->bounceConfig['account']['address'])) {
-                $message->setReturnPath($this->bounceConfig['account']['address']);
+                $message->returnPath($this->bounceConfig['account']['address']);
             } else {
                 if (null === $this->emailReturnPath) {
-                    $message->setReturnPath(\is_string($from) ? $from : key($from));
+                    $message->returnPath(\is_string($from) ? $from : key($from));
                 } elseif (\is_string($this->emailReturnPath)) {
-                    $message->setReturnPath($this->emailReturnPath);
+                    $message->returnPath($this->emailReturnPath);
                 }
             }
 
-            if ($this->mailer->send($message) < 1) {
+            try {
+                $this->mailer->send($message);
+            } catch (TransportException $e) {
                 $this->setError('Sikertelen küldés', $queue);
                 $this->doctrine->getManager()->flush();
 
@@ -218,7 +218,7 @@ class QueueManager
         $toName = $queue->getToName();
         $toEmail = $queue->getToEmail();
 
-        $to = empty($toName) ? $toEmail : [$toEmail => $toName];
+        $to = empty($toName) ? new Address($toEmail) : new Address($toEmail, $toName);
 
         $bounceConfig = $this->bounceConfig;
 
@@ -239,23 +239,25 @@ class QueueManager
             $params['vars']['webversion'] = $this->router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
             ['mail' => $mail] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
-            /** @var \Swift_Message $mail */
+            /** @var Email $mail */
             $headers = $mail->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());
 
             if (isset($bounceConfig['account']['address'])) {
-                $mail->setReturnPath($bounceConfig['account']['address']);
+                $mail->returnPath($bounceConfig['account']['address']);
             } else {
                 if (null === $this->messageReturnPath) {
                     $from = $mail->getFrom();
-                    $mail->setReturnPath(\is_string($from) ? $from : key($from));
+                    $mail->returnPath(\is_string($from) ? $from : key($from));
                 } elseif (\is_string($this->messageReturnPath)) {
-                    $mail->setReturnPath($this->messageReturnPath);
+                    $mail->returnPath($this->messageReturnPath);
                 }
             }
 
-            if ($mailer->send($mail) < 1) {
-                $queue->setError('Sikertelen kuldes');
+            try {
+                $mailer->send($mail);
+            } catch (TransportException $e) {
+                $this->setError('Sikertelen kuldes', $queue);
                 $this->doctrine->getManager()->flush();
 
                 return false;
@@ -325,13 +327,13 @@ class QueueManager
                 continue;
             }
 
-            $to = $recipient['to'];
+            $to = $this->translateEmailAddress($recipient['to']);
             $locale = $recipient['locale'] ?? null;
 
             $existing = $this
                 ->doctrine
                 ->getRepository(MessageQueue::class)
-                ->getForMessageAndEmail($message, \is_array($to) ? key($to) : $to)
+                ->getForMessageAndEmail($message, $to->getAddress())
             ;
 
             if ($existing) {
@@ -339,13 +341,8 @@ class QueueManager
             }
             $queue = new MessageQueue();
             $queue->setMessage($message);
-            if (\is_array($to)) {
-                $queue->setToEmail(key($to));
-                $queue->setToName(current($to));
-            } else {
-                $queue->setToEmail($to);
-            }
-
+            $queue->setToEmail($to->getAddress());
+            $queue->setToName($to->getName());
             $params = [];
 
             $queue->setLocale($locale);
@@ -434,9 +431,8 @@ class QueueManager
 
         foreach ($errorQueues as $queue) {
             ++$count;
-            $to = unserialize($queue->getTo());
-
-            $email = \is_array($to) ? key($to) : $to;
+            $to = $this->translateEmailAddress(unserialize($queue->getTo()));
+            $email = $to->getAddress();
 
             if ($this->sendEmailQueue($queue)) {
                 $this->log('Sikertelen kuldes ujra. Email kuldese sikeres. Email: ' . $email);
@@ -458,7 +454,8 @@ class QueueManager
 
         foreach ($queues as $queue) {
             ++$count;
-            $to = unserialize($queue->getTo());
+            $to = $this->translateEmailAddress(unserialize($queue->getTo()));
+            $email = $to->getAddress();
 
             $email = \is_array($to) ? key($to) : $to;
             if ($this->sendEmailQueue($queue)) {
@@ -576,5 +573,10 @@ class QueueManager
     public function clearMessageQueue()
     {
         return $this->doctrine->getRepository(MessageQueue::class)->clearQueue($this->deleteSentMessagesAfter);
+    }
+
+    public function translateEmailAddress($address)
+    {
+        return $this->recipientManager->translateEmailAddress($address);
     }
 }
