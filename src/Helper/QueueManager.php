@@ -3,8 +3,11 @@
 namespace Hgabka\EmailBundle\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Exception;
+use function get_class;
 use Hgabka\EmailBundle\Entity\AbstractQueue;
 use Hgabka\EmailBundle\Entity\Attachment;
+use Hgabka\EmailBundle\Entity\EmailCampaign;
 use Hgabka\EmailBundle\Entity\EmailQueue;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Entity\MessageQueue;
@@ -120,10 +123,11 @@ class QueueManager
         return $this;
     }
 
-    public function sendEmailQueue(EmailQueue $queue)
+    public function sendEmailQueue(EmailQueue $queue): bool
     {
         $to = unserialize($queue->getTo());
         $from = unserialize($queue->getFrom());
+
         $cc = $queue->getCc();
         if (!empty($cc)) {
             $cc = unserialize($cc);
@@ -134,19 +138,22 @@ class QueueManager
             $bcc = unserialize($bcc);
         }
 
+        $embeds = $queue->getEmbeds();
+
         try {
             $message =
                 (new Email())
-                    ->from($from)
-                    ->to($to)
+                    ->from(...$from)
+                    ->to(...$to)
+                    ->subject($queue->getSubject())
             ;
 
             if (!empty($cc)) {
-                $message->cc($cc);
+                $message->cc(...$cc);
             }
 
             if (!empty($bcc)) {
-                $message->bcc($bcc);
+                $message->bcc(...$bcc);
             }
 
             $contentText = $queue->getContentText();
@@ -157,6 +164,10 @@ class QueueManager
             }
             if (!empty($contentHtml)) {
                 $message->html($contentHtml);
+            }
+
+            foreach ($embeds as $embed) {
+                $message->embedFromPath($embed['path'], $embed['name'], $embed['content-type']);
             }
 
             foreach ($this->getAttachments($queue) as $attachment) {
@@ -174,7 +185,7 @@ class QueueManager
                 $message->returnPath($this->bounceConfig['account']['address']);
             } else {
                 if (null === $this->emailReturnPath) {
-                    $message->returnPath(\is_string($from) ? $from : key($from));
+                    $message->returnPath(...$message->getFrom());
                 } elseif (\is_string($this->emailReturnPath)) {
                     $message->returnPath($this->emailReturnPath);
                 }
@@ -192,7 +203,7 @@ class QueueManager
             $this->doctrine->getManager()->flush();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
@@ -266,7 +277,7 @@ class QueueManager
             $this->doctrine->getManager()->flush();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->setError($e->getMessage(), $queue);
             $this->doctrine->getManager()->flush();
 
@@ -318,7 +329,7 @@ class QueueManager
             }
 
             foreach ($recTypeRecipients as $recData) {
-                $recipients[] = array_merge(['type' => \get_class($recType), 'typeParams' => $toData], $recData);
+                $recipients[] = array_merge(['type' => get_class($recType), 'typeParams' => $toData], $recData);
             }
         }
 
@@ -361,25 +372,32 @@ class QueueManager
         if (!$message) {
             return;
         }
-
+        /** @var Email $message */
         $queue = new EmailQueue();
         $queue->setSendAt($sendAt);
         $queue->setFrom(serialize($message->getFrom()));
         $queue->setTo(serialize($message->getTo()));
-        $queue->setCc($message->getCc());
-        $queue->setBcc($message->getBcc());
+        $queue->setCc(serialize($message->getCc()));
+        $queue->setBcc(serialize($message->getBcc()));
         $queue->setSubject($message->getSubject());
-        $queue->setContentText($message->getBody());
+        $queue->setContentText($message->getTextBody());
+        $queue->setContentHtml($message->getHtmlBody());
+
+        $r = new \ReflectionProperty(Email::class, 'attachments');
+        $r->setAccessible(true);
+        $atts = $r->getValue($message);
+        $queueAtts = [];
+        if (!empty($atts)) {
+            foreach ($atts as $att) {
+                if ($att['inline']) {
+                    $queueAtts[] = $att;
+                }
+            }
+        }
+        $queue->setEmbeds($queueAtts);
 
         if ($campaign instanceof EmailCampaign) {
             $queue->setCampaign($campaign);
-        }
-
-        $children = $message->getChildren();
-        foreach ($children as $child) {
-            if ('text/html' === $child->getContentType()) {
-                $queue->setContentHtml($child->getBody());
-            }
         }
 
         $em = $this->doctrine->getManager();
@@ -388,7 +406,7 @@ class QueueManager
 
         foreach ($attachments as $attachment) {
             $newAttachment = new Attachment();
-            $newAttachment->setType(\get_class($queue));
+            $newAttachment->setType(get_class($queue));
             $newAttachment->setOwnerId($queue->getId());
             /** @var Media $media */
             $media = $attachment->getMedia();
@@ -415,8 +433,10 @@ class QueueManager
 
     /**
      * @param null|int $limit
+     *
+     * @return array
      */
-    public function sendEmails($limit = null): array
+    public function sendEmails(?int $limit = null): array
     {
         if (empty($limit)) {
             $limit = $this->sendLimit;
@@ -430,7 +450,6 @@ class QueueManager
         $errorQueues = $queueRepo->getErrorQueuesForSend($limit);
 
         foreach ($errorQueues as $queue) {
-            ++$count;
             $to = $this->translateEmailAddress(unserialize($queue->getTo()));
             $email = $to->getAddress();
 
@@ -439,7 +458,7 @@ class QueueManager
                 $this->doctrine->getManager()->remove($queue);
                 ++$sent;
             } else {
-                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $queue->getLastError());
+                $this->log('Sikertelen kuldes ujra. Email kuldes sikertelen. Email: ' . $email . ' Hiba: ' . $this->getLastError());
                 ++$fail;
             }
         }
@@ -457,7 +476,6 @@ class QueueManager
             $to = $this->translateEmailAddress(unserialize($queue->getTo()));
             $email = $to->getAddress();
 
-            $email = \is_array($to) ? key($to) : $to;
             if ($this->sendEmailQueue($queue)) {
                 $this->log('Email kuldese sikeres. Email: ' . $email);
 
@@ -575,7 +593,7 @@ class QueueManager
         return $this->doctrine->getRepository(MessageQueue::class)->clearQueue($this->deleteSentMessagesAfter);
     }
 
-    public function translateEmailAddress($address)
+    public function translateEmailAddress($address): Address
     {
         return $this->recipientManager->translateEmailAddress($address);
     }

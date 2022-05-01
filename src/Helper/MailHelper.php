@@ -67,6 +67,17 @@ class MailHelper
         }
 
         if ((!isset($address['name']) || '' === $address['name']) && (!isset($address['email']) || '' === $address['email'])) {
+            if (is_array($address)) {
+                $origAddress = $address;
+                $address = reset($address);
+
+                if ($address instanceof Address) {
+                    return $address;
+                }
+
+                $address = $origAddress;
+            }
+
             return new Address(key($address), current($address));
         }
 

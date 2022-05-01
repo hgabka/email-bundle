@@ -51,6 +51,13 @@ class EmailQueue extends AbstractQueue
     protected $subject;
 
     /**
+     * @var null|array
+     *
+     * @ORM\Column(name="message_embeds", type="array", nullable=true)
+     */
+    protected $embeds;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="content_text", type="text", nullable=true)
@@ -282,5 +289,25 @@ class EmailQueue extends AbstractQueue
         }
 
         return false;
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getEmbeds(): ?array
+    {
+        return $this->embeds;
+    }
+
+    /**
+     * @param null|array $embeds
+     *
+     * @return EmailQueue
+     */
+    public function setEmbeds(?array $embeds): self
+    {
+        $this->embeds = $embeds;
+
+        return $this;
     }
 }

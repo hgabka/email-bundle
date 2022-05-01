@@ -384,6 +384,7 @@ class MailBuilder
     }
 
     /**
+     * @param Message    $message
      * @param            $to
      * @param null       $locale
      * @param bool       $addCcs
@@ -391,7 +392,7 @@ class MailBuilder
      * @param null|mixed $recType
      * @param mixed      $embedImages
      *
-     * @return \Swift_Message
+     * @return array
      */
     public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true)
     {

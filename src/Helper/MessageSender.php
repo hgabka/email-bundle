@@ -12,6 +12,7 @@ use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -354,7 +355,7 @@ class MessageSender
      *
      * @return array
      */
-    public function sendEmailQueue($limit = null)
+    public function sendEmailQueue(?int $limit = null)
     {
         return $this->queueManager->sendEmails($limit);
     }
@@ -485,6 +486,8 @@ class MessageSender
      * @param bool                              $campaign
      * @param mixed                             $sendParams
      *
+     * @throws \Exception
+     *
      * @return bool|mixed
      */
     public function enqueueTemplateMessage($class, $params = [], $sendParams = [], $locale = null, $sendAt = null, $campaign = false)
@@ -509,6 +512,8 @@ class MessageSender
      * @param array                             $params
      * @param null                              $locale
      * @param mixed                             $sendParams
+     *
+     * @throws TransportExceptionInterface
      *
      * @return bool|int|mixed
      */
