@@ -207,11 +207,8 @@ class MessageAdminController extends CRUDController
         ]);
     }
 
-    public function copyAction(HgabkaUtils $utils)
+    public function copyAction(Request $request, HgabkaUtils $utils, $id)
     {
-        $request = $this->getRequest();
-
-        $id = $request->get($this->admin->getIdParameter());
         $existingObject = $this->admin->getObject($id);
 
         if (!$existingObject) {
