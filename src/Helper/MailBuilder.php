@@ -588,11 +588,11 @@ class MailBuilder
     {
         $default = $this->getDefaultFrom();
         $defaultName = $this->getDefaultFromName();
-        $defaultEmail = \is_array($default) ? key($default) : $default;
+        $defaultEmail = $this->getDefaultFromEmail();
         $name = ($message ? $message->getFromName($locale) : null) ?? ($defaultName ?? null);
         $email = ($message ? $message->getFromEmail($locale) : null) ?? $defaultEmail;
 
-        return empty($name) ? $email : [$email => $name];
+        return empty($name) ? new Address($email) : new Address($email, $name);
     }
 
     public function translateDefaultVariable($code)

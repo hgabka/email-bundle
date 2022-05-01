@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 
 class MessageAdminController extends CRUDController
 {
@@ -57,9 +58,8 @@ class MessageAdminController extends CRUDController
         ]);
     }
 
-    public function renderUsableVarsAction()
+    public function renderUsableVarsAction(Request $request)
     {
-        $request = $this->getRequest();
         if (!$request->isXmlHttpRequest()) {
             return $this->createNotFoundException();
         }
@@ -74,11 +74,8 @@ class MessageAdminController extends CRUDController
         ]);
     }
 
-    public function prepareAction(MessageSender $sender)
+    public function prepareAction(Request $request, MessageSender $sender, $id)
     {
-        $request = $this->getRequest();
-
-        $id = $request->get($this->admin->getIdParameter());
         $existingObject = $this->admin->getObject($id);
 
         if (!$existingObject) {
@@ -126,11 +123,8 @@ class MessageAdminController extends CRUDController
         ]);
     }
 
-    public function unprepareAction(MessageSender $sender)
+    public function unprepareAction(Request $request, MessageSender $sender, $id)
     {
-        $request = $this->getRequest();
-
-        $id = $request->get($this->admin->getIdParameter());
         $existingObject = $this->admin->getObject($id);
 
         if (!$existingObject) {
@@ -157,11 +151,8 @@ class MessageAdminController extends CRUDController
         return $this->redirectToList();
     }
 
-    public function testmailAction(MailBuilder $mailBuilder, RecipientManager $recipientManager, HgabkaUtils $hgabkaUtils)
+    public function testmailAction(Request $request, MailBuilder $mailBuilder, RecipientManager $recipientManager, HgabkaUtils $hgabkaUtils, MailerInterface $mailer, $id)
     {
-        $request = $this->getRequest();
-
-        $id = $request->get($this->admin->getIdParameter());
         $existingObject = $this->admin->getObject($id);
 
         if (!$existingObject) {
@@ -193,7 +184,7 @@ class MessageAdminController extends CRUDController
                 ['mail' => $message] = $mailBuilder
                                 ->createMessageMail($existingObject, [$email => 'XXX'], $locale, false, $params, $recType);
 
-                $this->get('mailer')->send($message);
+                $mailer->send($message);
                 $this->addFlash(
                     'sonata_flash_success',
                     $this->trans('hg_email.messages.testmail_success')
@@ -217,11 +208,8 @@ class MessageAdminController extends CRUDController
         ]);
     }
 
-    public function copyAction(HgabkaUtils $utils)
+    public function copyAction(Request $request, HgabkaUtils $utils, $id)
     {
-        $request = $this->getRequest();
-
-        $id = $request->get($this->admin->getIdParameter());
         $existingObject = $this->admin->getObject($id);
 
         if (!$existingObject) {

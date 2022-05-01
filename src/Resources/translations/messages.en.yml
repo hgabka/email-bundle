@@ -49,6 +49,7 @@ hg_email:
         unsubscribe: Click here to unsubscribe
         prepare: Send circular
         testmail: 'Send test mail - %message%'
+        testmail_general: 'Send test mail'
     help:
         from_name: 'If empty the default name will be used (currently: "%current%")'
         from_email: 'If empty the default email will be used (currently: "%current%")'

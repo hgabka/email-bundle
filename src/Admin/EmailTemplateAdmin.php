@@ -134,9 +134,9 @@ class EmailTemplateAdmin extends AbstractAdmin
         $collection->add('add_recipient', 'addRecipient');
     }
 
-    protected function configureListFields(ListMapper $listMapper): void
+    protected function configureListFields(ListMapper $list): void
     {
-        $listMapper
+        $list
             ->add('comment', null, [
                 'label' => 'hg_email.label.comment',
             ])

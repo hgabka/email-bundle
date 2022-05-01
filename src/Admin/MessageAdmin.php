@@ -140,10 +140,10 @@ class MessageAdmin extends AbstractAdmin
         $collection->add('copy', $this->getRouterIdParameter() . '/copy');
     }
 
-    protected function configureListFields(ListMapper $listMapper): void
+    protected function configureListFields(ListMapper $list): void
     {
-        $listMapper
-            ->add('translations.name', null, [
+        $list
+            ->add('name', null, [
                 'label' => 'hg_email.label.name',
                 'sortable' => true,
                 'template' => '@HgabkaEmail/Admin/Message/list_name.html.twig',

@@ -1,6 +1,6 @@
 {% if admin.hasAccess('list')  %}
     <a href="{{ admin.generateObjectUrl('testmail', object) }}"  class="btn btn-sm btn-default" title="{{ 'hg_email.label.testmail'|trans }}">
         <i class="fa fa-envelope" aria-hidden="true"></i>
-        {{ 'hg_email.label.testmail'|trans }}
+        {{ 'hg_email.label.testmail'|trans({'%message%': object.name}) }}
     </a>
 {% endif %}

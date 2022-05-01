@@ -72,9 +72,9 @@ class EmailLayoutAdmin extends AbstractAdmin
         $collection->remove('export');
     }
 
-    protected function configureListFields(ListMapper $listMapper): void
+    protected function configureListFields(ListMapper $list): void
     {
-        $listMapper
+        $list
             ->add('translations.name', null, [
                 'label' => 'hg_email.label.name',
                 'sortable' => true,
