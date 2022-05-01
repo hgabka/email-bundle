@@ -501,7 +501,7 @@ class MessageSender
 
         foreach ($messages as $messageData) {
             $attachments = $this->doctrine->getRepository(Attachment::class)->getByTemplate($template, $messageData['locale']);
-            $this->queueManager->addEmailMessageToQueue($messageData['message'], $attachments, $sendAt, $campaign);
+            $this->queueManager->addEmailMessageToQueue($messageData['message'], $attachments, $sendParams['headers'] ?? [], $sendAt, $campaign);
         }
 
         return $messages;

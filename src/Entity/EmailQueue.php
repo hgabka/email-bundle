@@ -44,6 +44,13 @@ class EmailQueue extends AbstractQueue
     protected $bcc;
 
     /**
+     * @var null|string
+     *
+     * @ORM\Column(name="mail_return_path", type="text", nullable=true)
+     */
+    protected $returnPath;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
@@ -56,6 +63,13 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="message_embeds", type="array", nullable=true)
      */
     protected $embeds;
+
+    /**
+     * @var null|array
+     *
+     * @ORM\Column(name="mail_headers", type="array", nullable=true)
+     */
+    protected $headers;
 
     /**
      * @var string
@@ -307,6 +321,46 @@ class EmailQueue extends AbstractQueue
     public function setEmbeds(?array $embeds): self
     {
         $this->embeds = $embeds;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getReturnPath(): ?string
+    {
+        return $this->returnPath;
+    }
+
+    /**
+     * @param null|string $returnPath
+     *
+     * @return EmailQueue
+     */
+    public function setReturnPath(?string $returnPath): self
+    {
+        $this->returnPath = $returnPath;
+
+        return $this;
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getHeaders(): ?array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * @param null|array $headers
+     *
+     * @return EmailQueue
+     */
+    public function setHeaders(?array $headers): self
+    {
+        $this->headers = $headers;
 
         return $this;
     }

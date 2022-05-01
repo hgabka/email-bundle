@@ -5,7 +5,9 @@ namespace Hgabka\EmailBundle\Helper;
 use function is_array;
 use function is_string;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\InvalidArgumentException;
+use Symfony\Component\Mime\Header\Headers;
 
 class MailHelper
 {
@@ -86,5 +88,32 @@ class MailHelper
         }
 
         return new Address($address['email']);
+    }
+
+    public function addHeadersFromArray(Email $message, ?array $headers)
+    {
+        if (empty($headers)) {
+            return;
+        }
+
+        foreach ($headers as $name => $data) {
+            if (is_string($data)) {
+                $data = ['type' => 'text', 'value' => $data];
+            }
+
+            if (!isset($data['type']) || empty($data['value'])) {
+                continue;
+            }
+
+            if ('mailBoxList' === $data['type'] && !is_array($data['value'])) {
+                $value = [$data['value']];
+            } else {
+                $value = $data['value'];
+            }
+
+            if (!Headers::isUniqueHeader($name) || !$message->getHeaders()->has($name)) {
+                $message->getHeaders()->{'add' . $data['type'] . 'Header'}($name, $value);
+            }
+        }
     }
 }

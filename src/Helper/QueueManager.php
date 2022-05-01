@@ -14,6 +14,7 @@ use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
 use Hgabka\EmailBundle\Logger\MessageLogger;
 use Hgabka\MediaBundle\Entity\Media;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -67,7 +68,10 @@ class QueueManager
     /** @var string */
     protected $emailReturnPath;
 
-    public function __construct(Registry $doctrine, MailerInterface $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter, $messageReturnPath, $emailReturnPath)
+    /** @var HgabkaUtils */
+    protected $hgabkaUtils;
+
+    public function __construct(Registry $doctrine, MailerInterface $mailer, MessageLogger $logger, RecipientManager $recipientManager, RouterInterface $router, HgabkaUtils $hgabkaUtils, array $bounceConfig, int $maxRetries, int $sendLimit, bool $loggingEnabled, int $deleteSentMessagesAfter, $messageReturnPath, $emailReturnPath)
     {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -81,6 +85,7 @@ class QueueManager
         $this->router = $router;
         $this->messageReturnPath = $messageReturnPath;
         $this->emailReturnPath = $emailReturnPath;
+        $this->hgabkaUtils = $hgabkaUtils;
     }
 
     /**
@@ -181,14 +186,18 @@ class QueueManager
             $headers = $message->getHeaders();
             $headers->addTextHeader('Hg-Email-Id', $queue->getId());
 
-            if (isset($this->bounceConfig['account']['address'])) {
-                $message->returnPath($this->bounceConfig['account']['address']);
+            $returnPath = $queue->getReturnPath();
+
+            if (!empty($returnPath)) {
+                $message->returnPath(unserialize($returnPath));
             } else {
-                if (null === $this->emailReturnPath) {
-                    $message->returnPath(...$message->getFrom());
-                } elseif (\is_string($this->emailReturnPath)) {
-                    $message->returnPath($this->emailReturnPath);
-                }
+                $message->returnPath(...$message->getFrom());
+            }
+
+            $headers = $queue->getHeaders();
+
+            if (!empty($headers)) {
+                $this->mailBuilder->addHeadersFromArray($message, $headers);
             }
 
             try {
@@ -367,11 +376,12 @@ class QueueManager
         }
     }
 
-    public function addEmailMessageToQueue($message, $attachments, $sendAt = null, $campaign = false)
+    public function addEmailMessageToQueue($message, $attachments, $headers = [], $sendAt = null, $campaign = false): ?Email
     {
         if (!$message) {
-            return;
+            return null;
         }
+
         /** @var Email $message */
         $queue = new EmailQueue();
         $queue->setSendAt($sendAt);
@@ -382,6 +392,10 @@ class QueueManager
         $queue->setSubject($message->getSubject());
         $queue->setContentText($message->getTextBody());
         $queue->setContentHtml($message->getHtmlBody());
+        $queue->setHeaders($headers);
+
+        $returnPath = $message->getReturnPath();
+        $queue->setReturnPath(empty($returnPath) ? null : serialize($returnPath));
 
         $r = new \ReflectionProperty(Email::class, 'attachments');
         $r->setAccessible(true);
@@ -410,7 +424,8 @@ class QueueManager
             $newAttachment->setOwnerId($queue->getId());
             /** @var Media $media */
             $media = $attachment->getMedia();
-            $newAttachment->setFilename($media->getOriginalFilename());
+            $name = $media->translate($this->hgabkaUtils->getCurrentLocale())->getName();
+            $newAttachment->setFilename(empty($name) ? $media->getOriginalFilename() : $name);
             $newAttachment->setContent($this->mailBuilder->getMediaContent($media));
             $newAttachment->setContentType($media->getContentType());
             $newAttachment->setLocale($attachment->getLocale());

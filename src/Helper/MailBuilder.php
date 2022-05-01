@@ -17,6 +17,7 @@ use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
+use function is_string;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mime\Address;
@@ -322,12 +323,12 @@ class MailBuilder
 
                 if (!empty($sendParams['attachments'])) {
                     $attachments = $sendParams['attachments'];
-                    if (\is_string($attachments)) {
+                    if (is_string($attachments)) {
                         $attachments = [$attachments];
                     }
 
                     foreach ($attachments as $attachment) {
-                        if (\is_string($attachment)) {
+                        if (is_string($attachment)) {
                             if (!is_file($attachment)) {
                                 continue;
                             }
@@ -355,11 +356,19 @@ class MailBuilder
 
                 if (!isset($sendParams['return_path'])) {
                     $from = $mail->getFrom();
-                    $mail->returnPath(current($from));
+                    $mail->returnPath(...$from);
                 } else {
-                    if (\is_string($sendParams['return_path'])) {
+                    if (is_string($sendParams['return_path'])) {
+                        $mail->returnPath(new Address($sendParams['return_path']));
+                    } elseif (is_array($sendParams['return_path'])) {
+                        $mail->returnPath(new Address(key($sendParams['return_path']), current($sendParams['return_path'])));
+                    } elseif ($sendParams['return_path'] instanceof Address) {
                         $mail->returnPath($sendParams['return_path']);
                     }
+                }
+
+                if (isset($sendParams['headers'])) {
+                    $this->mailHelper->addHeadersFromArray($mail, $sendParams['headers']);
                 }
 
                 $messages[] = ['message' => $mail, 'locale' => $locale];
@@ -602,7 +611,7 @@ class MailBuilder
 
     public function getTemplatetypeEntity($typeOrClass)
     {
-        if (\is_string($typeOrClass)) {
+        if (is_string($typeOrClass)) {
             $type = $this->templateTypeManager->getTemplateType($typeOrClass);
         } else {
             $type = $typeOrClass;
@@ -615,10 +624,15 @@ class MailBuilder
         return $this->templateTypeManager->getTemplateEntity($type);
     }
 
+    public function addHeadersFromArray(Email $message, ?array $headers)
+    {
+        $this->mailHelper->addHeadersFromArray($message, $headers);
+    }
+
     protected function addCcToMail($mail, $paramCc, $type)
     {
         $method = RecipientManager::RECIPIENT_TYPE_BCC === $type ? 'bcc' : 'cc';
-        if (\is_string($paramCc)) {
+        if (is_string($paramCc)) {
             $mail->{$method}(Address::create($paramCc));
 
             return;

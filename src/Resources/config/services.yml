@@ -142,7 +142,7 @@ services:
 
     hg_email.queue_manager:
         class: '%hg_email.queue_manager.class%'
-        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.message_logger", '@hg_email.recipient_manager', '@router', '', '', '', '', '', '', '']
+        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.message_logger", '@hg_email.recipient_manager', '@router', '@hgabka_utils.hgabka_utils',  '', '', '', '', '', '', '']
         calls:
             - method: setMailBuilder
               arguments:
@@ -356,6 +356,12 @@ services:
         arguments:
             $redirectConfig: '%hg_email.redirect_config%'
             $debug: '%kernel.debug%'
+
+    Hgabka\EmailBundle\EventListener\AddHeadersMailerSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $headersConfig: '%hg_email.headers_config%'
 
     Hgabka\EmailBundle\EventListener\MailerEventSubscriber:
         autowire: true
