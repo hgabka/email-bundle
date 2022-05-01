@@ -52,6 +52,7 @@ hg_email:
         unsubscribe: A leiratkozáshoz kattintson ide
         prepare: Körlevél elküldése
         testmail: 'Tesztüzenet küldése - %message%'
+        testmail_general: 'Tesztüzenet küldése'
     help:
         from_name: 'Ha üres, akkor az alapértelmezett névvel kerül küldésre (jelenleg: "%current%")'
         from_email: 'Ha üres, akkor az alapértelmezett címmel kerül küldésre (jelenleg: "%current%")'
