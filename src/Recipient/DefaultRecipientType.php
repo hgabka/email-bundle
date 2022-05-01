@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Recipient;
 use Hgabka\EmailBundle\Model\AbstractRecipientType;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Mime\Address;
 
 abstract class DefaultRecipientType extends AbstractRecipientType
 {
@@ -23,7 +24,7 @@ abstract class DefaultRecipientType extends AbstractRecipientType
         $html = $this->getRecipientCount() > 0 ? '<ul>' : '';
         if ($this->getRecipientCount() > 0) {
             foreach (array_map([$this, 'getRecipientDisplay'], $this->getRecipients()) as $r) {
-                $html .= '<li>' . $r . '</li>';
+                $html .= '<li>' . ($r instanceof Address ? htmlentities($r->toString()) : $r) . '</li>';
             }
             $html .= '</ul>';
         }

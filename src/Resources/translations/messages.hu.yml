@@ -202,3 +202,4 @@ form:
     group_hg_email_form_block_to_data: Címzettek
     group_hg_email_form_block_cc_data: Másolat címzettek
     group_hg_email_form_block_bcc_data: Titkos másolat címzettek
+    group_hg_email_form_block_from_data_static: Feladó
