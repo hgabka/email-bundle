@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Hgabka\EmailBundle\Entity\Message;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -74,6 +75,11 @@ abstract class AbstractMessageVar implements MessageVarInterface
         }
 
         return $this->type;
+    }
+
+    public function isEnabled(?Message $message): bool
+    {
+        return true;
     }
 
     protected function getKey(): string

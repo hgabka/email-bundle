@@ -256,9 +256,9 @@ class QueueManager
             if (!isset($params['vars'])) {
                 $params['vars'] = [];
             }
-            $params['vars']['webversion'] = $this->router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
+            // $params['vars']['webversion'] = $this->router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-            ['mail' => $mail] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType);
+            ['mail' => $mail] = $this->mailBuilder->createMessageMail($message, $to, $queue->getLocale(), true, $params, $recType, true, false, $queue);
             /** @var Email $mail */
             $headers = $mail->getHeaders();
             $headers->addTextHeader('Hg-Message-Id', $message->getId());

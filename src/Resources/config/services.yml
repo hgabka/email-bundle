@@ -258,6 +258,14 @@ services:
         tags:
         - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
 
+    hg_email.message_var.webversion:
+        class: Hgabka\EmailBundle\Message\WebversionMessageVar
+        arguments: ['@router']
+        tags:
+            - { name: hg_email.message_var, priority: 90 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
     hg_email.layout_var.content:
         class: Hgabka\EmailBundle\Layout\ContentLayoutVar
         tags:

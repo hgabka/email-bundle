@@ -7,6 +7,7 @@ use Doctrine\Persistence\ObjectRepository;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Entity\Message;
+use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Event\BuildMessageMailEvent;
 use Hgabka\EmailBundle\Event\BuildTemplateMailEvent;
@@ -424,7 +425,7 @@ class MailBuilder
      *
      * @return array
      */
-    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true, $webversion = false)
+    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true, $webversion = false, ?MessageQueue $queue = null)
     {
         $locale = $this->hgabkaUtils->getCurrentLocale($locale);
         $params = [];
@@ -445,10 +446,14 @@ class MailBuilder
         }
 
         foreach ($this->messageVars as $messageVar) {
-            $params[$messageVar->getPlaceholder()] = [
-                'type' => $messageVar->getType(),
-                'value' => $messageVar->getValue($message, $locale),
-            ];
+            $value = $messageVar->getValue($message, $paramFrom, $to, $locale, $queue);
+
+            if (null !== $value) {
+                $params[$messageVar->getPlaceholder()] = [
+                    'type' => $messageVar->getType(),
+                    'value' => $value,
+                ];
+            }
         }
 
         $subject = $this->paramSubstituter->substituteParams($message->translate($locale)->getSubject(), $params);
@@ -567,7 +572,6 @@ class MailBuilder
     public function getMessageVars(Message $message = null)
     {
         $vars = $this->getFromToParams();
-        $vars[$this->translator->trans('hg_email.variables.labels.webversion')] = $this->translateDefaultVariable('hg_email.variables.webversion');
         $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
 
         foreach ($messageVars as $placeholder => $varData) {
@@ -575,7 +579,10 @@ class MailBuilder
         }
 
         foreach ($this->messageVars as $messageVar) {
-            $vars[$messageVar->getLabel()] = $messageVar->getPlaceholder();
+            $enabled = $messageVar->isEnabled($message);
+            if ($enabled) {
+                $vars[$messageVar->getLabel()] = $messageVar->getPlaceholder();
+            }
         }
 
         return $vars;
@@ -638,7 +645,7 @@ class MailBuilder
 
     public function translateDefaultVariable($code)
     {
-        return $this->translator->trans($code, [], 'messages', 'en');
+        return $this->translator->trans($code, [], 'messages', $this->hgabkaUtils->getCurrentLocale());
     }
 
     public function getTemplatetypeEntity($typeOrClass)

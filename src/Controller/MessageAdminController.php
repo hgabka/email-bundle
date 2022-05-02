@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class MessageAdminController extends CRUDController
 {
@@ -178,12 +179,12 @@ class MessageAdminController extends CRUDController
                     'vars' => [
                         'unsubscribe_url' => '#',
                         'unsubscribe_link' => '<a href="#">' . $text . '</a>',
-                        'webversion' => '',
+                     //   'webversion' => '',
                     ],
                 ];
 
                 ['mail' => $message] = $mailBuilder
-                                ->createMessageMail($existingObject, [$email => 'XXX'], $locale, false, $params, $recType);
+                                ->createMessageMail($existingObject, new Address($email, 'XXX'), $locale, false, $params, $recType);
 
                 $mailer->send($message);
                 $this->addFlash(
@@ -222,7 +223,7 @@ class MessageAdminController extends CRUDController
         $toName = 'Teszt címzett';
         $toEmail = 'test@test.com';
 
-        $to = empty($toName) ? $toEmail : [$toEmail => $toName];
+        $to = empty($toName) ? new Address($toEmail) : new Address($toEmail, $toName);
         $recType = $recipientManager->getMessageRecipientType(DefaultMessageRecipientType::class);
         if (!$recType) {
             return false;
@@ -231,7 +232,6 @@ class MessageAdminController extends CRUDController
         if (!isset($params['vars'])) {
             $params['vars'] = [];
         }
-        $params['vars']['webversion'] = 'Webes változat';
 
         ['bodyHtml' => $bodyHtml] = $mailBuilder->createMessageMail($existingObject, $to, $utils->getCurrentLocale(), true, $params, $recType, false, true);
 
