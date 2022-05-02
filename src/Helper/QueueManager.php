@@ -268,7 +268,7 @@ class QueueManager
             } else {
                 if (null === $this->messageReturnPath) {
                     $from = $mail->getFrom();
-                    $mail->returnPath(\is_string($from) ? $from : key($from));
+                    $mail->returnPath(...$from);
                 } elseif (\is_string($this->messageReturnPath)) {
                     $mail->returnPath($this->messageReturnPath);
                 }

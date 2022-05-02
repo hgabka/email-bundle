@@ -400,10 +400,11 @@ class MailBuilder
      * @param array      $parameters
      * @param null|mixed $recType
      * @param mixed      $embedImages
+     * @param mixed      $webversion
      *
      * @return array
      */
-    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true)
+    public function createMessageMail(Message $message, $to, $locale = null, $addCcs = true, $parameters = [], $recType = null, $embedImages = true, $webversion = false)
     {
         $locale = $this->hgabkaUtils->getCurrentLocale($locale);
         $params = [];
@@ -454,7 +455,7 @@ class MailBuilder
                 'subject' => $subject,
         ]);
 
-        $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams);
+        $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams, null, $webversion);
 
         if ('' !== $bodyText) {
             $mail->text($bodyText);

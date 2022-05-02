@@ -66,7 +66,7 @@ class LayoutManager
         return $locator->locate('layout.html');
     }
 
-    public function applyLayout($bodyHtml, ?EmailLayout $layout, $mail, $locale, $params = [], $layoutFile = null)
+    public function applyLayout($bodyHtml, ?EmailLayout $layout, $mail, $locale, $params = [], $layoutFile = null, $webversion = false)
     {
         $isTwig = false;
         if ($layout && '' !== $bodyHtml) {
@@ -80,7 +80,7 @@ class LayoutManager
                     $isTwig = true;
 
                     try {
-                        $layoutHtml = $this->environment->render($layoutFile, $this->getLayoutParams('', $bodyHtml, $mail, $params, $locale));
+                        $layoutHtml = $this->environment->render($layoutFile, $this->getLayoutParams('', $bodyHtml, $mail, $params, $locale, $webversion));
                     } catch (Throwable $e) {
                         $layoutHtml = null;
                     }
@@ -96,7 +96,7 @@ class LayoutManager
         }
 
         if (!empty($layoutHtml)) {
-            $bodyHtml = !$isTwig ? $this->finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale) : $layoutHtml;
+            $bodyHtml = !$isTwig ? $this->finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion) : $layoutHtml;
         }
 
         return $bodyHtml;
@@ -112,10 +112,10 @@ class LayoutManager
         return $result;
     }
 
-    public function getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale): array
+    public function getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion): array
     {
         foreach ($this->layoutVars as $layoutVar) {
-            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale);
+            $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion);
         }
 
         return array_merge($params, [
@@ -136,11 +136,12 @@ class LayoutManager
      * @param mixed $params
      * @param mixed $locale
      * @param mixed $mail
+     * @param mixed $webversion
      *
      * @return string
      */
-    protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale): string
+    protected function finalizeLayout($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion): string
     {
-        return $this->paramSubstituter->substituteParams($layoutHtml, $this->getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale));
+        return $this->paramSubstituter->substituteParams($layoutHtml, $this->getLayoutParams($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion));
     }
 }

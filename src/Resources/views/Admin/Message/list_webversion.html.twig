@@ -1,0 +1,6 @@
+{% if admin.hasAccess('edit')  %}
+    <a href="{{ admin.generateObjectUrl('webversion', object) }}" target="_blank" class="btn btn-sm btn-default" title="{{ 'hg_email.label.webversion'|trans }}">
+        <i class="fa fa-globe" aria-hidden="true"></i>
+        {{ 'hg_email.label.webversion'|trans }}
+    </a>
+{% endif %}

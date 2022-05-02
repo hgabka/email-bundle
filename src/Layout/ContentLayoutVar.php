@@ -6,7 +6,7 @@ use Hgabka\EmailBundle\Model\AbstractLayoutVar;
 
 class ContentLayoutVar extends AbstractLayoutVar
 {
-    public function getValue($layoutHtml, $bodyHtml, $mail, $params, $locale)
+    public function getValue($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion = false)
     {
         return $bodyHtml;
     }

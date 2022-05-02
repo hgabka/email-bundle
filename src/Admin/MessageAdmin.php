@@ -138,6 +138,7 @@ class MessageAdmin extends AbstractAdmin
         $collection->add('unprepare', $this->getRouterIdParameter() . '/unprepare');
         $collection->add('testmail', $this->getRouterIdParameter() . '/testmail');
         $collection->add('copy', $this->getRouterIdParameter() . '/copy');
+        $collection->add('webversion', $this->getRouterIdParameter() . '/webversion');
     }
 
     protected function configureListFields(ListMapper $list): void
@@ -168,6 +169,9 @@ class MessageAdmin extends AbstractAdmin
                     ],
                     'copy' => [
                         'template' => '@HgabkaEmail/Admin/Message/list_copy.html.twig',
+                    ],
+                    'webversion' => [
+                        'template' => '@HgabkaEmail/Admin/Message/list_webversion.html.twig',
                     ],
                     'delete' => [],
                 ],
