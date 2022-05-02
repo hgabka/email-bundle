@@ -14,6 +14,7 @@ use Hgabka\EmailBundle\Event\MailBuilderEvents;
 use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
+use Hgabka\EmailBundle\Model\MessageVarInterface;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
@@ -67,6 +68,8 @@ class MailBuilder
     /** @var MailHelper */
     protected $mailHelper;
 
+    protected $messageVars = [];
+
     /**
      * MailBuilder constructor.
      */
@@ -96,6 +99,23 @@ class MailBuilder
         $this->templateTypeManager = $templateTypeManager;
         $this->layoutManager = $layoutManager;
         $this->mailHelper = $mailHelper;
+    }
+
+    public function addMessageVar(MessageVarInterface $messageVar, $priority = null)
+    {
+        $alias = \get_class($messageVar);
+
+        if (null !== $priority) {
+            $messageVar->setPriority($priority);
+        }
+
+        $this->messageVars[$alias] = $messageVar;
+        uasort($this->messageVars, function ($type1, $type2) {
+            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
+            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
+
+            return $p2 <=> $p1;
+        });
     }
 
     /**
@@ -424,6 +444,13 @@ class MailBuilder
             $params[$key] = $value;
         }
 
+        foreach ($this->messageVars as $messageVar) {
+            $params[$messageVar->getPlaceholder()] = [
+                'type' => $messageVar->getType(),
+                'value' => $messageVar->getValue($message, $locale),
+            ];
+        }
+
         $subject = $this->paramSubstituter->substituteParams($message->translate($locale)->getSubject(), $params);
         $mail = new Email();
         $mail->subject($subject);
@@ -545,6 +572,10 @@ class MailBuilder
 
         foreach ($messageVars as $placeholder => $varData) {
             $vars[$this->translator->trans($varData['label'])] = $placeholder;
+        }
+
+        foreach ($this->messageVars as $messageVar) {
+            $vars[$messageVar->getLabel()] = $messageVar->getPlaceholder();
         }
 
         return $vars;

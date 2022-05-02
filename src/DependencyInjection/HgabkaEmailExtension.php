@@ -8,6 +8,7 @@ use Hgabka\EmailBundle\Model\EmailTemplateRecipientTypeInterface;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\LayoutVarInterface;
 use Hgabka\EmailBundle\Model\MessageRecipientTypeInterface;
+use Hgabka\EmailBundle\Model\MessageVarInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -105,6 +106,10 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             ->registerForAutoconfiguration(LayoutVarInterface::class)
             ->addTag('hg_email.layout_var')
         ;
+        $container
+            ->registerForAutoconfiguration(MessageVarInterface::class)
+            ->addTag('hg_email.message_var')
+        ;
     }
 
     /**
@@ -170,6 +175,18 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
             foreach ($tags as $attributes) {
                 $type = new Reference($id);
                 $definition->addMethodCall('addLayoutVar', [
+                    $type, $attributes['priority'] ?? null,
+                ]);
+            }
+        }
+
+        $taggedServices = $container->findTaggedServiceIds('hg_email.message_var');
+
+        $definition = $container->findDefinition('hg_email.mail_builder');
+        foreach ($taggedServices as $id => $tags) {
+            foreach ($tags as $attributes) {
+                $type = new Reference($id);
+                $definition->addMethodCall('addMessageVar', [
                     $type, $attributes['priority'] ?? null,
                 ]);
             }
