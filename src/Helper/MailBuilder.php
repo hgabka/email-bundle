@@ -518,7 +518,11 @@ class MailBuilder
 
         $mail->from($this->translateEmailAddress($paramFrom));
         if (!empty($params['unsubscribe_url'])) {
-            $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<' . $params['unsubscribe_url'] . '>');
+            $url = is_string($params['unsubscribe_url']) ? $params['unsubscribe_url'] : ($params['unsubscribe_url']['value'] ?? '');
+
+            if (!empty($url)) {
+                $mail->getHeaders()->addTextHeader('List-Unsubscribe', '<' . $url . '>');
+            }
         }
 
         if ($addCcs) {
@@ -572,17 +576,18 @@ class MailBuilder
     public function getMessageVars(Message $message = null)
     {
         $vars = $this->getFromToParams();
-        $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
-
-        foreach ($messageVars as $placeholder => $varData) {
-            $vars[$this->translator->trans($varData['label'])] = $placeholder;
-        }
 
         foreach ($this->messageVars as $messageVar) {
             $enabled = $messageVar->isEnabled($message);
             if ($enabled) {
                 $vars[$messageVar->getLabel()] = $messageVar->getPlaceholder();
             }
+        }
+
+        $messageVars = $message ? $this->getMessageVariablesByToData($message->getToData()) : [];
+
+        foreach ($messageVars as $placeholder => $varData) {
+            $vars[$this->translator->trans($varData['label'])] = $placeholder;
         }
 
         return $vars;

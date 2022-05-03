@@ -143,7 +143,7 @@ hg_email:
         name: A címzett neve
         email: A címzett email címe
         webversion: Webes változat
-        unsubscribe: Leiratkozó URL
+        unsubscribe_url: Leiratkozó URL
         unsubscribe_link: Leiratkozó link
 
     fixtures:
@@ -203,3 +203,4 @@ form:
     group_hg_email_form_block_cc_data: Másolat címzettek
     group_hg_email_form_block_bcc_data: Titkos másolat címzettek
     group_hg_email_form_block_from_data_static: Feladó
+    group_hg_email_admin_subscriber_label: Feliratkozott adatai

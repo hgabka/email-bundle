@@ -79,8 +79,10 @@ class MailHelper
 
                 $address = $origAddress;
             }
+            $name = reset($address);
+            $email = key($address);
 
-            return new Address(key($address), current($address));
+            return empty($name) ? new Address($email) : new Address($email, $name);
         }
 
         if (isset($address['name']) && \strlen($address['name'])) {

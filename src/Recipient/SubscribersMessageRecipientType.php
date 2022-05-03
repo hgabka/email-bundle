@@ -13,7 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class SubscribersMessageRecipientType extends AbstractMessageRecipientType
+class SubscribersMessageRecipientType extends AbstractMessageRecipientType implements SubscriberRecipientTypeInterface
 {
     /** @var SubscriptionManager */
     protected $subscriptionManager;
@@ -92,16 +92,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
     public function getMessageVariables()
     {
-        return [
-            'unsubscribe_url' => [
-                'label' => 'hg_email.variables.labels.unsubscribe_url',
-                'value' => 'unsubscribeUrl',
-            ],
-            'unsubscribe_link' => [
-                'label' => 'hg_email.variables.labels.unsubscribe_link',
-                'value' => 'unsubscribeLink',
-            ],
-        ];
+        return [];
     }
 
     public function getParamDefaults()

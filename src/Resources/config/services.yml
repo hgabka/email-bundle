@@ -266,6 +266,22 @@ services:
         calls:
         - [setTranslator, ["@translator"]]
 
+    hg_email.message_var.unsubscribe_url:
+        class: Hgabka\EmailBundle\Message\UnsubscribeUrlMessageVar
+        arguments: ['@router', '@hg_email.recipient_manager']
+        tags:
+            - { name: hg_email.message_var, priority: -253 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
+    hg_email.message_var.unsubscribe_link:
+        class: Hgabka\EmailBundle\Message\UnsubscribeLinkMessageVar
+        arguments: ['@router', '@hg_email.recipient_manager']
+        tags:
+            - { name: hg_email.message_var, priority: -254 }
+        calls:
+        - [setTranslator, ["@translator"]]
+
     hg_email.layout_var.content:
         class: Hgabka\EmailBundle\Layout\ContentLayoutVar
         tags:
