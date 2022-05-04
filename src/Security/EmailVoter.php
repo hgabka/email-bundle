@@ -36,7 +36,7 @@ class EmailVoter extends Voter
         $this->editorRole = $editorRole;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!\in_array($attribute, [self::EDIT], true)) {
             return false;
@@ -49,7 +49,7 @@ class EmailVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
@@ -68,7 +68,7 @@ class EmailVoter extends Voter
         throw new \LogicException('This code should not be reached!');
     }
 
-    private function canEdit($subject, TokenInterface $token)
+    private function canEdit(mixed $subject, TokenInterface $token): bool
     {
         return $this->decisionManager->decide($token, [$this->editorRole]);
     }
