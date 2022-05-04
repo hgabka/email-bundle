@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageQueue;
@@ -27,10 +28,10 @@ class MessageController extends AbstractController
      *
      * @return Response
      */
-    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, $id, $hash)
+    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, ManagerRegistry $doctrine, $id, $hash)
     {
         /** @var MessageQueue $queue */
-        $queue = $this->getDoctrine()->getRepository(MessageQueue::class)->find($id);
+        $queue = $doctrine->getRepository(MessageQueue::class)->find($id);
         if (!$queue || $queue->getHash() !== $hash) {
             throw $this->createNotFoundException('Invalid message');
         }
@@ -66,9 +67,9 @@ class MessageController extends AbstractController
      *
      * @return Response
      */
-    public function unsubscribeAction(Request $request, $token)
+    public function unsubscribeAction(Request $request, ManagerRegistry $doctrine, $token)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $doctrine->getManager();
 
         $subscr = $em
             ->getRepository(MessageSubscriber::class)
