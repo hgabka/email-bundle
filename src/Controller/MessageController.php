@@ -15,9 +15,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageController extends AbstractController
 {
+    /** @var TranslatorInterface */
+    protected $translator;
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * The webversion action.
      *
@@ -117,7 +129,7 @@ class MessageController extends AbstractController
     protected function applyLayout($layout, $subject, $bodyHtml, $name, $email)
     {
         if (empty($name)) {
-            $name = $this->get('translator')->trans($this->get('hgabka_kunstmaan_email.mail_builder')->getConfig()['default_name']);
+            $name = $this->translator->trans($this->get('hgabka_kunstmaan_email.mail_builder')->getConfig()['default_name']);
         }
 
         return strtr($layout, [
