@@ -15,21 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageController extends AbstractController
 {
-    /** @var TranslatorInterface */
-    protected $translator;
-
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
-    }
-
     /**
      * The webversion action.
      *
@@ -115,30 +103,5 @@ class MessageController extends AbstractController
         }
 
         return $this->render('@HgabkaEmail/Message/unsubscribe.html.twig');
-    }
-
-    /**
-     * @param $layout
-     * @param $subject
-     * @param $bodyHtml
-     * @param $name
-     * @param $email
-     *
-     * @return string
-     */
-    protected function applyLayout($layout, $subject, $bodyHtml, $name, $email)
-    {
-        if (empty($name)) {
-            $name = $this->translator->trans($this->get('hgabka_kunstmaan_email.mail_builder')->getConfig()['default_name']);
-        }
-
-        return strtr($layout, [
-            '%%host%%' => $this->get('hgabka_kunstmaan_extension.kuma_utils')->getSchemeAndHttpHost(),
-            '%%styles%%' => '',
-            '%%title%%' => $subject,
-            '%%content%%' => $bodyHtml,
-            '%%name%%' => $name,
-            '%%email%%' => $email,
-        ]);
     }
 }
