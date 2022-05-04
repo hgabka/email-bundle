@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\Message;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
@@ -24,6 +25,22 @@ use Symfony\Component\Mime\Address;
 
 class MessageAdminController extends CRUDController
 {
+    /** @var ManagerRegistry */
+    protected $doctrine;
+
+    /**
+     * @required
+     * @param ManagerRegistry $doctrine
+     * @return MessageAdminController
+     */
+    public function setDoctrine(ManagerRegistry $doctrine): self
+    {
+        $this->doctrine = $doctrine;
+
+        return $this;
+    }
+
+
     public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
         if (!$request->isXmlHttpRequest()) {
@@ -100,7 +117,7 @@ class MessageAdminController extends CRUDController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $this->doctrine->getManager()->flush();
                 $sender->prepareMessage($existingObject);
                 $this->addFlash(
                     'sonata_flash_success',
@@ -259,7 +276,7 @@ class MessageAdminController extends CRUDController
             ->setSentFail(0)
             ->setSentSuccess(0)
         ;
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->doctrine->getManager();
         $em->persist($message);
         foreach ($utils->getAvailableLocales() as $loc) {
             if (!empty($existingObject->translate($loc)->getName())) {
