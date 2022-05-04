@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Entity\MessageListSubscription;
 use Hgabka\EmailBundle\Entity\MessageQueue;
@@ -11,8 +12,8 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class MessageController extends AbstractController
@@ -27,17 +28,17 @@ class MessageController extends AbstractController
      *
      * @return Response
      */
-    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, $id, $hash)
+    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, ManagerRegistry $doctrine, $id, $hash)
     {
         /** @var MessageQueue $queue */
-        $queue = $this->getDoctrine()->getRepository(MessageQueue::class)->find($id);
+        $queue = $doctrine->getRepository(MessageQueue::class)->find($id);
         if (!$queue || $queue->getHash() !== $hash) {
             throw $this->createNotFoundException('Invalid message');
         }
         $toName = $queue->getToName();
         $toEmail = $queue->getToEmail();
 
-        $to = empty($toName) ? $toEmail : [$toEmail => $toName];
+        $to = empty($toName) ? new Address($toEmail) : new Address($toEmail, $toName);
         $params = json_decode($queue->getParameters(), true);
 
         if (!isset($params['type'])) {
@@ -51,9 +52,8 @@ class MessageController extends AbstractController
         if (!isset($params['vars'])) {
             $params['vars'] = [];
         }
-        $params['vars']['webversion'] = $router->generate('hgabka_email_message_webversion', ['id' => $queue->getId(), 'hash' => $queue->getHash()], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        ['bodyHtml' => $bodyHtml] = $mailBuilder->createMessageMail($queue->getMessage(), $to, $queue->getLocale(), true, $params, $recType, false);
+        ['bodyHtml' => $bodyHtml] = $mailBuilder->createMessageMail($queue->getMessage(), $to, $queue->getLocale(), true, $params, $recType, false, true, $queue);
 
         return new Response($bodyHtml);
     }
@@ -67,9 +67,9 @@ class MessageController extends AbstractController
      *
      * @return Response
      */
-    public function unsubscribeAction(Request $request, $token)
+    public function unsubscribeAction(Request $request, ManagerRegistry $doctrine, $token)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $doctrine->getManager();
 
         $subscr = $em
             ->getRepository(MessageSubscriber::class)
