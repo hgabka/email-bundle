@@ -18,7 +18,8 @@
         "hgabka/utils-bundle": "^6.0",
         "hgabka/media-bundle": "^6.0",
         "a2lix/translation-form-bundle": "^3.2",
-        "symfony/framework-bundle": "6.0.*"
+        "symfony/framework-bundle": "6.0.*",
+        "twig/cssinliner-extra": "^3.3"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
