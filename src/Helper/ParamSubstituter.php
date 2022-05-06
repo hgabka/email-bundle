@@ -46,6 +46,10 @@ class ParamSubstituter
      */
     public function substituteParams(?string $text, $params, bool $normalized = false): ?string
     {
+        if (empty($text)) {
+            return $text;
+        }
+        
         $params = $normalized ? $params : $this->normalizeParams($params);
 
         $params = $this->addVarChars($params);
