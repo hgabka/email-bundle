@@ -82,6 +82,7 @@ class Configuration implements ConfigurationInterface
                           ->scalarNode('postfix')->defaultValue('%%')->isRequired()->cannotBeEmpty()->end()
                       ->end()
                 ->end()
+                ->enumNode('template_var_reader_type')->values(['annotation', 'attribute'])->defaultValue('attribute')->end()
                 ->scalarNode('layout_file')->defaultValue($this->container->getParameter('kernel.project_dir') . '/var/layout/%locale%/email_layout.html')->end()
                 ->arrayNode('message_extra_parameters')
                     ->useAttributeAsKey('name')

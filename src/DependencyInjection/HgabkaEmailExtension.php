@@ -88,6 +88,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $container->setParameter('hg_email.editor_role', $config['editor_role']);
         $container->setParameter('hg_email.redirect_config', $config['redirect']);
         $container->setParameter('hg_email.headers_config', $config['add_headers']);
+        $container->setParameter('hg_email.template_var_reader_type', $config['template_var_reader_type']);
 
         $container
             ->registerForAutoconfiguration(EmailTemplateTypeInterface::class)

@@ -119,7 +119,7 @@ class MessageAdmin extends AbstractAdmin
         return $name ?: $this->getTranslator()->trans('breadcrumb.link_message_create');
     }
 
-    protected function configureDefaultSortValues(array &$sortValues): void
+    protected function configureDefaultSortValues(array & $sortValues): void
     {
         $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
     }

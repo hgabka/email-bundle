@@ -3,9 +3,11 @@
 namespace Hgabka\EmailBundle\Model;
 
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\ORM\Mapping\Driver\AttributeReader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
 use Hgabka\EmailBundle\Helper\MessageSender;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -39,6 +41,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /** @var Reader */
     protected $annotationReader;
 
+    /** @var ParameterBagInterface */
+    protected $parameterBag;
+
     /** @var MessageSender */
     protected $messageSender;
 
@@ -71,6 +76,14 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function setAnnotationReader(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
+    }
+
+    /**
+     * @required
+     */
+    public function setParameterBag(ParameterBagInterface $parameterBag)
+    {
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -130,8 +143,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         if (empty($this->variableCache)) {
             $variables = [];
             $refl = new \ReflectionObject($this);
+
             foreach ($refl->getProperties() as $property) {
-                $annotation = $this->annotationReader->getPropertyAnnotation($property, TemplateVar::class);
+                $annotation = $this->getPropertyAnnotation($property, TemplateVar::class);
                 if ($annotation) {
                     $usName = Container::underscore($property->getName());
                     $placeholder = $annotation->getPlaceholder() ?: $usName;
@@ -150,7 +164,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             }
 
             foreach ($refl->getMethods() as $method) {
-                $annotation = $this->annotationReader->getMethodAnnotation($method, TemplateVar::class);
+                $annotation = $this->getMethodAnnotation($method, TemplateVar::class);
                 if ($annotation) {
                     $usName = Container::underscore(str_replace('get', '', $method->getName()));
                     $placeholder = $annotation->getPlaceholder() ?: $usName;
@@ -359,6 +373,44 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
         $this->setParameters($paramArray);
 
         return $this->messageSender->sendTemplateMail($this, [], $sendParams, $locale);
+    }
+
+    protected function getPropertyAnnotation(\ReflectionProperty $property, $name)
+    {
+        if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
+            $reader = $this->annotationReader;
+
+            return $reader->getPropertyAnnotation($property, $name);
+        }
+        $attributes = $property->getAttributes($name);
+        if (!empty($attributes)) {
+            foreach ($attributes as $attribute) {
+                if ($name === $attribute->getName()) {
+                    return new $name(...$attribute->getArguments());
+                }
+            }
+        }
+    }
+
+    protected function getMethodAnnotation(\ReflectionMethod $method, $name)
+    {
+        if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
+            $reader = $this->annotationReader;
+
+            return $reader->getMethodAnnotation($method, $name);
+        }
+        $reader = new AttributeReader();
+        $annotations = $reader->getMethodAnnotations($method);
+
+        $attributes = $method->getAttributes($name);
+
+        if (!empty($attributes)) {
+            foreach ($attributes as $attribute) {
+                if ($name === $attribute->getName()) {
+                    return new $name(...$attribute->getArguments());
+                }
+            }
+        }
     }
 
     protected function getKey()

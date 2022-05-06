@@ -718,7 +718,7 @@ class MailBuilder
         return empty($name) ? new Address($email) : new Address($email, $name);
     }
 
-    protected function addDefaultParams($paramFrom, $paramTo, &$params)
+    protected function addDefaultParams($paramFrom, $paramTo, & $params)
     {
         $to = $this->translateEmailAddress($paramTo);
         $from = $this->translateEmailAddress($paramFrom);

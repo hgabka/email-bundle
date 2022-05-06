@@ -8,21 +8,14 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"PROPERTY","METHOD"})
  */
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class TemplateVar
 {
-    /** @var string */
-    public $label;
+    public function __construct(public ?string $label = null, public ?string $placeholder = null, public ?string $type = null)
+    {
+    }
 
-    /** @var string */
-    public $placeholder;
-
-    /** @var string */
-    public $type;
-
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): ?string
     {
         return $this->label;
     }
@@ -32,7 +25,7 @@ class TemplateVar
      *
      * @return TemplateVar
      */
-    public function setLabel($label)
+    public function setLabel(?string $label): self
     {
         $this->label = $label;
 
@@ -42,7 +35,7 @@ class TemplateVar
     /**
      * @return string
      */
-    public function getPlaceholder()
+    public function getPlaceholder(): ?string
     {
         return $this->placeholder;
     }
@@ -52,27 +45,19 @@ class TemplateVar
      *
      * @return TemplateVar
      */
-    public function setPlaceholder($placeholder)
+    public function setPlaceholder(?string $placeholder): self
     {
         $this->placeholder = $placeholder;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return TemplateVar
-     */
-    public function setType($type)
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
