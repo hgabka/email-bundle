@@ -16,17 +16,25 @@ use Hgabka\EmailBundle\Recipient\DefaultMessageRecipientType;
 use Hgabka\EmailBundle\Recipient\GeneralMessageRecipientType;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageAdminController extends CRUDController
 {
     /** @var ManagerRegistry */
     protected $doctrine;
+
+    /** @var FormFactoryInterface */
+    protected $formFactory;
+
+    /** @var TranslatorInterface */
+    protected $translator;
 
     /**
      * @required
@@ -36,6 +44,30 @@ class MessageAdminController extends CRUDController
     public function setDoctrine(ManagerRegistry $doctrine): self
     {
         $this->doctrine = $doctrine;
+
+        return $this;
+    }
+
+    /**
+     * @required
+     * @param FormFactoryInterface $formFactory
+     * @return MessageAdminController
+     */
+    public function setFormFactory(FormFactoryInterface $formFactory): self
+    {
+        $this->formFactory = $formFactory;
+
+        return $this;
+    }
+
+    /**
+     * @required
+     * @param TranslatorInterface $translator
+     * @return MessageAdminController
+     */
+    public function setTranslator(TranslatorInterface $translator): MessageAdminController
+    {
+        $this->translator = $translator;
 
         return $this;
     }
@@ -52,7 +84,7 @@ class MessageAdminController extends CRUDController
         $recType = $recipientManager->getMessageRecipientType($type);
 
         $builder = $this
-            ->get('form.factory')
+            ->formFactory
             ->createNamedBuilder($request->get('name'))
             ->add($fieldName, MessageRecipientsType::class, [
                 'admin' => $this->admin,
@@ -191,7 +223,7 @@ class MessageAdminController extends CRUDController
                     'email' => $email,
                     'locale' => $locale,
                 ]);
-                $text = $this->get('translator')->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
+                $text = $this->translator->trans('hg_email.title.unsubscribe', [], 'messages', $locale);
                 $params = [
                     'vars' => [
                         'unsubscribe_url' => '#',
@@ -280,7 +312,7 @@ class MessageAdminController extends CRUDController
         $em->persist($message);
         foreach ($utils->getAvailableLocales() as $loc) {
             if (!empty($existingObject->translate($loc)->getName())) {
-                $copyText = $this->get('translator')->trans('hg_email.text.copy', [], 'messages', $loc);
+                $copyText = $this->translator->trans('hg_email.text.copy', [], 'messages', $loc);
                 $message->translate($loc)->setSubject($existingObject->translate($loc)->getSubject());
                 $message->translate($loc)->setContentText($existingObject->translate($loc)->getContentText());
                 $message->translate($loc)->setContentHtml($existingObject->translate($loc)->getContentHtml());
