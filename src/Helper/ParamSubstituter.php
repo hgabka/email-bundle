@@ -49,7 +49,7 @@ class ParamSubstituter
         if (empty($text)) {
             return $text;
         }
-        
+
         $params = $normalized ? $params : $this->normalizeParams($params);
 
         $params = $this->addVarChars($params);

@@ -38,7 +38,9 @@ class MessageAdminController extends CRUDController
 
     /**
      * @required
+     *
      * @param ManagerRegistry $doctrine
+     *
      * @return MessageAdminController
      */
     public function setDoctrine(ManagerRegistry $doctrine): self
@@ -50,7 +52,9 @@ class MessageAdminController extends CRUDController
 
     /**
      * @required
+     *
      * @param FormFactoryInterface $formFactory
+     *
      * @return MessageAdminController
      */
     public function setFormFactory(FormFactoryInterface $formFactory): self
@@ -62,16 +66,17 @@ class MessageAdminController extends CRUDController
 
     /**
      * @required
+     *
      * @param TranslatorInterface $translator
+     *
      * @return MessageAdminController
      */
-    public function setTranslator(TranslatorInterface $translator): MessageAdminController
+    public function setTranslator(TranslatorInterface $translator): self
     {
         $this->translator = $translator;
 
         return $this;
     }
-
 
     public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
