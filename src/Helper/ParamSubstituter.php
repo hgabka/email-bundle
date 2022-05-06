@@ -44,7 +44,7 @@ class ParamSubstituter
      *
      * @return string
      */
-    public function substituteParams(string $text, $params, bool $normalized = false): string
+    public function substituteParams(?string $text, $params, bool $normalized = false): ?string
     {
         $params = $normalized ? $params : $this->normalizeParams($params);
 
