@@ -16,13 +16,6 @@ class EmailLayoutTranslation implements TranslationInterface
     use TranslationTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
      * @Hgabka\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout")
      */
     protected $translatable;

@@ -18,13 +18,6 @@ class MessageTranslation implements TranslationInterface
     use TranslationTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
      * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\Attachment", mappedBy="message")
      *
      * @var ArrayCollection|Attachment[]
