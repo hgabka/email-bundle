@@ -391,6 +391,8 @@ class MailBuilder
                 if (isset($sendParams['headers'])) {
                     $this->mailHelper->addHeadersFromArray($mail, $sendParams['headers']);
                 }
+                
+                $templateType->alterEmail($mail);
 
                 $messages[] = ['message' => $mail, 'locale' => $locale];
             } catch (\Exception $e) {
