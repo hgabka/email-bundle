@@ -246,7 +246,7 @@ class EmailTemplateTranslation implements TranslationInterface
             $this->attachments->add($attachment);
         }
 
-        return $this
+        return $this;
     }
 
     public function removeAttachment(Attachment $attachment): void
