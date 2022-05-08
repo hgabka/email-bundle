@@ -47,4 +47,6 @@ interface EmailTemplateTypeInterface
     public function getDefaultBcc();
 
     public function setParameters($paramArray);
+    
+    public function alterEmail(\Swift_Message $mail);
 }
