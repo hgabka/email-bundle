@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Reader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
 use Hgabka\EmailBundle\Helper\MessageSender;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -380,4 +381,10 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
         return $this->translator->trans($id, $params, $domain, $this->locale);
     }
+    
+    public function alterEmail(Email $email)
+    {
+        return;
+    }
+
 }
