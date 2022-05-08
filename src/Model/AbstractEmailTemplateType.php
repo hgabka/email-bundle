@@ -380,4 +380,9 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
         return $this->translator->trans($id, $params, $domain, $this->locale);
     }
+    
+    public function alterEmail(\Swift_Message $mail)
+    {
+        return;
+    }
 }
