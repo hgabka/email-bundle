@@ -55,7 +55,7 @@ class EmailQueue extends AbstractQueue
      *
      * @ORM\Column(name="mail_return_path", type="text", nullable=true)
      */
-    #[ORM\Column(name: 'return_path', type: 'text', nullable: true)]
+    #[ORM\Column(name: 'mail_return_path', type: 'text', nullable: true)]
     protected ?string $returnPath = null;
 
     /**
@@ -71,7 +71,7 @@ class EmailQueue extends AbstractQueue
      *
      * @ORM\Column(name="message_embeds", type="array", nullable=true)
      */
-    #[ORM\Column(name: 'mail_embeds', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'message_embeds', type: 'array', nullable: true)]
     protected ?array $embeds = null;
 
     /**

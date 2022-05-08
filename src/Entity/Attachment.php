@@ -91,7 +91,7 @@ class Attachment
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    #[ORM\Column(name: 'locale', type: 'string', nullable: true)]
+    #[ORM\Column(name: 'locale', type: 'string', length: 2, nullable: true)]
     protected ?string $locale = null;
 
     /**

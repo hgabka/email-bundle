@@ -63,7 +63,7 @@ class MessageSubscriber
      * @var string
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    #[ORM\Column(name: 'locale', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(name: 'locale', type: 'string', length: 2, nullable: true)]
     protected ?string $locale = null;
 
     /**

@@ -33,7 +33,7 @@ class AbstractQueue
      *
      * @ORM\Column(name="status", type="string", length=20)
      */
-    #[ORM\Column(name: 'status', type: 'string', length: 255)]
+    #[ORM\Column(name: 'status', type: 'string', length: 20)]
     protected ?string $status = QueueStatusEnum::STATUS_INIT;
 
     public function getId(): ?int

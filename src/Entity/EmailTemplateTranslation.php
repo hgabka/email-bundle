@@ -51,13 +51,13 @@ class EmailTemplateTranslation implements TranslationInterface
      * @ORM\Column(name="comment", type="text")
      * @Assert\NotBlank()
      */
-    #[ORM\Column(name: 'comment', type: 'text', nullable: true)]
+    #[ORM\Column(name: 'comment', type: 'text')]
     protected ?string $comment = null;
 
     /**
      * @ORM\Column(name="subject", type="string", length=255)
      */
-    #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(name: 'subject', type: 'string', length: 255)]
     protected ?string $subject = null;
 
     /**
