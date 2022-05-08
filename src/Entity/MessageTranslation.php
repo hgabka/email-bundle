@@ -176,7 +176,7 @@ class MessageTranslation implements TranslationInterface
      *
      * @return MessageTranslation
      */
-    public function setContentHtml(?string $contentHtml): string
+    public function setContentHtml(?string $contentHtml): self
     {
         $this->contentHtml = $contentHtml;
 
@@ -186,7 +186,7 @@ class MessageTranslation implements TranslationInterface
     /**
      * @return ArrayCollection
      */
-    public function getAttachments(): Collection
+    public function getAttachments(): Collection|array|null
     {
         return $this->attachments;
     }
@@ -196,7 +196,7 @@ class MessageTranslation implements TranslationInterface
      *
      * @return MessageTranslation
      */
-    public function setAttachments(Collection $attachments): self
+    public function setAttachments(Collection|array|null $attachments): self
     {
         $this->attachments = $attachments;
 

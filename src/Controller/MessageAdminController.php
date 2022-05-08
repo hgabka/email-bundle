@@ -314,7 +314,6 @@ class MessageAdminController extends CRUDController
             ->setSentSuccess(0)
         ;
         $em = $this->doctrine->getManager();
-        $em->persist($message);
         foreach ($utils->getAvailableLocales() as $loc) {
             if (!empty($existingObject->translate($loc)->getName())) {
                 $copyText = $this->translator->trans('hg_email.text.copy', [], 'messages', $loc);
@@ -327,6 +326,7 @@ class MessageAdminController extends CRUDController
             }
         }
 
+        $em->persist($message);
         $em->flush();
 
         $attachments = $em->getRepository(Attachment::class)->getByMessage($existingObject);
