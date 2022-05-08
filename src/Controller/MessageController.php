@@ -21,14 +21,13 @@ class MessageController extends AbstractController
     /**
      * The webversion action.
      *
-     * @Route("/{id}/webversion/{hash}", name="hgabka_email_message_webversion", requirements={"id" = "\d+"}, methods={"GET"})
-     *
      * @param mixed $id
      * @param mixed $hash
      *
      * @return Response
      */
-    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, ManagerRegistry $doctrine, $id, $hash)
+    #[Route('/{id}/webversion/{hash}', name: 'hgabka_email_message_webversion', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function webversionAction(Request $request, RouterInterface $router, MailBuilder $mailBuilder, RecipientManager $recipientManager, ManagerRegistry $doctrine, int $id, string $hash): Response
     {
         /** @var MessageQueue $queue */
         $queue = $doctrine->getRepository(MessageQueue::class)->find($id);
@@ -61,13 +60,12 @@ class MessageController extends AbstractController
     /**
      * The unsubscribe action.
      *
-     * @Route("/unsubscribe/{token}", name="hgabka_email_message_unsubscribe")
-     *
      * @param mixed $token
      *
      * @return Response
      */
-    public function unsubscribeAction(Request $request, ManagerRegistry $doctrine, $token)
+    #[Route('/unsubscribe/{token}', name: 'hgabka_email_message_unsubscribe')]
+    public function unsubscribeAction(Request $request, ManagerRegistry $doctrine, string $token): Response
     {
         $em = $doctrine->getManager();
 

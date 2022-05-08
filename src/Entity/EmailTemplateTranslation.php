@@ -9,23 +9,13 @@ use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
 use Hgabka\Doctrine\Translatable\Entity\TranslationTrait;
 use Hgabka\Doctrine\Translatable\TranslatableInterface;
 use Hgabka\Doctrine\Translatable\TranslationInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(name="hg_email_email_template_translation")
- * @ORM\Entity
- */
 #[ORM\Table(name: 'hg_email_email_template_translation')]
 #[ORM\Entity]
 class EmailTemplateTranslation implements TranslationInterface
 {
     use TranslationTrait;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\Attachment", mappedBy="template")
-     *
-     * @var ArrayCollection|Attachment[]
-     */
     #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'template')]
     protected Collection|array|null $attachments = null;
 
@@ -35,64 +25,34 @@ class EmailTemplateTranslation implements TranslationInterface
     #[Hgabka\Translatable(targetEntity: EmailTemplate::class)]
     protected ?TranslatableInterface $translatable = null;
 
-    /**
-     * @ORM\Column(name="from_name", type="text", nullable=true)
-     */
     #[ORM\Column(name: 'from_name', type: 'text', nullable: true)]
     protected ?string $fromName = null;
 
-    /**
-     * @ORM\Column(name="from_email", type="text", nullable=true)
-     */
     #[ORM\Column(name: 'from_email', type: 'text', nullable: true)]
     protected ?string $fromEmail = null;
 
-    /**
-     * @ORM\Column(name="comment", type="text")
-     * @Assert\NotBlank()
-     */
     #[ORM\Column(name: 'comment', type: 'text')]
     protected ?string $comment = null;
 
-    /**
-     * @ORM\Column(name="subject", type="string", length=255)
-     */
     #[ORM\Column(name: 'subject', type: 'string', length: 255)]
     protected ?string $subject = null;
 
-    /**
-     * @ORM\Column(name="content_text", type="text", nullable=true)
-     */
     #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
     protected ?string $contentText = '';
 
-    /**
-     * @ORM\Column(name="content_html", type="text", nullable=true)
-     */
     #[ORM\Column(name: 'content_html', type: 'text', nullable: true)]
     protected ?string $contentHtml = '';
 
-    /**
-     * EmailTemplateTranslation constructor.
-     */
     public function __construct()
     {
         $this->attachments = new ArrayCollection();
     }
 
-    /**
-     * @return mixed
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setId(?int $id): self
     {
         $this->id = $id;
@@ -100,19 +60,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getFromName(): ?string
     {
         return $this->fromName;
     }
 
-    /**
-     * @param mixed $fromName
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setFromName(?string $fromName): self
     {
         $this->fromName = $fromName;
@@ -120,19 +72,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getFromEmail(): ?string
     {
         return $this->fromEmail;
     }
 
-    /**
-     * @param mixed $fromEmail
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setFromEmail(?string $fromEmail): self
     {
         $this->fromEmail = $fromEmail;
@@ -140,19 +84,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getSubject(): ?string
     {
         return $this->subject;
     }
 
-    /**
-     * @param mixed $subject
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setSubject(?string $subject): self
     {
         $this->subject = $subject;
@@ -160,19 +96,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getContentText(): ?string
     {
         return $this->contentText;
     }
 
-    /**
-     * @param string $contentText
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setContentText(?string $contentText): self
     {
         $this->contentText = $contentText;
@@ -180,19 +108,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getContentHtml(): ?string
     {
         return $this->contentHtml;
     }
 
-    /**
-     * @param string $contentHtml
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setContentHtml(?string $contentHtml): self
     {
         $this->contentHtml = $contentHtml;
@@ -200,19 +120,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getComment(): ?string
     {
         return $this->comment;
     }
 
-    /**
-     * @param mixed $comment
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setComment(?string $comment): self
     {
         $this->comment = $comment;
@@ -220,19 +132,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getAttachments(): Collection|array|null
     {
         return $this->attachments;
     }
 
-    /**
-     * @param mixed $attachments
-     *
-     * @return EmailTemplateTranslation
-     */
     public function setAttachments(Collection|array|null $attachments): self
     {
         $this->attachments = $attachments;
@@ -249,9 +153,11 @@ class EmailTemplateTranslation implements TranslationInterface
         return $this;
     }
 
-    public function removeAttachment(Attachment $attachment): void
+    public function removeAttachment(Attachment $attachment): self
     {
         $this->attachments->removeElement($attachment);
+
+        return $this;
     }
 
     /**

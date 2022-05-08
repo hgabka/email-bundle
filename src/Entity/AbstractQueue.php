@@ -10,29 +10,14 @@ class AbstractQueue
 {
     use TimestampableEntity;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
     protected ?int $id = null;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="retries", type="integer")
-     */
     #[ORM\Column(name: 'retries')]
     protected ?int $retries = 0;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="status", type="string", length=20)
-     */
     #[ORM\Column(name: 'status', type: 'string', length: 20)]
     protected ?string $status = QueueStatusEnum::STATUS_INIT;
 

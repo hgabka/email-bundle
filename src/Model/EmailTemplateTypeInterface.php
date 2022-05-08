@@ -2,6 +2,8 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Symfony\Component\Mime\Email;
+
 interface EmailTemplateTypeInterface
 {
     public function getComment();
@@ -47,4 +49,6 @@ interface EmailTemplateTypeInterface
     public function getDefaultBcc();
 
     public function setParameters($paramArray);
+
+    public function alterEmail(Email $email): void;
 }

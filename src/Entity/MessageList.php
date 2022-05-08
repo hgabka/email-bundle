@@ -223,9 +223,11 @@ class MessageList implements TranslatableInterface
     /**
      * Remove send list.
      */
-    public function removeSendList(MessageSendList $sendList): void
+    public function removeSendList(MessageSendList $sendList): self
     {
         $this->sendLists->removeElement($sendList);
+
+        return $this;
     }
 
     /**
@@ -267,8 +269,10 @@ class MessageList implements TranslatableInterface
     /**
      * Remove send list.
      */
-    public function removeListSubscription(MessageListSubscription $listSubscription): void
+    public function removeListSubscription(MessageListSubscription $listSubscription): self
     {
         $this->listSubscriptions->removeElement($listSubscription);
+
+        return $this;
     }
 }
