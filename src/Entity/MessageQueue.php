@@ -12,7 +12,7 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_message_queue")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageQueueRepository")
  */
-#[ORM\Table(name: 'hg_email_email_queue')]
+#[ORM\Table(name: 'hg_email_message_queue')]
 #[ORM\Entity(repositoryClass: MessageQueueRepository::class)]
 class MessageQueue extends AbstractQueue
 {
