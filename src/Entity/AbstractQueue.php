@@ -15,26 +15,28 @@ class AbstractQueue
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var int
      *
      * @ORM\Column(name="retries", type="integer")
      */
-    protected $retries = 0;
+    #[ORM\Column(name: 'retries')]
+    protected ?int $retries = 0;
 
     /**
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=20)
      */
-    protected $status = QueueStatusEnum::STATUS_INIT;
+    #[ORM\Column(name: 'status', type: 'string', length: 255)]
+    protected ?string $status = QueueStatusEnum::STATUS_INIT;
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -44,7 +46,7 @@ class AbstractQueue
      *
      * @return AbstractQueue
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -54,7 +56,7 @@ class AbstractQueue
     /**
      * @return int
      */
-    public function getRetries()
+    public function getRetries(): ?int
     {
         return $this->retries;
     }
@@ -64,7 +66,7 @@ class AbstractQueue
      *
      * @return AbstractQueue
      */
-    public function setRetries($retries)
+    public function setRetries(?int $retries): self
     {
         $this->retries = $retries;
 
@@ -74,7 +76,7 @@ class AbstractQueue
     /**
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
@@ -84,7 +86,7 @@ class AbstractQueue
      *
      * @return AbstractQueue
      */
-    public function setStatus($status)
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 

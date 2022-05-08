@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\EmailQueueRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
@@ -11,6 +12,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_email_queue")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailQueueRepository")
  */
+#[ORM\Table(name: 'hg_email_email_queue')]
+#[ORM\Entity(repositoryClass: EmailQueueRepository::class)]
 class EmailQueue extends AbstractQueue
 {
     use TimestampableEntity;
@@ -20,77 +23,88 @@ class EmailQueue extends AbstractQueue
      *
      * @ORM\Column(name="mail_from", type="text", nullable=true)
      */
-    protected $from;
+    #[ORM\Column(name: 'mail_from', type: 'text', nullable: true)]
+    protected ?string $from;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
-    protected $to;
+    #[ORM\Column(name: 'mail_to', type: 'text', nullable: true)]
+    protected ?string $to;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
-    protected $cc;
+    #[ORM\Column(name: 'mail_cc', type: 'text', nullable: true)]
+    protected ?string $cc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
-    protected $bcc;
+    #[ORM\Column(name: 'mail_bcc', type: 'text', nullable: true)]
+    protected ?string $bcc;
 
     /**
      * @var null|string
      *
      * @ORM\Column(name="mail_return_path", type="text", nullable=true)
      */
-    protected $returnPath;
+    #[ORM\Column(name: 'return_path', type: 'text', nullable: true)]
+    protected ?string $returnPath;
 
     /**
      * @var string
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
-    protected $subject;
+    #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
+    protected ?string $subject;
 
     /**
      * @var null|array
      *
      * @ORM\Column(name="message_embeds", type="array", nullable=true)
      */
-    protected $embeds;
+    #[ORM\Column(name: 'mail_embeds', type: 'array', nullable: true)]
+    protected ?array $embeds;
 
     /**
      * @var null|array
      *
      * @ORM\Column(name="mail_headers", type="array", nullable=true)
      */
-    protected $headers;
+    #[ORM\Column(name: 'mail_headers', type: 'array', nullable: true)]
+    protected ?array $headers;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
-    protected $contentText;
+    #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
+    protected ?string $contentText;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
-    protected $contentHtml;
+    #[ORM\Column(name: 'content_html', type: 'text', nullable: true)]
+    protected ?string $contentHtml;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
      */
-    protected $sendAt;
+    #[ORM\Column(name: 'send_at', type: 'datetime', nullable: true)]
+    protected ?\DateTime $sendAt;
 
     /**
      * @var EmailCampaign
@@ -98,12 +112,14 @@ class EmailQueue extends AbstractQueue
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailCampaign", cascade={"persist"})
      * @ORM\JoinColumn(name="email_campaign_id", nullable=true, referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $campaign;
+    #[ORM\ManyToOne(targetEntity: EmailCampaign::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'email_campaign_id', nullable: true, referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?EmailCampaign $campaign;
 
     /**
      * @return string
      */
-    public function getFrom()
+    public function getFrom(): ?string
     {
         return $this->from;
     }
@@ -113,7 +129,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setFrom($from)
+    public function setFrom(?string $from): self
     {
         $this->from = $from;
 
@@ -123,7 +139,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getTo()
+    public function getTo(): ?string
     {
         return $this->to;
     }
@@ -133,7 +149,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setTo($to)
+    public function setTo(?string $to): self
     {
         $this->to = $to;
 
@@ -143,7 +159,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getCc()
+    public function getCc(): ?string
     {
         return $this->cc;
     }
@@ -153,7 +169,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setCc($cc)
+    public function setCc(?string $cc): self
     {
         $this->cc = $cc;
 
@@ -163,7 +179,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getBcc()
+    public function getBcc(): ?string
     {
         return $this->bcc;
     }
@@ -173,7 +189,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setBcc($bcc)
+    public function setBcc(?string $bcc): self
     {
         $this->bcc = $bcc;
 
@@ -183,7 +199,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getSubject()
+    public function getSubject(): ?string
     {
         return $this->subject;
     }
@@ -193,7 +209,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setSubject($subject)
+    public function setSubject(?string $subject)
     {
         $this->subject = $subject;
 
@@ -203,7 +219,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getContentText()
+    public function getContentText(): ?string
     {
         return $this->contentText;
     }
@@ -213,7 +229,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setContentText($contentText)
+    public function setContentText(?string $contentText): self
     {
         $this->contentText = $contentText;
 
@@ -223,7 +239,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return string
      */
-    public function getContentHtml()
+    public function getContentHtml(): ?string
     {
         return $this->contentHtml;
     }
@@ -233,7 +249,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setContentHtml($contentHtml)
+    public function setContentHtml(?string $contentHtml): self
     {
         $this->contentHtml = $contentHtml;
 
@@ -243,7 +259,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return \DateTime
      */
-    public function getSendAt()
+    public function getSendAt(): ?\DateTime
     {
         return $this->sendAt;
     }
@@ -253,7 +269,7 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setSendAt($sendAt)
+    public function setSendAt(?\DateTime $sendAt): self
     {
         $this->sendAt = $sendAt;
 
@@ -263,7 +279,7 @@ class EmailQueue extends AbstractQueue
     /**
      * @return EmailCampaign
      */
-    public function getCampaign()
+    public function getCampaign(): ?EmailCampaign
     {
         return $this->campaign;
     }
@@ -273,14 +289,14 @@ class EmailQueue extends AbstractQueue
      *
      * @return EmailQueue
      */
-    public function setCampaign($campaign)
+    public function setCampaign(?EmailCampaign $campaign): self
     {
         $this->campaign = $campaign;
 
         return $this;
     }
 
-    public function isForEmail($email)
+    public function isForEmail($email): bool
     {
         $to = $this->getTo();
         if (empty($to)) {

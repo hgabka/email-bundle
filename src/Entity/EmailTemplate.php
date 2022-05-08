@@ -3,9 +3,11 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
 use Hgabka\Doctrine\Translatable\TranslatableInterface;
+use Hgabka\EmailBundle\Repository\EmailTemplateRepository;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
@@ -15,6 +17,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_email_template")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailTemplateRepository")
  */
+#[ORM\Table(name: 'hg_email_email_template')]
+#[ORM\Entity(repositoryClass: EmailTemplateRepository::class)]
 class EmailTemplate implements TranslatableInterface
 {
     use TimestampableEntity;
@@ -25,17 +29,22 @@ class EmailTemplate implements TranslatableInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation")
      */
-    protected $translations;
+    #[Hgabka\Translations(targetEntity: EmailTemplateTranslation::class)]
+    protected Collection $translations;
 
     /**
      * @ORM\Column(name="type", type="text", nullable=true)
      */
-    protected $type;
+    #[ORM\Column(name: 'type', type: 'text', nullable: true)]
+    protected ?string $type;
 
     /**
      * @var EmailLayout
@@ -43,22 +52,27 @@ class EmailTemplate implements TranslatableInterface
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout", inversedBy="templates", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
-    protected $layout;
+    #[ORM\ManyToOne(targetEntity: EmailLayout::class, inversedBy: 'templates', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'email_layout_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    protected ?EmailLayout $layout;
 
     /**
      * @ORM\Column(name="to_data", type="array", nullable=true)
      */
-    protected $toData;
+    #[ORM\Column(name: 'to_data', type: 'array', nullable: true)]
+    protected ?array $toData;
 
     /**
      * @ORM\Column(name="cc_data", type="array", nullable=true)
      */
-    protected $ccData;
+    #[ORM\Column(name: 'cc_data', type: 'array', nullable: true)]
+    protected ?array $ccData;
 
     /**
      * @ORM\Column(name="bcc_data", type="array", nullable=true)
      */
-    protected $bccData;
+    #[ORM\Column(name: 'bcc_data', type: 'array', nullable: true)]
+    protected ?array $bccData;
 
     /**
      * constructor.
@@ -68,7 +82,7 @@ class EmailTemplate implements TranslatableInterface
         $this->translations = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return 'Email sablon';
     }
@@ -76,7 +90,7 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -86,7 +100,7 @@ class EmailTemplate implements TranslatableInterface
      *
      * @return EmailTemplate
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -96,9 +110,9 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getComment()
+    public function getComment(?string $locale = null): ?string
     {
-        return $this->translate()->getComment();
+        return $this->translate($locale)->getComment();
     }
 
     /**
@@ -106,7 +120,7 @@ class EmailTemplate implements TranslatableInterface
      *
      * @return EmailTemplate
      */
-    public function setComment($comment)
+    public function setComment(?string $comment, ?string $locale = null): self
     {
         $this->translate($locale)->setComment($comment);
 
@@ -116,7 +130,7 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -126,7 +140,7 @@ class EmailTemplate implements TranslatableInterface
      *
      * @return EmailTemplate
      */
-    public function setType($type)
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
@@ -136,7 +150,7 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return EmailLayout
      */
-    public function getLayout()
+    public function getLayout(): ?EmailLayout
     {
         return $this->layout;
     }
@@ -146,7 +160,7 @@ class EmailTemplate implements TranslatableInterface
      *
      * @return EmailTemplate
      */
-    public function setLayout($layout)
+    public function setLayout(?EmailLayout $layout): self
     {
         $this->layout = $layout;
 
@@ -156,12 +170,12 @@ class EmailTemplate implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function isSystem()
+    public function isSystem(): bool
     {
         return !empty($this->type);
     }
 
-    public static function getTranslationEntityClass()
+    public static function getTranslationEntityClass(): string
     {
         return EmailTemplateTranslation::class;
     }

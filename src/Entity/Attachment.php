@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\AttachmentRepository;
 use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -13,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_attachment")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\AttachmentRepository")
  */
+#[ORM\Table(name: 'hg_email_attachment')]
+#[ORM\Entity(repositoryClass: AttachmentRepository::class)]
 class Attachment
 {
     use TimestampableEntity;
@@ -22,28 +25,34 @@ class Attachment
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", name="content_type", nullable=true)
      */
-    protected $contentType;
+    #[ORM\Column(type: 'string', name: 'content_type', nullable: true)]
+    protected ?string $contentType;
 
     /**
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
      */
-    protected $type;
+    #[ORM\Column(type: 'string', name: 'content_type', length: 255)]
+    protected ?string $type;
 
     /**
      * @var int
      *
      * @ORM\Column(name="owner_id", type="bigint", nullable=true)
      */
-    protected $ownerId;
+    #[ORM\Column(type: 'bigint', name: 'owner_id', nullable: true)]
+    protected ?int  $ownerId;
 
     /**
      * @var Media
@@ -52,7 +61,10 @@ class Attachment
      * @ORM\JoinColumn(name="media_id", referencedColumnName="id")
      * @Assert\NotNull()
      */
-    protected $media;
+    #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'media_id', referencedColumnName: 'id')]
+    #[Assert\NotNull]
+    protected ?Media $media;
 
     /**
      * @var EmailTemplateTranslation
@@ -60,7 +72,9 @@ class Attachment
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation", inversedBy="attachments")
      * @ORM\JoinColumn(name="template_id", referencedColumnName="id")
      */
-    protected $template;
+    #[ORM\ManyToOne(targetEntity: EmailTemplateTranslation::class, inversedBy: 'attachments')]
+    #[ORM\JoinColumn(name: 'template_id', referencedColumnName: 'id')]
+    protected ?EmailTemplateTranslation $template;
 
     /**
      * @var MessageTranslation
@@ -68,33 +82,38 @@ class Attachment
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageTranslation", inversedBy="attachments")
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id")
      */
-    protected $message;
+    #[ORM\ManyToOne(targetEntity: MessageTranslation::class, inversedBy: 'attachments')]
+    #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id')]
+    protected ?MessageTranslation $message;
 
     /**
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    protected $locale;
+    #[ORM\Column(name: 'locale', type: 'string', nullable: true)]
+    protected ?string $locale;
 
     /**
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=512, nullable=true)
      */
-    protected $filename;
+    #[ORM\Column(name: 'filename', type: 'string', length: 512, nullable: true)]
+    protected ?string $filename;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content", type="hg_utils_longblob", nullable=true)
      */
+    #[ORM\Column(name: 'content', type: 'hg_utils_longblob', nullable: true)]
     protected $content;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -104,7 +123,7 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -114,7 +133,7 @@ class Attachment
     /**
      * @return string
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -124,7 +143,7 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setType($type)
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
@@ -134,7 +153,7 @@ class Attachment
     /**
      * @return int
      */
-    public function getOwnerId()
+    public function getOwnerId(): ?int
     {
         return $this->ownerId;
     }
@@ -144,7 +163,7 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setOwnerId($ownerId)
+    public function setOwnerId(?int $ownerId): self
     {
         $this->ownerId = $ownerId;
 
@@ -154,7 +173,7 @@ class Attachment
     /**
      * @return Media
      */
-    public function getMedia()
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
@@ -164,7 +183,7 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setMedia($media)
+    public function setMedia(?Media $media): self
     {
         $this->media = $media;
 
@@ -174,7 +193,7 @@ class Attachment
     /**
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -184,14 +203,14 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setLocale($locale)
+    public function setLocale(?string $locale)
     {
         $this->locale = $locale;
 
         return $this;
     }
 
-    public function getFilename(): string
+    public function getFilename(): ?string
     {
         return $this->filename;
     }
@@ -201,14 +220,14 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setFilename($filename)
+    public function setFilename(?string $filename): self
     {
         $this->filename = $filename;
 
         return $this;
     }
 
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
@@ -218,14 +237,14 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setContent($content)
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
         return $this;
     }
 
-    public function getContentType(): string
+    public function getContentType(): ?string
     {
         return $this->contentType;
     }
@@ -235,7 +254,7 @@ class Attachment
      *
      * @return Attachment
      */
-    public function setContentType($contentType)
+    public function setContentType(?string $contentType): self
     {
         $this->contentType = $contentType;
 

@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\EmailCampaignMessageRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
@@ -11,6 +12,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_email_campaign_message")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailCampaignMessageRepository")
  */
+#[ORM\Table(name: 'hg_email_email_campaign_message')]
+#[ORM\Entity(repositoryClass: EmailCampaignMessageRepository::class)]
 class EmailCampaignMessage
 {
     use TimestampableEntity;
@@ -20,7 +23,10 @@ class EmailCampaignMessage
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var EmailCampaign
@@ -28,7 +34,9 @@ class EmailCampaignMessage
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailCampaign", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_campaign_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $campaign;
+    #[ORM\ManyToOne(targetEntity: EmailCampaign::class, inversedBy: 'messages', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'email_campaign_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
+    protected ?EmailCampaign $campaign;
 
     /**
      * @var EmailTemplate
@@ -36,6 +44,8 @@ class EmailCampaignMessage
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate", cascade={"persist"})
      * @ORM\JoinColumn(name="email_template_id", referencedColumnName="id", onDelete="CASCADE")
      */
+    #[ORM\ManyToOne(targetEntity: EmailTemplate::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'email_template_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
     protected $template;
 
     /**
@@ -43,12 +53,13 @@ class EmailCampaignMessage
      *
      * @ORM\Column(name="send_after", type="integer")
      */
-    protected $sendAfter = 0;
+    #[ORM\Column(name: 'send_after', type: 'integer')]
+    protected ?int $sendAfter = 0;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -58,7 +69,7 @@ class EmailCampaignMessage
      *
      * @return EmailCampaignMessage
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -68,7 +79,7 @@ class EmailCampaignMessage
     /**
      * @return EmailCampaign
      */
-    public function getCampaign()
+    public function getCampaign(): ?EmailCampaign
     {
         return $this->campaign;
     }
@@ -78,7 +89,7 @@ class EmailCampaignMessage
      *
      * @return EmailCampaignMessage
      */
-    public function setCampaign($campaign)
+    public function setCampaign(?EmailCampaign $campaign): self
     {
         $this->campaign = $campaign;
 
@@ -88,7 +99,7 @@ class EmailCampaignMessage
     /**
      * @return EmailTemplate
      */
-    public function getTemplate()
+    public function getTemplate(): ?EmailTemplate
     {
         return $this->template;
     }
@@ -98,7 +109,7 @@ class EmailCampaignMessage
      *
      * @return EmailCampaignMessage
      */
-    public function setTemplate($template)
+    public function setTemplate(?EmailTemplate $template): self
     {
         $this->template = $template;
 
@@ -108,7 +119,7 @@ class EmailCampaignMessage
     /**
      * @return int
      */
-    public function getSendAfter()
+    public function getSendAfter(): ?int
     {
         return $this->sendAfter;
     }
@@ -118,7 +129,7 @@ class EmailCampaignMessage
      *
      * @return EmailCampaignMessage
      */
-    public function setSendAfter($sendAfter)
+    public function setSendAfter(?int $sendAfter)
     {
         $this->sendAfter = $sendAfter;
 

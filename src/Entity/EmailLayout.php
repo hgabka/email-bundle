@@ -3,9 +3,11 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
 use Hgabka\Doctrine\Translatable\TranslatableInterface;
+use Hgabka\EmailBundle\Repository\EmailLayoutRepository;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_email_layout")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailLayoutRepository")
  */
+#[ORM\Table(name: 'hg_email_email_layout')]
+#[ORM\Entity(repositoryClass: EmailLayoutRepository::class)]
 class EmailLayout implements TranslatableInterface
 {
     use TimestampableEntity;
@@ -26,7 +30,10 @@ class EmailLayout implements TranslatableInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var ArrayCollection|EmailTemplate[]
@@ -35,7 +42,9 @@ class EmailLayout implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $templates;
+    #[ORM\OneToMany(targetEntity: EmailTemplate::class, cascade: ['all'], mappedBy: 'layout', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection $templates;
 
     /**
      * @var ArrayCollection|Message[]
@@ -44,19 +53,23 @@ class EmailLayout implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $messages;
+    #[ORM\OneToMany(targetEntity: Message::class, cascade: ['all'], mappedBy: 'layout', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection $messages;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailLayoutTranslation")
      */
-    protected $translations;
+    #[Hgabka\Translations(targetEntity: EmailLayoutTranslation::class)]
+    protected Collection $translations;
 
     /**
      * @var string
      *
      * @ORM\Column(name="styles", type="text")
      */
-    protected $styles;
+    #[ORM\Column(name: 'styles', type: 'text')]
+    protected ?string $styles;
 
     /**
      * constructor.
@@ -68,15 +81,15 @@ class EmailLayout implements TranslatableInterface
         $this->messages = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->getName();
+        return (string) $this->getName();
     }
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -86,7 +99,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -98,7 +111,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return string
      */
-    public function getName($locale = null)
+    public function getName(?string $locale = null): ?string
     {
         return $this->translate($locale)->getName();
     }
@@ -109,7 +122,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function setName($name, $locale = null)
+    public function setName(?string $name, ?string $locale = null): self
     {
         $this->translate($locale)->setName($name);
 
@@ -119,7 +132,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * @return string
      */
-    public function getStyles()
+    public function getStyles(): ?string
     {
         return $this->styles;
     }
@@ -129,7 +142,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function setStyles($styles)
+    public function setStyles(?string $styles): self
     {
         $this->styles = $styles;
 
@@ -139,7 +152,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * @return EmailTemplate[]
      */
-    public function getTemplates()
+    public function getTemplates(): Collection
     {
         return $this->templates;
     }
@@ -149,7 +162,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function setTemplates($templates)
+    public function setTemplates(Collection $templates): self
     {
         $this->templates = $templates;
 
@@ -161,7 +174,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function addTemplate(EmailTemplate $template)
+    public function addTemplate(EmailTemplate $template): self
     {
         if (!$this->templates->contains($template)) {
             $this->templates[] = $template;
@@ -175,7 +188,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * Remove template.
      */
-    public function removeTemplate(EmailTemplate $template)
+    public function removeTemplate(EmailTemplate $template): void
     {
         $this->templates->removeElement($template);
     }
@@ -183,7 +196,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * @return Message[]
      */
-    public function getMessages()
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
@@ -193,7 +206,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function setMessages($messages)
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 
@@ -205,7 +218,7 @@ class EmailLayout implements TranslatableInterface
      *
      * @return EmailLayout
      */
-    public function addMessage(Message $message)
+    public function addMessage(Message $message): self
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
@@ -219,7 +232,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * Remove message.
      */
-    public function removeMessage(Message $message)
+    public function removeMessage(Message $message): void
     {
         $this->messages->removeElement($message);
     }
@@ -227,7 +240,7 @@ class EmailLayout implements TranslatableInterface
     /**
      * @return string
      */
-    public static function getTranslationEntityClass()
+    public static function getTranslationEntityClass(): string
     {
         return EmailLayoutTranslation::class;
     }

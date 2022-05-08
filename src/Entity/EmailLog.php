@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\EmailBundle\Helper\MailHelper;
+use Hgabka\EmailBundle\Repository\EmailLogRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Mime\Email;
 
@@ -13,6 +14,8 @@ use Symfony\Component\Mime\Email;
  * @ORM\Table(name="hg_email_email_log")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailLogRepository")
  */
+#[ORM\Table(name: 'hg_email_email_log')]
+#[ORM\Entity(repositoryClass: EmailLogRepository::class)]
 class EmailLog
 {
     use TimestampableEntity;
@@ -22,75 +25,87 @@ class EmailLog
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
-    protected $subject;
+    #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
+    protected ?string $subject;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_from", type="string", length=255, nullable=true)
      */
-    protected $from;
+    #[ORM\Column(name: 'mail_from', type: 'string', length: 255, nullable: true)]
+    protected ?string $from;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_to", type="string", length=255, nullable=true)
      */
-    protected $to;
+    #[ORM\Column(name: 'mail_to', type: 'string', length: 255, nullable: true)]
+    protected ?string  $to;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_cc", type="string", length=255, nullable=true)
      */
-    protected $cc;
+    #[ORM\Column(name: 'mail_cc', type: 'string', length: 255, nullable: true)]
+    protected ?string $cc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mail_bcc", type="string", length=255, nullable=true)
      */
-    protected $bcc;
+    #[ORM\Column(name: 'mail_bcc', type: 'string', length: 255, nullable: true)]
+    protected ?string $bcc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
-    protected $textBody;
+    #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
+    protected ?string $textBody;
 
     /**
      * @var string
      *
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
-    protected $htmlBody;
+    #[ORM\Column(name: 'content_html', type: 'text', nullable: true)]
+    protected ?string $htmlBody;
 
     /**
      * @var string
      *
      * @ORM\Column(name="attachment", type="text", nullable=true)
      */
-    protected $attachment;
+    #[ORM\Column(name: 'attachment', type: 'text', nullable: true)]
+    protected ?string $attachment;
 
     /**
      * @var string
      *
      * @ORM\Column(name="mime", type="string", length=255, nullable=true)
      */
-    protected $mime;
+    #[ORM\Column(name: 'mime', type: 'string', length: 255, nullable: true)]
+    protected ?string $mime;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -100,7 +115,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
 
@@ -110,7 +125,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getSubject()
+    public function getSubject(): string
     {
         return $this->subject;
     }
@@ -120,7 +135,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setSubject($subject)
+    public function setSubject(?string $subject): self
     {
         $this->subject = $subject;
 
@@ -130,7 +145,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getFrom()
+    public function getFrom(): ?string
     {
         return $this->from;
     }
@@ -140,7 +155,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setFrom($from)
+    public function setFrom(?string $from): self
     {
         $this->from = $from;
 
@@ -150,7 +165,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getTo()
+    public function getTo(): ?string
     {
         return $this->to;
     }
@@ -160,7 +175,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setTo($to)
+    public function setTo(?string $to): self
     {
         $this->to = $to;
 
@@ -170,7 +185,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getCc()
+    public function getCc(): ?string
     {
         return $this->cc;
     }
@@ -180,7 +195,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setCc($cc)
+    public function setCc(?string $cc): self
     {
         $this->cc = $cc;
 
@@ -190,7 +205,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getBcc()
+    public function getBcc(): ?string
     {
         return $this->bcc;
     }
@@ -200,7 +215,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setBcc($bcc)
+    public function setBcc(?string $bcc): self
     {
         $this->bcc = $bcc;
 
@@ -210,7 +225,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getTextBody()
+    public function getTextBody(): ?string
     {
         return $this->textBody;
     }
@@ -220,7 +235,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setTextBody($textBody)
+    public function setTextBody(?string $textBody): self
     {
         $this->textBody = $textBody;
 
@@ -230,7 +245,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getHtmlBody()
+    public function getHtmlBody(): ?string
     {
         return $this->htmlBody;
     }
@@ -240,7 +255,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setHtmlBody($htmlBody)
+    public function setHtmlBody(?string $htmlBody): self
     {
         $this->htmlBody = $htmlBody;
 
@@ -250,7 +265,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getAttachment()
+    public function getAttachment(): ?string
     {
         return $this->attachment;
     }
@@ -260,7 +275,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setAttachment($attachment)
+    public function setAttachment(?string $attachment): self
     {
         $this->attachment = $attachment;
 
@@ -270,7 +285,7 @@ class EmailLog
     /**
      * @return string
      */
-    public function getMime()
+    public function getMime(): ?string
     {
         return $this->mime;
     }
@@ -280,7 +295,7 @@ class EmailLog
      *
      * @return EmailLog
      */
-    public function setMime($mime)
+    public function setMime(?string $mime): self
     {
         $this->mime = $mime;
 
@@ -292,7 +307,7 @@ class EmailLog
      *
      * @param Email $message
      */
-    public function fromMessage(Email $message, MailHelper $mailHelper)
+    public function fromMessage(Email $message, MailHelper $mailHelper): void
     {
         $this->setFrom($mailHelper->displayAddresses($message->getFrom()));
         $this->setTo($mailHelper->displayAddresses($message->getTo()));
@@ -306,35 +321,5 @@ class EmailLog
             $attachment = (string) $this->getAttachment();
             $this->setAttachment((empty($attachment) ? '' : ($attachment . ',')) . $attachmentPart->asDebugString());
         }
-    }
-
-    /**
-     * Convert address or addresses to string.
-     *
-     * @param array $addr
-     *
-     * @return string
-     */
-    protected function addressToString($addr)
-    {
-        if (empty($addr)) {
-            return '';
-        }
-
-        if (\is_string($addr)) {
-            return $addr;
-        }
-
-        $str = '';
-        foreach ($addr as $key => $val) {
-            $to = trim($val);
-            if (empty($to)) {
-                $str .= ($key . ', ');
-            } else {
-                $str .= sprintf('%s <%s>, ', $val, $key);
-            }
-        }
-
-        return trim(substr($str, 0, -2));
     }
 }

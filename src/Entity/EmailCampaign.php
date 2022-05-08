@@ -3,7 +3,9 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\EmailCampaignRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -12,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_email_campaign")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\EmailCampaignRepository")
  */
+#[ORM\Table(name: 'hg_email_email_campaign')]
+#[ORM\Entity(repositoryClass: EmailCampaignRepository::class)]
 class EmailCampaign
 {
     /**
@@ -19,7 +23,10 @@ class EmailCampaign
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id;
 
     /**
      * @var MessageList
@@ -27,7 +34,9 @@ class EmailCampaign
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageList", inversedBy="campaigns", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $list;
+    #[ORM\ManyToOne(targetEntity: MessageList::class, inversedBy: 'campaigns', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'message_list_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
+    protected ?MessageList $list;
 
     /**
      * @var ArrayCollection|EmailCampaignMessage[]
@@ -36,33 +45,39 @@ class EmailCampaign
      *
      * @Assert\Valid()
      */
-    protected $messages;
+    #[ORM\OneToMany(targetEntity: EmailCampaignMessage::class, cascade: ['all'], mappedBy: 'campaign', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection $messages;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    protected $name;
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: true)]
+    protected ?string $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
      */
-    protected $fromName;
+    #[ORM\Column(name: 'from_name', type: 'string', length: 255, nullable: true)]
+    protected ?string $fromName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
      */
-    protected $fromEmail;
+    #[ORM\Column(name: 'from_email', type: 'string', length: 255, nullable: true)]
+    protected ?string $fromEmail;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    protected $isActive = true;
+    #[ORM\Column(name: 'is_active', type: 'boolean')]
+    protected ?bool $isActive = true;
 
     /**
      * constructor.
@@ -75,7 +90,7 @@ class EmailCampaign
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -85,7 +100,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -95,7 +110,7 @@ class EmailCampaign
     /**
      * @return MessageList
      */
-    public function getList()
+    public function getList(): ?MessageList
     {
         return $this->list;
     }
@@ -105,7 +120,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setList($list)
+    public function setList(?MessageList $list): self
     {
         $this->list = $list;
 
@@ -115,7 +130,7 @@ class EmailCampaign
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -125,7 +140,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setName($name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -135,7 +150,7 @@ class EmailCampaign
     /**
      * @return string
      */
-    public function getFromName()
+    public function getFromName(): ?string
     {
         return $this->fromName;
     }
@@ -145,7 +160,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setFromName($fromName)
+    public function setFromName(?string $fromName): self
     {
         $this->fromName = $fromName;
 
@@ -155,7 +170,7 @@ class EmailCampaign
     /**
      * @return string
      */
-    public function getFromEmail()
+    public function getFromEmail(): ?string
     {
         return $this->fromEmail;
     }
@@ -165,7 +180,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setFromEmail($fromEmail)
+    public function setFromEmail(?string $fromEmail): self
     {
         $this->fromEmail = $fromEmail;
 
@@ -175,7 +190,7 @@ class EmailCampaign
     /**
      * @return mixed
      */
-    public function getisActive()
+    public function getisActive(): ?bool
     {
         return $this->isActive;
     }
@@ -185,7 +200,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setIsActive($isActive)
+    public function setIsActive(?bool $isActive): self
     {
         $this->isActive = $isActive;
 
@@ -195,7 +210,7 @@ class EmailCampaign
     /**
      * @return EmailCampaignMessage[]
      */
-    public function getMessages()
+    public function getMessages(): Collection
     {
         return $this->messages;
     }
@@ -205,7 +220,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setMessages($messages)
+    public function setMessages(Collection $messages): self
     {
         $this->messages = $messages;
 
@@ -217,7 +232,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function addMessage(EmailCampaignMessage $message)
+    public function addMessage(EmailCampaignMessage $message): self
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
@@ -231,7 +246,7 @@ class EmailCampaign
     /**
      * Remove message.
      */
-    public function removeMessage(EmailCampaignMessage $message)
+    public function removeMessage(EmailCampaignMessage $message): void
     {
         $this->messages->removeElement($message);
     }
