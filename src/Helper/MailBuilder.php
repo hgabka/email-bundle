@@ -350,6 +350,8 @@ class MailBuilder
                         $mail->setReturnPath($sendParams['return_path']);
                     }
                 }
+                
+                $templateType->alterEmail($mail);
 
                 $messages[] = ['message' => $mail, 'locale' => $locale];
             } catch (\Exception $e) {
