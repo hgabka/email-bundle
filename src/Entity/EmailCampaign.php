@@ -26,7 +26,7 @@ class EmailCampaign
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var MessageList
@@ -36,7 +36,7 @@ class EmailCampaign
      */
     #[ORM\ManyToOne(targetEntity: MessageList::class, inversedBy: 'campaigns', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'message_list_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
-    protected ?MessageList $list;
+    protected ?MessageList $list = null;
 
     /**
      * @var ArrayCollection|EmailCampaignMessage[]
@@ -47,7 +47,7 @@ class EmailCampaign
      */
     #[ORM\OneToMany(targetEntity: EmailCampaignMessage::class, cascade: ['all'], mappedBy: 'campaign', orphanRemoval: true)]
     #[Assert\Valid]
-    protected Collection $messages;
+    protected Collection|array|null $messages = null;
 
     /**
      * @var string
@@ -55,7 +55,7 @@ class EmailCampaign
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: true)]
-    protected ?string $name;
+    protected ?string $name = null;
 
     /**
      * @var string
@@ -63,7 +63,7 @@ class EmailCampaign
      * @ORM\Column(name="from_name", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'from_name', type: 'string', length: 255, nullable: true)]
-    protected ?string $fromName;
+    protected ?string $fromName = null;
 
     /**
      * @var string
@@ -71,7 +71,7 @@ class EmailCampaign
      * @ORM\Column(name="from_email", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'from_email', type: 'string', length: 255, nullable: true)]
-    protected ?string $fromEmail;
+    protected ?string $fromEmail = null;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
@@ -210,7 +210,7 @@ class EmailCampaign
     /**
      * @return EmailCampaignMessage[]
      */
-    public function getMessages(): Collection
+    public function getMessages(): Collection|array|null
     {
         return $this->messages;
     }
@@ -220,7 +220,7 @@ class EmailCampaign
      *
      * @return EmailCampaign
      */
-    public function setMessages(Collection $messages): self
+    public function setMessages(Collection|array|null $messages): self
     {
         $this->messages = $messages;
 

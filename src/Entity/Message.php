@@ -3,10 +3,12 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
 use Hgabka\Doctrine\Translatable\TranslatableInterface;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
+use Hgabka\EmailBundle\Repository\MessageRepository;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_message")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageRepository")
  */
+#[ORM\Table(name: 'hg_email_message')]
+#[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message implements TranslatableInterface
 {
     use TimestampableEntity;
@@ -27,12 +31,16 @@ class Message implements TranslatableInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id = null;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageTranslation")
      */
-    protected $translations;
+    #[Hgabka\Translations(targetEntity: MessageTranslation::class)]
+    protected Collection|array|null $translations = null;
 
     /**
      * @var ArrayCollection|MessageSendList[]
@@ -41,40 +49,48 @@ class Message implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $sendLists;
+    #[ORM\OneToMany(targetEntity: MessageSendList::class, cascade: ['all'], mappedBy: 'message', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection|array|null $sendLists = null;
 
     /**
      * @ORM\Column(name="to_data", type="array", nullable=true)
      */
-    protected $toData;
+    #[ORM\Column(name: 'to_data', type: 'array', nullable: true)]
+    protected ?array $toData = null;
 
     /**
      * @ORM\Column(name="cc_data", type="array", nullable=true)
      */
-    protected $ccData;
+    #[ORM\Column(name: 'cc_data', type: 'array', nullable: true)]
+    protected ?array $ccData = null;
 
     /**
      * @ORM\Column(name="bcc_data", type="array", nullable=true)
      */
-    protected $bccData;
+    #[ORM\Column(name: 'bcc_data', type: 'array', nullable: true)]
+    protected ?array $bccData = null;
 
     /**
      * @var \DateTime
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
      */
-    protected $sendAt;
+    #[ORM\Column(name: 'send_at', type: 'datetime', nullable: true)]
+    protected ?\DateTime $sendAt = null;
 
     /**
      * @var \DateTime
      * @ORM\Column(name="sent_at", type="datetime", nullable=true)
      */
-    protected $sentAt;
+    #[ORM\Column(name: 'sent_at', type: 'datetime', nullable: true)]
+    protected ?\DateTime $sentAt = null;
 
     /**
      * @var string
      * @ORM\Column(name="status", type="string", length=20)
      */
-    protected $status = MessageStatusEnum::STATUS_INIT;
+    #[ORM\Column(name: 'status', type: 'string', length: 20)]
+    protected ?string $status = MessageStatusEnum::STATUS_INIT;
 
     /**
      * @var EmailLayout
@@ -82,36 +98,43 @@ class Message implements TranslatableInterface
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\EmailLayout", inversedBy="messages", cascade={"persist"})
      * @ORM\JoinColumn(name="email_layout_id", referencedColumnName="id", onDelete="SET NULL")
      */
-    protected $layout;
+    #[ORM\ManyToOne(targetEntity: EmailLayout::class, inversedBy: 'messages', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'email_layout_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    protected ?EmailLayout $layout = null;
 
     /**
      * @var int
      * @ORM\Column(name="sent_mail", type="integer")
      */
-    protected $sentMail = 0;
+    #[ORM\Column(name: 'sent_mail', type: 'integer')]
+    protected ?int $sentMail = 0;
 
     /**
      * @var int
      * @ORM\Column(name="sent_success", type="integer")
      */
-    protected $sentSuccess = 0;
+    #[ORM\Column(name: 'sent_success', type: 'integer')]
+    protected ?int $sentSuccess = 0;
 
     /**
      * @var int
      * @ORM\Column(name="sent_fail", type="integer")
      */
-    protected $sentFail = 0;
+    #[ORM\Column(name: 'sent_fail', type: 'integer')]
+    protected ?int $sentFail = 0;
 
     /**
      * @ORM\Column(name="is_simple", type="boolean")
      */
-    protected $isSimple = false;
+    #[ORM\Column(name: 'is_simple', type: 'boolean')]
+    protected ?bool $isSimple = false;
 
     /**
      * @var string
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    protected $locale;
+    #[ORM\Column(name: 'locale', type: 'string', length: 2, nullable: true)]
+    protected ?string $locale = null;
 
     /**
      * constructor.
@@ -125,7 +148,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -135,7 +158,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setId($id)
+    public function setId(?int $id)
     {
         $this->id = $id;
 
@@ -145,7 +168,7 @@ class Message implements TranslatableInterface
     /**
      * @return EmailLayout
      */
-    public function getLayout()
+    public function getLayout(): ?EmailLayout
     {
         return $this->layout;
     }
@@ -155,7 +178,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setLayout($layout)
+    public function setLayout(?EmailLayout $layout): self
     {
         $this->layout = $layout;
 
@@ -165,7 +188,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->status;
     }
@@ -175,7 +198,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setType($status)
+    public function setType(?string $status)
     {
         if (!\in_array($status, MessageStatusEnum::getAvailableStatuses(), true)) {
             throw new \InvalidArgumentException('Invalid type');
@@ -189,7 +212,7 @@ class Message implements TranslatableInterface
     /**
      * @return \DateTime
      */
-    public function getSendAt()
+    public function getSendAt(): ?\DateTime
     {
         return $this->sendAt;
     }
@@ -199,7 +222,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSendAt(\DateTime $sendAt = null)
+    public function setSendAt(?\DateTime $sendAt = null): self
     {
         $this->sendAt = $sendAt;
 
@@ -209,7 +232,7 @@ class Message implements TranslatableInterface
     /**
      * @return int
      */
-    public function getSentMail()
+    public function getSentMail(): ?int
     {
         return $this->sentMail;
     }
@@ -219,7 +242,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSentMail($sentMail)
+    public function setSentMail(?int $sentMail): self
     {
         $this->sentMail = $sentMail;
 
@@ -229,7 +252,7 @@ class Message implements TranslatableInterface
     /**
      * @return int
      */
-    public function getSentSuccess()
+    public function getSentSuccess(): ?int
     {
         return $this->sentSuccess;
     }
@@ -239,7 +262,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSentSuccess($sentSuccess)
+    public function setSentSuccess(?int $sentSuccess): self
     {
         $this->sentSuccess = $sentSuccess;
 
@@ -249,7 +272,7 @@ class Message implements TranslatableInterface
     /**
      * @return int
      */
-    public function getSentFail()
+    public function getSentFail(): ?int
     {
         return $this->sentFail;
     }
@@ -259,7 +282,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSentFail($sentFail)
+    public function setSentFail(?int $sentFail): self
     {
         $this->sentFail = $sentFail;
 
@@ -269,7 +292,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getisSimple()
+    public function getisSimple(): ?bool
     {
         return $this->isSimple;
     }
@@ -279,7 +302,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setIsSimple($isSimple)
+    public function setIsSimple(?bool $isSimple): self
     {
         $this->isSimple = $isSimple;
 
@@ -289,7 +312,7 @@ class Message implements TranslatableInterface
     /**
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -299,7 +322,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setLocale($locale)
+    public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
 
@@ -309,7 +332,7 @@ class Message implements TranslatableInterface
     /**
      * @return MessageSendList[]
      */
-    public function getSendLists()
+    public function getSendLists(): Collection|array|null
     {
         return $this->sendLists;
     }
@@ -319,7 +342,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSendLists($sendLists)
+    public function setSendLists(Collection|array|null $sendLists): self
     {
         $this->sendLists = $sendLists;
 
@@ -331,7 +354,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function addSendList(MessageSendList $sendList)
+    public function addSendList(MessageSendList $sendList): self
     {
         if (!$this->sendLists->contains($sendList)) {
             $this->sendLists[] = $sendList;
@@ -345,12 +368,12 @@ class Message implements TranslatableInterface
     /**
      * Remove send list.
      */
-    public function removeSendList(MessageSendList $sendList)
+    public function removeSendList(MessageSendList $sendList): void
     {
         $this->sendLists->removeElement($sendList);
     }
 
-    public static function getTranslationEntityClass()
+    public static function getTranslationEntityClass(): string
     {
         return MessageTranslation::class;
     }
@@ -358,7 +381,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getToData()
+    public function getToData(): ?array
     {
         return $this->toData;
     }
@@ -368,7 +391,7 @@ class Message implements TranslatableInterface
      *
      * @return EmailTemplate
      */
-    public function setToData($toData)
+    public function setToData(?array $toData): self
     {
         $this->toData = $toData;
 
@@ -378,7 +401,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getCcData()
+    public function getCcData(): ?array
     {
         return $this->ccData;
     }
@@ -388,7 +411,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setCcData($ccData)
+    public function setCcData(?array $ccData): self
     {
         $this->ccData = $ccData;
 
@@ -398,7 +421,7 @@ class Message implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getBccData()
+    public function getBccData(): ?array
     {
         return $this->bccData;
     }
@@ -408,7 +431,7 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setBccData($bccData)
+    public function setBccData(?array $bccData)
     {
         $this->bccData = $bccData;
 
@@ -418,7 +441,7 @@ class Message implements TranslatableInterface
     /**
      * @return \DateTime
      */
-    public function getSentAt()
+    public function getSentAt(): ?\DateTime
     {
         return $this->sentAt;
     }
@@ -428,34 +451,34 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setSentAt($sentAt)
+    public function setSentAt(?\DateTime $sentAt): self
     {
         $this->sentAt = $sentAt;
 
         return $this;
     }
 
-    public function isPrepareable()
+    public function isPrepareable(): bool
     {
         return MessageStatusEnum::STATUS_INIT === $this->getStatus() || null === $this->getId();
     }
 
-    public function isUnprepareable()
+    public function isUnprepareable(): bool
     {
         return \in_array($this->getStatus(), [MessageStatusEnum::STATUS_KULDENDO, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
-    public function isBeingSent()
+    public function isBeingSent(): bool
     {
         return \in_array($this->getStatus(), [MessageStatusEnum::STATUS_ELKULDVE, MessageStatusEnum::STATUS_FOLYAMATBAN], true);
     }
 
-    public function isPrepared()
+    public function isPrepared(): bool
     {
         return MessageStatusEnum::STATUS_KULDENDO === $this->getStatus();
     }
 
-    public function getSendTime()
+    public function getSendTime(): array
     {
         if (null === $this->sendAt) {
             return [
@@ -470,7 +493,7 @@ class Message implements TranslatableInterface
             ];
     }
 
-    public function setSendTime($data)
+    public function setSendTime(?array $data): self
     {
         if (!isset($data['type']) || 'now' === $data['type']) {
             $this->setSendAt(null);
@@ -481,7 +504,7 @@ class Message implements TranslatableInterface
         return $this;
     }
 
-    public function getSubject($locale = null)
+    public function getSubject(?string $locale = null): ?string
     {
         return $this->translate($locale)->getSubject();
     }
@@ -491,31 +514,31 @@ class Message implements TranslatableInterface
      *
      * @return Message
      */
-    public function setStatus($status)
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getStatusDisplay()
+    public function getStatusDisplay(): string
     {
         $choices = MessageStatusEnum::getStatusTextChoices();
 
         return $choices[$this->getStatus()] ?? '';
     }
 
-    public function getName($locale = null)
+    public function getName(?string $locale = null): ?string
     {
         return $this->translate($locale)->getName();
     }
 
-    public function getFromName($locale = null)
+    public function getFromName(?string $locale = null): ?string
     {
         return $this->translate($locale)->getFromName();
     }
 
-    public function getFromEmail($locale = null)
+    public function getFromEmail(?string $locale = null): ?string
     {
         return $this->translate($locale)->getFromEmail();
     }

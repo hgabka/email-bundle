@@ -32,19 +32,19 @@ class EmailTemplate implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplateTranslation")
      */
     #[Hgabka\Translations(targetEntity: EmailTemplateTranslation::class)]
-    protected Collection $translations;
+    protected Collection|array|null $translations = null;
 
     /**
      * @ORM\Column(name="type", type="text", nullable=true)
      */
     #[ORM\Column(name: 'type', type: 'text', nullable: true)]
-    protected ?string $type;
+    protected ?string $type = null;
 
     /**
      * @var EmailLayout
@@ -54,25 +54,25 @@ class EmailTemplate implements TranslatableInterface
      */
     #[ORM\ManyToOne(targetEntity: EmailLayout::class, inversedBy: 'templates', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'email_layout_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    protected ?EmailLayout $layout;
+    protected ?EmailLayout $layout = null;
 
     /**
      * @ORM\Column(name="to_data", type="array", nullable=true)
      */
     #[ORM\Column(name: 'to_data', type: 'array', nullable: true)]
-    protected ?array $toData;
+    protected ?array $toData = null;
 
     /**
      * @ORM\Column(name="cc_data", type="array", nullable=true)
      */
     #[ORM\Column(name: 'cc_data', type: 'array', nullable: true)]
-    protected ?array $ccData;
+    protected ?array $ccData = null;
 
     /**
      * @ORM\Column(name="bcc_data", type="array", nullable=true)
      */
     #[ORM\Column(name: 'bcc_data', type: 'array', nullable: true)]
-    protected ?array $bccData;
+    protected ?array $bccData = null;
 
     /**
      * constructor.

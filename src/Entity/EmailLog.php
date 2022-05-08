@@ -28,7 +28,7 @@ class EmailLog
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class EmailLog
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
-    protected ?string $subject;
+    protected ?string $subject = null;
 
     /**
      * @var string
@@ -44,7 +44,7 @@ class EmailLog
      * @ORM\Column(name="mail_from", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'mail_from', type: 'string', length: 255, nullable: true)]
-    protected ?string $from;
+    protected ?string $from = null;
 
     /**
      * @var string
@@ -52,7 +52,7 @@ class EmailLog
      * @ORM\Column(name="mail_to", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'mail_to', type: 'string', length: 255, nullable: true)]
-    protected ?string  $to;
+    protected ?string  $to = null;
 
     /**
      * @var string
@@ -60,7 +60,7 @@ class EmailLog
      * @ORM\Column(name="mail_cc", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'mail_cc', type: 'string', length: 255, nullable: true)]
-    protected ?string $cc;
+    protected ?string $cc = null;
 
     /**
      * @var string
@@ -68,7 +68,7 @@ class EmailLog
      * @ORM\Column(name="mail_bcc", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'mail_bcc', type: 'string', length: 255, nullable: true)]
-    protected ?string $bcc;
+    protected ?string $bcc = null;
 
     /**
      * @var string
@@ -76,7 +76,7 @@ class EmailLog
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
     #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
-    protected ?string $textBody;
+    protected ?string $textBody = null;
 
     /**
      * @var string
@@ -84,7 +84,7 @@ class EmailLog
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
     #[ORM\Column(name: 'content_html', type: 'text', nullable: true)]
-    protected ?string $htmlBody;
+    protected ?string $htmlBody = null;
 
     /**
      * @var string
@@ -92,7 +92,7 @@ class EmailLog
      * @ORM\Column(name="attachment", type="text", nullable=true)
      */
     #[ORM\Column(name: 'attachment', type: 'text', nullable: true)]
-    protected ?string $attachment;
+    protected ?string $attachment = null;
 
     /**
      * @var string
@@ -100,7 +100,7 @@ class EmailLog
      * @ORM\Column(name="mime", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'mime', type: 'string', length: 255, nullable: true)]
-    protected ?string $mime;
+    protected ?string $mime = null;
 
     /**
      * @return mixed

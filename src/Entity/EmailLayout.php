@@ -33,7 +33,7 @@ class EmailLayout implements TranslatableInterface
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var ArrayCollection|EmailTemplate[]
@@ -44,7 +44,7 @@ class EmailLayout implements TranslatableInterface
      */
     #[ORM\OneToMany(targetEntity: EmailTemplate::class, cascade: ['all'], mappedBy: 'layout', orphanRemoval: true)]
     #[Assert\Valid]
-    protected Collection $templates;
+    protected Collection|array|null $templates = null;
 
     /**
      * @var ArrayCollection|Message[]
@@ -55,13 +55,13 @@ class EmailLayout implements TranslatableInterface
      */
     #[ORM\OneToMany(targetEntity: Message::class, cascade: ['all'], mappedBy: 'layout', orphanRemoval: true)]
     #[Assert\Valid]
-    protected Collection $messages;
+    protected Collection|array|null $messages = null;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\EmailLayoutTranslation")
      */
     #[Hgabka\Translations(targetEntity: EmailLayoutTranslation::class)]
-    protected Collection $translations;
+    protected Collection|array|null $translations = null;
 
     /**
      * @var string
@@ -69,7 +69,7 @@ class EmailLayout implements TranslatableInterface
      * @ORM\Column(name="styles", type="text")
      */
     #[ORM\Column(name: 'styles', type: 'text')]
-    protected ?string $styles;
+    protected ?string $styles = null;
 
     /**
      * constructor.

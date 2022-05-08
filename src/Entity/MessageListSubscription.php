@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\MessageListSubscriptionRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
@@ -11,6 +12,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_message_list_subscription")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageListSubscriptionRepository")
  */
+#[ORM\Table(name: 'hg_email_message_list_subscription')]
+#[ORM\Entity(repositoryClass: MessageListSubscriptionRepository::class)]
 class MessageListSubscription
 {
     use TimestampableEntity;
@@ -20,7 +23,10 @@ class MessageListSubscription
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id = null;
 
     /**
      * @var MessageList
@@ -28,7 +34,9 @@ class MessageListSubscription
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageList", inversedBy="listSubscriptions", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $list;
+    #[ORM\ManyToOne(targetEntity: MessageList::class, inversedBy: 'listSubscriptions', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'message_list_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?MessageList $list = null;
 
     /**
      * @var MessageSubscriber
@@ -36,12 +44,14 @@ class MessageListSubscription
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageSubscriber", inversedBy="listSubscriptions", cascade={"persist"})
      * @ORM\JoinColumn(name="subscriber_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $subscriber;
+    #[ORM\ManyToOne(targetEntity: MessageSubscriber::class, inversedBy: 'listSubscriptions', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'subscriber_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?MessageSubscriber $subscriber = null;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -51,7 +61,7 @@ class MessageListSubscription
      *
      * @return MessageListSubscription
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -61,7 +71,7 @@ class MessageListSubscription
     /**
      * @return MessageList
      */
-    public function getList()
+    public function getList(): ?MessageList
     {
         return $this->list;
     }
@@ -71,7 +81,7 @@ class MessageListSubscription
      *
      * @return MessageListSubscription
      */
-    public function setList($list)
+    public function setList(?MessageList $list): self
     {
         $this->list = $list;
 
@@ -81,7 +91,7 @@ class MessageListSubscription
     /**
      * @return MessageSubscriber
      */
-    public function getSubscriber()
+    public function getSubscriber(): ?MessageSubscriber
     {
         return $this->subscriber;
     }
@@ -91,7 +101,7 @@ class MessageListSubscription
      *
      * @return MessageListSubscription
      */
-    public function setSubscriber($subscriber)
+    public function setSubscriber(?MessageSubscriber $subscriber): self
     {
         $this->subscriber = $subscriber;
 

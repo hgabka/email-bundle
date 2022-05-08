@@ -24,7 +24,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_from", type="text", nullable=true)
      */
     #[ORM\Column(name: 'mail_from', type: 'text', nullable: true)]
-    protected ?string $from;
+    protected ?string $from = null;
 
     /**
      * @var string
@@ -32,7 +32,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_to", type="text", nullable=true)
      */
     #[ORM\Column(name: 'mail_to', type: 'text', nullable: true)]
-    protected ?string $to;
+    protected ?string $to = null;
 
     /**
      * @var string
@@ -40,7 +40,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_cc", type="text", nullable=true)
      */
     #[ORM\Column(name: 'mail_cc', type: 'text', nullable: true)]
-    protected ?string $cc;
+    protected ?string $cc = null;
 
     /**
      * @var string
@@ -48,7 +48,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_bcc", type="text", nullable=true)
      */
     #[ORM\Column(name: 'mail_bcc', type: 'text', nullable: true)]
-    protected ?string $bcc;
+    protected ?string $bcc = null;
 
     /**
      * @var null|string
@@ -56,7 +56,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_return_path", type="text", nullable=true)
      */
     #[ORM\Column(name: 'return_path', type: 'text', nullable: true)]
-    protected ?string $returnPath;
+    protected ?string $returnPath = null;
 
     /**
      * @var string
@@ -64,7 +64,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="subject", type="string", length=255, nullable=true)
      */
     #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
-    protected ?string $subject;
+    protected ?string $subject = null;
 
     /**
      * @var null|array
@@ -72,7 +72,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="message_embeds", type="array", nullable=true)
      */
     #[ORM\Column(name: 'mail_embeds', type: 'array', nullable: true)]
-    protected ?array $embeds;
+    protected ?array $embeds = null;
 
     /**
      * @var null|array
@@ -80,7 +80,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="mail_headers", type="array", nullable=true)
      */
     #[ORM\Column(name: 'mail_headers', type: 'array', nullable: true)]
-    protected ?array $headers;
+    protected ?array $headers = null;
 
     /**
      * @var string
@@ -88,7 +88,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="content_text", type="text", nullable=true)
      */
     #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
-    protected ?string $contentText;
+    protected ?string $contentText = null;
 
     /**
      * @var string
@@ -96,7 +96,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="content_html", type="text", nullable=true)
      */
     #[ORM\Column(name: 'content_html', type: 'text', nullable: true)]
-    protected ?string $contentHtml;
+    protected ?string $contentHtml = null;
 
     /**
      * @var \DateTime
@@ -104,7 +104,7 @@ class EmailQueue extends AbstractQueue
      * @ORM\Column(name="send_at", type="datetime", nullable=true)
      */
     #[ORM\Column(name: 'send_at', type: 'datetime', nullable: true)]
-    protected ?\DateTime $sendAt;
+    protected ?\DateTime $sendAt = null;
 
     /**
      * @var EmailCampaign
@@ -114,7 +114,7 @@ class EmailQueue extends AbstractQueue
      */
     #[ORM\ManyToOne(targetEntity: EmailCampaign::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'email_campaign_id', nullable: true, referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected ?EmailCampaign $campaign;
+    protected ?EmailCampaign $campaign = null;
 
     /**
      * @return string

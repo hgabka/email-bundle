@@ -3,9 +3,11 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\Doctrine\Translatable\Annotation as Hgabka;
 use Hgabka\Doctrine\Translatable\TranslatableInterface;
+use Hgabka\EmailBundle\Repository\MessageListRepository;
 use Hgabka\UtilsBundle\Entity\TranslatableTrait;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="hg_email_message_list")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageListRepository")
  */
+#[ORM\Table(name: 'hg_email_message_list')]
+#[ORM\Entity(repositoryClass: MessageListRepository::class)]
 class MessageList implements TranslatableInterface
 {
     use TimestampableEntity;
@@ -26,12 +30,16 @@ class MessageList implements TranslatableInterface
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id = null;
 
     /**
      * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageListTranslation")
      */
-    protected $translations;
+    #[Hgabka\Translations(targetEntity: MessageListTranslation::class)]
+    protected Collection|array|null $translations = null;
 
     /**
      * @var ArrayCollection|MessageListSubscription[]
@@ -40,7 +48,9 @@ class MessageList implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $listSubscriptions;
+    #[ORM\OneToMany(targetEntity: MessageListSubscription::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection|array|null $listSubscriptions = null;
 
     /**
      * @var ArrayCollection|MessageSendList[]
@@ -49,7 +59,9 @@ class MessageList implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $sendLists;
+    #[ORM\OneToMany(targetEntity: MessageSendList::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection|array|null $sendLists = null;
 
     /**
      * @var ArrayCollection|EmailCampaign[]
@@ -58,17 +70,21 @@ class MessageList implements TranslatableInterface
      *
      * @Assert\Valid()
      */
-    protected $campaigns;
+    #[ORM\OneToMany(targetEntity: EmailCampaign::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
+    #[Assert\Valid]
+    protected Collection|array|null $campaigns = null;
 
     /**
      * @ORM\Column(name="is_default", type="boolean")
      */
-    protected $isDefault = false;
+    #[ORM\Column(name: 'is_default', type: 'boolean')]
+    protected ?bool $isDefault = false;
 
     /**
      * @ORM\Column(name="is_public", type="boolean")
      */
-    protected $isPublic = true;
+    #[ORM\Column(name: 'is_public', type: 'boolean')]
+    protected ?bool $isPublic = true;
 
     /**
      * constructor.
@@ -80,7 +96,7 @@ class MessageList implements TranslatableInterface
         $this->campaigns = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getName() ?: '';
     }
@@ -88,7 +104,7 @@ class MessageList implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -98,7 +114,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -110,7 +126,7 @@ class MessageList implements TranslatableInterface
      *
      * @return mixed
      */
-    public function getName($locale = null)
+    public function getName(?string $locale = null): ?string
     {
         return $this->translate($locale)->getName();
     }
@@ -121,7 +137,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setName($name, $locale = null)
+    public function setName(?string $name, ?string $locale = null): self
     {
         $this->translate($locale)->setName($name);
 
@@ -131,7 +147,7 @@ class MessageList implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getisDefault()
+    public function getisDefault(): ?bool
     {
         return $this->isDefault;
     }
@@ -141,7 +157,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setIsDefault($isDefault)
+    public function setIsDefault(?bool $isDefault): self
     {
         $this->isDefault = $isDefault;
 
@@ -151,7 +167,7 @@ class MessageList implements TranslatableInterface
     /**
      * @return mixed
      */
-    public function getisPublic()
+    public function getIsPublic(): ?bool
     {
         return $this->isPublic;
     }
@@ -161,7 +177,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setIsPublic($isPublic)
+    public function setIsPublic(?bool $isPublic): self
     {
         $this->isPublic = $isPublic;
 
@@ -171,7 +187,7 @@ class MessageList implements TranslatableInterface
     /**
      * @return MessageSendList[]
      */
-    public function getMessageSendLists()
+    public function getMessageSendLists(): Collection|array|null
     {
         return $this->sendLists;
     }
@@ -181,7 +197,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setSendLists($sendLists)
+    public function setSendLists(Collection|array|null $sendLists): self
     {
         $this->sendLists = $sendLists;
 
@@ -193,7 +209,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function addSendList(MessageSendList $sendList)
+    public function addSendList(MessageSendList $sendList): self
     {
         if (!$this->sendLists->contains($sendList)) {
             $this->sendLists[] = $sendList;
@@ -207,7 +223,7 @@ class MessageList implements TranslatableInterface
     /**
      * Remove send list.
      */
-    public function removeSendList(MessageSendList $sendList)
+    public function removeSendList(MessageSendList $sendList): void
     {
         $this->sendLists->removeElement($sendList);
     }
@@ -215,7 +231,7 @@ class MessageList implements TranslatableInterface
     /**
      * @return MessageListSubscription[]
      */
-    public function getListSubscriptions()
+    public function getListSubscriptions(): Collection|array|null
     {
         return $this->listSubscriptions;
     }
@@ -225,7 +241,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function setListSubscriptions($listSubscriptions)
+    public function setListSubscriptions(Collection|array|null $listSubscriptions): self
     {
         $this->listSubscriptions = $listSubscriptions;
 
@@ -237,7 +253,7 @@ class MessageList implements TranslatableInterface
      *
      * @return MessageList
      */
-    public function addListSubscription(MessageListSubscription $listSubscription)
+    public function addListSubscription(MessageListSubscription $listSubscription): self
     {
         if (!$this->listSubscriptions->contains($listSubscription)) {
             $this->listSubscriptions[] = $listSubscription;
@@ -251,7 +267,7 @@ class MessageList implements TranslatableInterface
     /**
      * Remove send list.
      */
-    public function removeListSubscription(MessageListSubscription $listSubscription)
+    public function removeListSubscription(MessageListSubscription $listSubscription): void
     {
         $this->listSubscriptions->removeElement($listSubscription);
     }

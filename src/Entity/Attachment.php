@@ -28,7 +28,7 @@ class Attachment
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var string
@@ -36,15 +36,15 @@ class Attachment
      * @ORM\Column(type="string", name="content_type", nullable=true)
      */
     #[ORM\Column(type: 'string', name: 'content_type', nullable: true)]
-    protected ?string $contentType;
+    protected ?string $contentType = null;
 
     /**
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
      */
-    #[ORM\Column(type: 'string', name: 'content_type', length: 255)]
-    protected ?string $type;
+    #[ORM\Column(type: 'string', name: 'type', length: 255)]
+    protected ?string $type = null;
 
     /**
      * @var int
@@ -52,7 +52,7 @@ class Attachment
      * @ORM\Column(name="owner_id", type="bigint", nullable=true)
      */
     #[ORM\Column(type: 'bigint', name: 'owner_id', nullable: true)]
-    protected ?int  $ownerId;
+    protected ?int  $ownerId = null;
 
     /**
      * @var Media
@@ -64,7 +64,7 @@ class Attachment
     #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'media_id', referencedColumnName: 'id')]
     #[Assert\NotNull]
-    protected ?Media $media;
+    protected ?Media $media = null;
 
     /**
      * @var EmailTemplateTranslation
@@ -74,7 +74,7 @@ class Attachment
      */
     #[ORM\ManyToOne(targetEntity: EmailTemplateTranslation::class, inversedBy: 'attachments')]
     #[ORM\JoinColumn(name: 'template_id', referencedColumnName: 'id')]
-    protected ?EmailTemplateTranslation $template;
+    protected ?EmailTemplateTranslation $template = null;
 
     /**
      * @var MessageTranslation
@@ -84,7 +84,7 @@ class Attachment
      */
     #[ORM\ManyToOne(targetEntity: MessageTranslation::class, inversedBy: 'attachments')]
     #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id')]
-    protected ?MessageTranslation $message;
+    protected ?MessageTranslation $message = null;
 
     /**
      * @var string
@@ -92,7 +92,7 @@ class Attachment
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
     #[ORM\Column(name: 'locale', type: 'string', nullable: true)]
-    protected ?string $locale;
+    protected ?string $locale = null;
 
     /**
      * @var string
@@ -100,7 +100,7 @@ class Attachment
      * @ORM\Column(name="filename", type="string", length=512, nullable=true)
      */
     #[ORM\Column(name: 'filename', type: 'string', length: 512, nullable: true)]
-    protected ?string $filename;
+    protected ?string $filename = null;
 
     /**
      * @var string

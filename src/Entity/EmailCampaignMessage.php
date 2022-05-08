@@ -26,7 +26,7 @@ class EmailCampaignMessage
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
-    protected ?int $id;
+    protected ?int $id = null;
 
     /**
      * @var EmailCampaign
@@ -36,7 +36,7 @@ class EmailCampaignMessage
      */
     #[ORM\ManyToOne(targetEntity: EmailCampaign::class, inversedBy: 'messages', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'email_campaign_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
-    protected ?EmailCampaign $campaign;
+    protected ?EmailCampaign $campaign = null;
 
     /**
      * @var EmailTemplate
@@ -46,7 +46,7 @@ class EmailCampaignMessage
      */
     #[ORM\ManyToOne(targetEntity: EmailTemplate::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'email_template_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
-    protected $template;
+    protected ?EmailTemplate $template = null;
 
     /**
      * @var int

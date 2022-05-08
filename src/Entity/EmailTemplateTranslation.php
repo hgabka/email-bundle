@@ -27,38 +27,38 @@ class EmailTemplateTranslation implements TranslationInterface
      * @var ArrayCollection|Attachment[]
      */
     #[ORM\OneToMany(targetEntity: Attachment::class, mappedBy: 'template')]
-    protected Collection $attachments;
+    protected Collection|array|null $attachments = null;
 
     /**
      * @Hgabka\Translatable(targetEntity="Hgabka\EmailBundle\Entity\EmailTemplate")
      */
     #[Hgabka\Translatable(targetEntity: EmailTemplate::class)]
-    protected ?TranslatableInterface $translatable;
+    protected ?TranslatableInterface $translatable = null;
 
     /**
      * @ORM\Column(name="from_name", type="text", nullable=true)
      */
     #[ORM\Column(name: 'from_name', type: 'text', nullable: true)]
-    protected ?string $fromName;
+    protected ?string $fromName = null;
 
     /**
      * @ORM\Column(name="from_email", type="text", nullable=true)
      */
     #[ORM\Column(name: 'from_email', type: 'text', nullable: true)]
-    protected ?string $fromEmail;
+    protected ?string $fromEmail = null;
 
     /**
      * @ORM\Column(name="comment", type="text")
      * @Assert\NotBlank()
      */
     #[ORM\Column(name: 'comment', type: 'text', nullable: true)]
-    protected ?string $comment;
+    protected ?string $comment = null;
 
     /**
      * @ORM\Column(name="subject", type="string", length=255)
      */
     #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
-    protected ?string $subject;
+    protected ?string $subject = null;
 
     /**
      * @ORM\Column(name="content_text", type="text", nullable=true)
@@ -223,7 +223,7 @@ class EmailTemplateTranslation implements TranslationInterface
     /**
      * @return mixed
      */
-    public function getAttachments(): Collection
+    public function getAttachments(): Collection|array|null
     {
         return $this->attachments;
     }
@@ -233,7 +233,7 @@ class EmailTemplateTranslation implements TranslationInterface
      *
      * @return EmailTemplateTranslation
      */
-    public function setAttachments(Collection $attachments): self
+    public function setAttachments(Collection|array|null $attachments): self
     {
         $this->attachments = $attachments;
 
@@ -246,7 +246,7 @@ class EmailTemplateTranslation implements TranslationInterface
             $this->attachments->add($attachment);
         }
 
-        return $this
+        return $this;
     }
 
     public function removeAttachment(Attachment $attachment): void

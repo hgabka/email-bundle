@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\MessageSendListRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
@@ -11,6 +12,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_message_send_list")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageSendListRepository")
  */
+#[ORM\Table(name: 'hg_email_message_send_list')]
+#[ORM\Entity(repositoryClass: MessageSendListRepository::class)]
 class MessageSendList
 {
     use TimestampableEntity;
@@ -20,7 +23,10 @@ class MessageSendList
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id = null;
 
     /**
      * @var MessageList
@@ -28,7 +34,9 @@ class MessageSendList
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\MessageList", inversedBy="sendLists", cascade={"persist"})
      * @ORM\JoinColumn(name="message_list_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $list;
+    #[ORM\ManyToOne(targetEntity: MessageList::class, inversedBy: 'sendLists', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'message_list_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?MessageList $list = null;
 
     /**
      * @var Message
@@ -36,12 +44,14 @@ class MessageSendList
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\Message", inversedBy="sendLists", cascade={"persist"})
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $message;
+    #[ORM\ManyToOne(targetEntity: Message::class, inversedBy: 'sendLists', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?Message $message = null;
 
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -51,7 +61,7 @@ class MessageSendList
      *
      * @return MessageSendList
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -61,7 +71,7 @@ class MessageSendList
     /**
      * @return MessageList
      */
-    public function getList()
+    public function getList(): ?MessageList
     {
         return $this->list;
     }
@@ -71,7 +81,7 @@ class MessageSendList
      *
      * @return MessageSendList
      */
-    public function setList($list)
+    public function setList(?MessageList $list): self
     {
         $this->list = $list;
 
@@ -81,7 +91,7 @@ class MessageSendList
     /**
      * @return Message
      */
-    public function getMessage()
+    public function getMessage(): ?Message
     {
         return $this->message;
     }
@@ -91,7 +101,7 @@ class MessageSendList
      *
      * @return MessageSendList
      */
-    public function setMessage($message)
+    public function setMessage(?Message $message): self
     {
         $this->message = $message;
 

@@ -3,7 +3,9 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\MessageSubscriberRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,6 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageSubscriberRepository")
  * @UniqueEntity("email")
  */
+#[ORM\Table(name: 'hg_email_message_subscriber')]
+#[ORM\Entity(repositoryClass: MessageSubscriberRepository::class)]
+#[UniqueEntity('email')]
 class MessageSubscriber
 {
     use TimestampableEntity;
@@ -24,7 +29,10 @@ class MessageSubscriber
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    protected ?int $id = null;
 
     /**
      * @var ArrayCollection|MessageListSubscription[]
@@ -33,32 +41,39 @@ class MessageSubscriber
      *
      * @Assert\Valid()
      */
-    protected $listSubscriptions;
+    #[ORM\OneToMany(targetEntity: MessageListSubscription::class, cascade: ['all'], mappedBy: 'subscriber')]
+    #[Assert\Valid]
+    protected Collection|array|null $listSubscriptions = null;
 
     /**
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    protected $name;
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: true)]
+    protected ?string $name = null;
 
     /**
      * @ORM\Column(name="email", type="string", length=255, unique=true)
      * @Assert\Email()
      */
-    protected $email;
+    #[ORM\Column(name: 'email', type: 'string', length: 255, unique: true)]
+    #[Assert\Email]
+    protected ?string $email = null;
 
     /**
      * @var string
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    protected $locale;
+    #[ORM\Column(name: 'locale', type: 'string', length: 255, nullable: true)]
+    protected ?string $locale = null;
 
     /**
      * @ORM\Column(name="token", type="string", length=255, nullable=true)
      */
-    protected $token;
+    #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: true)]
+    protected ?string $token = null;
 
     /** @var array|MessageList[] */
-    protected $lists;
+    protected Collection|array|null $lists = null;
 
     /**
      * constructor.
@@ -71,7 +86,7 @@ class MessageSubscriber
     /**
      * @return mixed
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -81,7 +96,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -91,7 +106,7 @@ class MessageSubscriber
     /**
      * @return mixed
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -101,7 +116,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setName($name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -111,7 +126,7 @@ class MessageSubscriber
     /**
      * @return mixed
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -121,7 +136,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setEmail($email)
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
@@ -131,7 +146,7 @@ class MessageSubscriber
     /**
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -141,7 +156,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setLocale($locale)
+    public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
 
@@ -151,7 +166,7 @@ class MessageSubscriber
     /**
      * @return mixed
      */
-    public function getToken()
+    public function getToken(): ?string
     {
         return $this->token;
     }
@@ -161,7 +176,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setToken($token)
+    public function setToken(?string $token): self
     {
         $this->token = $token;
 
@@ -171,7 +186,7 @@ class MessageSubscriber
     /**
      * @return MessageListSubscription[]
      */
-    public function getListSubscriptions()
+    public function getListSubscriptions(): Collection|array|null
     {
         return $this->listSubscriptions;
     }
@@ -181,7 +196,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setListSubscriptions($listSubscriptions)
+    public function setListSubscriptions(Collection|array|null $listSubscriptions): self
     {
         $this->listSubscriptions = $listSubscriptions;
 
@@ -193,7 +208,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function addListSubscription(MessageListSubscription $listSubscription)
+    public function addListSubscription(MessageListSubscription $listSubscription): self
     {
         if (!$this->listSubscriptions->contains($listSubscription)) {
             $this->listSubscriptions[] = $listSubscription;
@@ -207,7 +222,7 @@ class MessageSubscriber
     /**
      * Remove send list.
      */
-    public function removeListSubscription(MessageListSubscription $listSubscription)
+    public function removeListSubscription(MessageListSubscription $listSubscription): void
     {
         $this->listSubscriptions->removeElement($listSubscription);
     }
@@ -215,7 +230,7 @@ class MessageSubscriber
     /**
      * @return array|MessageList[]
      */
-    public function getLists()
+    public function getLists(): Collection|array|null
     {
         return $this->lists;
     }
@@ -225,7 +240,7 @@ class MessageSubscriber
      *
      * @return MessageSubscriber
      */
-    public function setLists($lists)
+    public function setLists(Collection|array|null $lists): self
     {
         $this->lists = $lists;
 

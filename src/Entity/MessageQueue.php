@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hgabka\EmailBundle\Repository\MessageQueueRepository;
 use Hgabka\UtilsBundle\Traits\TimestampableEntity;
 
 /**
@@ -11,6 +12,8 @@ use Hgabka\UtilsBundle\Traits\TimestampableEntity;
  * @ORM\Table(name="hg_email_message_queue")
  * @ORM\Entity(repositoryClass="Hgabka\EmailBundle\Repository\MessageQueueRepository")
  */
+#[ORM\Table(name: 'hg_email_email_queue')]
+#[ORM\Entity(repositoryClass: MessageQueueRepository::class)]
 class MessageQueue extends AbstractQueue
 {
     use TimestampableEntity;
@@ -20,21 +23,24 @@ class MessageQueue extends AbstractQueue
      *
      * @ORM\Column(name="to_name", type="string", length=255, nullable=true)
      */
-    protected $toName;
+    #[ORM\Column(name: 'to_name', type: 'string', length: 255, nullable: true)]
+    protected ?string $toName = null;
 
     /**
      * @var string
      *
      * @ORM\Column(name="to_email", type="string", length=255, nullable=true)
      */
-    protected $toEmail;
+    #[ORM\Column(name: 'to_email', type: 'string', length: 255, nullable: true)]
+    protected ?string $toEmail = null;
 
     /**
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=2, nullable=true)
      */
-    protected $locale;
+    #[ORM\Column(name: 'locale', type: 'string', length: 2, nullable: true)]
+    protected ?string $locale = null;
 
     /**
      * @var Message
@@ -42,19 +48,22 @@ class MessageQueue extends AbstractQueue
      * @ORM\ManyToOne(targetEntity="Hgabka\EmailBundle\Entity\Message")
      * @ORM\JoinColumn(name="message_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    protected $message;
+    #[ORM\ManyToOne(targetEntity: Message::class)]
+    #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?Message $message = null;
 
     /**
      * @var string
      *
      * @ORM\Column(name="parameters", type="text", nullable=true)
      */
-    protected $parameters;
+    #[ORM\Column(name: 'parameters', type: 'text', nullable: true)]
+    protected ?string $parameters = null;
 
     /**
      * @return Message
      */
-    public function getMessage()
+    public function getMessage(): ?Message
     {
         return $this->message;
     }
@@ -64,7 +73,7 @@ class MessageQueue extends AbstractQueue
      *
      * @return MessageQueue
      */
-    public function setMessage($message)
+    public function setMessage(?Message $message): self
     {
         $this->message = $message;
 
@@ -84,7 +93,7 @@ class MessageQueue extends AbstractQueue
      *
      * @return MessageQueue
      */
-    public function setToName($toName)
+    public function setToName(?string $toName): self
     {
         $this->toName = $toName;
 
@@ -104,7 +113,7 @@ class MessageQueue extends AbstractQueue
      *
      * @return MessageQueue
      */
-    public function setToEmail($toEmail)
+    public function setToEmail(?string $toEmail): self
     {
         $this->toEmail = $toEmail;
 
@@ -124,7 +133,7 @@ class MessageQueue extends AbstractQueue
      *
      * @return MessageQueue
      */
-    public function setLocale($locale)
+    public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
 
@@ -144,14 +153,14 @@ class MessageQueue extends AbstractQueue
      *
      * @return MessageQueue
      */
-    public function setParameters($parameters)
+    public function setParameters(?string $parameters): self
     {
         $this->parameters = $parameters;
 
         return $this;
     }
 
-    public function getHash()
+    public function getHash(): string
     {
         return md5($this->id . $this->getToEmail() . $this->getMessage()->getId());
     }
