@@ -4,6 +4,7 @@ namespace Hgabka\EmailBundle\Model;
 
 use Hgabka\EmailBundle\Entity\Message;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractMessageVar implements MessageVarInterface
@@ -19,9 +20,7 @@ abstract class AbstractMessageVar implements MessageVarInterface
 
     protected $type;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;

@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Model;
 
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractLayoutVar implements LayoutVarInterface
@@ -16,9 +17,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
 
     protected $priority;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;

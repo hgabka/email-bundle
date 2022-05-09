@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageAdminController extends CRUDController
@@ -36,13 +37,7 @@ class MessageAdminController extends CRUDController
     /** @var TranslatorInterface */
     protected $translator;
 
-    /**
-     * @required
-     *
-     * @param ManagerRegistry $doctrine
-     *
-     * @return MessageAdminController
-     */
+    #[Required]
     public function setDoctrine(ManagerRegistry $doctrine): self
     {
         $this->doctrine = $doctrine;
@@ -50,13 +45,7 @@ class MessageAdminController extends CRUDController
         return $this;
     }
 
-    /**
-     * @required
-     *
-     * @param FormFactoryInterface $formFactory
-     *
-     * @return MessageAdminController
-     */
+    #[Required]
     public function setFormFactory(FormFactoryInterface $formFactory): self
     {
         $this->formFactory = $formFactory;
@@ -64,13 +53,7 @@ class MessageAdminController extends CRUDController
         return $this;
     }
 
-    /**
-     * @required
-     *
-     * @param TranslatorInterface $translator
-     *
-     * @return MessageAdminController
-     */
+    #[Required]
     public function setTranslator(TranslatorInterface $translator): self
     {
         $this->translator = $translator;

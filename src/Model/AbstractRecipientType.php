@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Model;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractRecipientType implements RecipientTypeInterface
@@ -28,9 +29,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
 
     protected $priority;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
@@ -51,11 +50,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return $this->builder;
     }
 
-    /**
-     * @required
-     *
-     * @return AbstractEmailTemplateRecipientType
-     */
+    #[Required]
     public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
@@ -63,17 +58,13 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         return $this;
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setManager(RecipientManager $manager)
     {
         $this->manager = $manager;
     }
 
-    /**
-     * @return mixed
-     */
+    #[Required]
     public function getRecipients()
     {
         if (null === $this->recipients) {

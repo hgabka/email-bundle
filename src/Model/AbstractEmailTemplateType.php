@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AbstractEmailTemplateType implements EmailTemplateTypeInterface
@@ -55,33 +56,25 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 
     protected $priority;
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setMessageSender(MessageSender $messageSender)
     {
         $this->messageSender = $messageSender;
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setAnnotationReader(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }
 
-    /**
-     * @required
-     */
+    #[Required]
     public function setParameterBag(ParameterBagInterface $parameterBag)
     {
         $this->parameterBag = $parameterBag;
