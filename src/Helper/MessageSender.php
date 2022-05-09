@@ -531,7 +531,10 @@ class MessageSender
 
         $count = 0;
         foreach ($messages as $messageData) {
-            $count += $this->mailer->send($messageData['message']);
+            try {
+                $this->mailer->send($messageData['message']);
+                $count++;
+            } catch (TransportExceptionInterface $e) {}
         }
 
         return $count;
