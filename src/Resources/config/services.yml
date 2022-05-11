@@ -10,45 +10,45 @@ services:
     hg_email.admin.email_template:
         class: Hgabka\EmailBundle\Admin\EmailTemplateAdmin
         tags:
-            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\EmailTemplate, controller: Hgabka\EmailBundle\Controller\EmailTemplateAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.email_template.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\EmailTemplate, controller: Hgabka\EmailBundle\Controller\EmailTemplateAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.email_template.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
         calls:
-          - [setBuilder, ["@hg_email.mail_builder"]]
-          - [setTemplateTypeManager, ["@hg_email.template_type_manager"]]
-          - [setAuthChecker, ["@security.authorization_checker"]]
-          - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailTemplate/edit.html.twig']]
+            - [setBuilder, ["@hg_email.mail_builder"]]
+            - [setTemplateTypeManager, ["@hg_email.template_type_manager"]]
+            - [setAuthChecker, ["@security.authorization_checker"]]
+            - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailTemplate/edit.html.twig']]
 
     hg_email.admin.message:
         class: Hgabka\EmailBundle\Admin\MessageAdmin
         tags:
-            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\Message, controller: Hgabka\EmailBundle\Controller\MessageAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.message.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\Message, controller: Hgabka\EmailBundle\Controller\MessageAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.message.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
         calls:
-          - [setBuilder, ["@hg_email.mail_builder"]]
-          - [setAuthChecker, ["@security.authorization_checker"]]
-          - [setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
-          - [setUtils, ["@hgabka_utils.hgabka_utils"]]
+            - [setBuilder, ["@hg_email.mail_builder"]]
+            - [setAuthChecker, ["@security.authorization_checker"]]
+            - [setTemplate, ['edit', '@@HgabkaEmail/Admin/Message/edit.html.twig']]
+            - [setUtils, ["@hgabka_utils.hgabka_utils"]]
 
     hg_email.admin.email_layout:
         class: Hgabka\EmailBundle\Admin\EmailLayoutAdmin
         tags:
-        - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\EmailLayout, controller: Hgabka\EmailBundle\Controller\EmailLayoutAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.email_layout.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\EmailLayout, controller: Hgabka\EmailBundle\Controller\EmailLayoutAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.email_layout.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
         calls:
-        - [setMailBuilder, ["@hg_email.mail_builder"]]
-        - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailLayout/edit.html.twig']]
+            - [setMailBuilder, ["@hg_email.mail_builder"]]
+            - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailLayout/edit.html.twig']]
 
     hg_email.admin.message_list:
         class: Hgabka\EmailBundle\Admin\MessageListAdmin
         tags:
-        - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\MessageList, controller: Hgabka\EmailBundle\Controller\MessageListAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.message_list.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\MessageList, controller: Hgabka\EmailBundle\Controller\MessageListAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-list"></i>', label: hg_email.admin.message_list.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages'}
         calls:
-        - [setManager, ["@hg_email.subscription_manager"]]
+            - [setManager, ["@hg_email.subscription_manager"]]
 
     hg_email.admin.subscriber:
         class: Hgabka\EmailBundle\Admin\SubscriberAdmin
         tags:
-        - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\MessageSubscriber, controller: Hgabka\EmailBundle\Controller\SubscriberAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-newspaper"></i>', label: hg_email.admin.subscriber.label, label_catalogue: 'HgabkaEmailBundle', label_translator_strategy: 'sonata.admin.label.strategy.underscore' }
+            - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\MessageSubscriber, controller: Hgabka\EmailBundle\Controller\SubscriberAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-newspaper"></i>', label: hg_email.admin.subscriber.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
         calls:
-        - [setManager, ["@hg_email.subscription_manager"]]
-        - [setUtils, ["@hgabka_utils.hgabka_utils"]]
+            - [setManager, ["@hg_email.subscription_manager"]]
+            - [setUtils, ["@hgabka_utils.hgabka_utils"]]
 
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true

@@ -12,17 +12,14 @@ use Hgabka\EmailBundle\Entity\Message;
 
 class EmailSubscriber implements EventSubscriber
 {
-    /** @var array */
-    protected $attachments;
-
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::preRemove,
         ];
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
         $manager = $args->getObjectManager();

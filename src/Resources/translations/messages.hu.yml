@@ -86,6 +86,7 @@ hg_email:
     group: Üzenetek
     admin:
         email_template:
+            model_name: Email sablon
             label: Email sablonok
         message:
             label: Körlevelek

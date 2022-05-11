@@ -517,7 +517,7 @@ class MessageSender
      *
      * @return bool|int|mixed
      */
-    public function sendTemplateMail($class, $params = [], $sendParams = [], $locale = null)
+    public function sendTemplateMail($class, $params = [], $sendParams = [], $locale = null): int|false
     {
         if ($this->config['force_queueing']) {
             return $this->enqueueTemplateMessage($class, $params, $sendParams, $locale, null);
@@ -533,8 +533,9 @@ class MessageSender
         foreach ($messages as $messageData) {
             try {
                 $this->mailer->send($messageData['message']);
-                $count++;
-            } catch (TransportExceptionInterface $e) {}
+                ++$count;
+            } catch (TransportExceptionInterface $e) {
+            }
         }
 
         return $count;

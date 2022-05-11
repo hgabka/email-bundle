@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class MessageSubscriberEventSubscriber implements EventSubscriberInterface
 {
     /** @var RecipientManager */
-    protected $recipientManager;
+    protected RecipientManager $recipientManager;
 
     /**
      * MessageSubscriberEventSubscriber constructor.
@@ -20,19 +20,14 @@ class MessageSubscriberEventSubscriber implements EventSubscriberInterface
         $this->recipientManager = $recipientManager;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             MailBuilderEvents::BUILD_MESSAGE_MAIL => 'onBuildMessageMail',
         ];
     }
 
-    /**
-     * @param MailSenderEvent $event
-     *
-     * @return MailSenderEvent
-     */
-    public function onBuildMessageMail(BuildMessageMailEvent $event)
+    public function onBuildMessageMail(BuildMessageMailEvent $event): BuildMessageMailEvent
     {
         $message = $event->getMessage();
         $html = $event->getBody();

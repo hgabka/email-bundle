@@ -10,21 +10,16 @@ use Symfony\Component\Mime\Email;
 
 class RedirectMailerSubscriber implements EventSubscriberInterface
 {
-    /** @var array */
-    protected $redirectConfig;
+    protected array $redirectConfig;
 
-    /** @var bool */
-    protected $debug;
+    protected bool $debug;
 
     /** @var HgabkaUtils */
-    protected $hgabkaUtils;
+    protected HgabkaUtils $hgabkaUtils;
 
     /** @var MailHelper */
-    protected $mailHelper;
+    protected MailHelper $mailHelper;
 
-    /**
-     * @param array $redirectConfig
-     */
     public function __construct(HgabkaUtils $hgabkaUtils, MailHelper $mailHelper, array $redirectConfig, bool $debug)
     {
         $this->redirectConfig = $redirectConfig;
@@ -40,11 +35,12 @@ class RedirectMailerSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onMessage(MessageEvent $event)
+    public function onMessage(MessageEvent $event): void
     {
         if (!$this->isEnabled()) {
             return;
         }
+
         $message = $event->getMessage();
 
         if (!$message instanceof Email) {

@@ -84,6 +84,7 @@ hg_email:
     admin:
         email_template:
             label: Email templates
+            model_name: Email template
         message:
             label: Circulars
         subscriber:

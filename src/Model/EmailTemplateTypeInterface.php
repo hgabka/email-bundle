@@ -6,49 +6,49 @@ use Symfony\Component\Mime\Email;
 
 interface EmailTemplateTypeInterface
 {
-    public function getComment();
+    public function getComment(): ?string;
 
-    public function getDefaultSubject();
+    public function getDefaultSubject(): ?string;
 
-    public function getDefaultTextContent();
+    public function getDefaultTextContent(): ?string;
 
-    public function getDefaultHtmlContent();
+    public function getDefaultHtmlContent(): ?string;
 
-    public function getVariables();
+    public function getVariables(): ?array;
 
-    public function getVariableValues();
+    public function getVariableValues(): ?array;
 
-    public function getDefaultFromName();
+    public function getDefaultFromName(): ?string;
 
-    public function getDefaultFromEmail();
+    public function getDefaultFromEmail(): ?string;
 
-    public function getTitle();
+    public function getTitle(): ?string;
 
-    public function getDefaultRecipients();
+    public function getDefaultRecipients(): ?array;
 
-    public function isPublic();
+    public function isPublic(): bool;
 
-    public function isToEditable();
+    public function isToEditable(): bool;
 
-    public function isCcEditable();
+    public function isCcEditable(): bool;
 
-    public function isBccEditable();
+    public function isBccEditable(): bool;
 
-    public function isSenderEditable();
+    public function isSenderEditable(): bool;
 
-    public function getSenderText();
+    public function getSenderText(): ?string;
 
-    public function setLocale($locale);
+    public function setLocale(?string $locale): self;
 
-    public function getPriority();
+    public function getPriority(): ?int;
 
-    public function setPriority($priority);
+    public function setPriority(?int $priority): self;
 
-    public function getDefaultCc();
+    public function getDefaultCc(): mixed;
 
-    public function getDefaultBcc();
+    public function getDefaultBcc(): mixed;
 
-    public function setParameters($paramArray);
+    public function setParameters(?array $paramArray): self;
 
     public function alterEmail(Email $email): void;
 }

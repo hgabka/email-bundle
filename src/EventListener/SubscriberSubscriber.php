@@ -8,16 +8,12 @@ use Doctrine\ORM\Events;
 use Hgabka\EmailBundle\Entity\EmailQueue;
 use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
-use Hgabka\EmailBundle\Helper\QueueManager;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 
 class SubscriberSubscriber implements EventSubscriber
 {
     /** @var SubscriptionManager */
-    protected $manager;
-
-    /** @var QueueManager */
-    protected $queueManager;
+    protected SubscriptionManager $manager;
 
     /**
      * SubscriberSubscriber constructor.
@@ -29,7 +25,7 @@ class SubscriberSubscriber implements EventSubscriber
         $this->manager = $manager;
     }
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::postPersist,
@@ -38,7 +34,7 @@ class SubscriberSubscriber implements EventSubscriber
         ];
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
 
@@ -50,7 +46,7 @@ class SubscriberSubscriber implements EventSubscriber
         $args->getObjectManager()->flush();
     }
 
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
 
@@ -62,7 +58,7 @@ class SubscriberSubscriber implements EventSubscriber
         $args->getObjectManager()->flush();
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
 

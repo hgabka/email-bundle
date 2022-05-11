@@ -5,6 +5,7 @@ namespace Hgabka\EmailBundle\Model;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Driver\AttributeReader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
+use Hgabka\EmailBundle\Entity\EmailTemplate;
 use Hgabka\EmailBundle\Helper\MessageSender;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -16,74 +17,82 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 {
     /** @var EmailTemplate */
-    protected $entity;
+    protected ?EmailTemplate $entity = null;
 
     /** @var string */
-    protected $comment = '';
+    protected string $comment = '';
 
     /** @var array */
-    protected $variables = [];
+    protected array $variables = [];
 
     /** @var string */
-    protected $defaultSubject = '';
+    protected string $defaultSubject = '';
 
     /** @var string */
-    protected $defaultTextContent = '';
+    protected string $defaultTextContent = '';
 
     /** @var string */
-    protected $defaultHtmlContent = '';
+    protected string $defaultHtmlContent = '';
 
-    protected $defaultFromName;
+    protected ?string $defaultFromName = null;
 
-    protected $defaultFromEmail;
+    protected ?string $defaultFromEmail = null;
 
     /** @var TranslatorInterface */
-    protected $translator;
+    protected ?TranslatorInterface $translator = null;
 
     /** @var Reader */
-    protected $annotationReader;
+    protected ?Reader $annotationReader = null;
 
     /** @var ParameterBagInterface */
-    protected $parameterBag;
+    protected ?ParameterBagInterface $parameterBag = null;
 
     /** @var MessageSender */
-    protected $messageSender;
+    protected ?MessageSender $messageSender = null;
 
-    protected $variableCache;
+    protected ?array $variableCache = null;
 
     /** @var string */
-    protected $locale;
+    protected ?string $locale = null;
 
-    protected $priority;
+    protected ?int $priority = null;
 
     #[Required]
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): self
     {
         $this->translator = $translator;
+
+        return $this;
     }
 
     #[Required]
-    public function setMessageSender(MessageSender $messageSender)
+    public function setMessageSender(MessageSender $messageSender): self
     {
         $this->messageSender = $messageSender;
+
+        return $this;
     }
 
     #[Required]
-    public function setAnnotationReader(Reader $annotationReader)
+    public function setAnnotationReader(Reader $annotationReader): self
     {
         $this->annotationReader = $annotationReader;
+
+        return $this;
     }
 
     #[Required]
-    public function setParameterBag(ParameterBagInterface $parameterBag)
+    public function setParameterBag(ParameterBagInterface $parameterBag): self
     {
         $this->parameterBag = $parameterBag;
+
+        return $this;
     }
 
     /**
      * @return EmailTemplate
      */
-    public function getEntity()
+    public function getEntity(): ?EmailTemplate
     {
         return $this->entity;
     }
@@ -93,7 +102,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setEntity($entity)
+    public function setEntity(?EmailTemplate $entity): self
     {
         $this->entity = $entity;
 
@@ -110,7 +119,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setComment($comment)
+    public function setComment(?string $comment): self
     {
         $this->comment = $comment;
 
@@ -122,7 +131,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setHtmlContent($htmlContent)
+    public function setHtmlContent(?string $htmlContent): self
     {
         $this->htmlContent = $htmlContent;
 
@@ -132,7 +141,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return array
      */
-    public function getVariables()
+    public function getVariables(): ?array
     {
         if (empty($this->variableCache)) {
             $variables = [];
@@ -187,7 +196,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return array
      */
-    public function getVariableValues()
+    public function getVariableValues(): ?array
     {
         $vars = [];
         $accessor = PropertyAccess::createPropertyAccessor();
@@ -221,7 +230,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return mixed
      */
-    public function getDefaultFromName()
+    public function getDefaultFromName(): ?string
     {
         return $this->defaultFromName;
     }
@@ -231,7 +240,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setDefaultFromName($fromName)
+    public function setDefaultFromName(?string $fromName): self
     {
         $this->defaultFromName = $fromName;
 
@@ -241,7 +250,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return mixed
      */
-    public function getDefaultFromEmail()
+    public function getDefaultFromEmail(): ?string
     {
         return $this->defaultFromEmail;
     }
@@ -251,59 +260,59 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setDefaultFromEmail($fromEmail)
+    public function setDefaultFromEmail(?string $fromEmail): self
     {
         $this->defaultFromEmail = $fromEmail;
 
         return $this;
     }
 
-    public function getDefaultRecipients()
+    public function getDefaultRecipients(): ?array
     {
         return [];
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->translator->trans('mail_template.' . $this->getKey() . '.title');
     }
 
-    public function isPublic()
+    public function isPublic(): bool
     {
         return true;
     }
 
-    public function isToEditable()
+    public function isToEditable(): bool
     {
         return true;
     }
 
-    public function isCcEditable()
+    public function isCcEditable(): bool
     {
         return true;
     }
 
-    public function isBccEditable()
+    public function isBccEditable(): bool
     {
         return true;
     }
 
-    public function isSenderEditable()
+    public function isSenderEditable(): bool
     {
         return true;
     }
 
-    public function getSenderText()
+    public function getSenderText(): ?string
     {
         return null;
     }
 
-    public function getDefaultCc()
+    public function getDefaultCc(): mixed
     {
         return null;
     }
 
-    public function getDefaultBcc()
+    public function getDefaultBcc(): mixed
     {
         return null;
     }
@@ -311,7 +320,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
@@ -321,7 +330,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setLocale($locale)
+    public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
 
@@ -331,7 +340,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /**
      * @return mixed
      */
-    public function getPriority()
+    public function getPriority(): ?int
     {
         return $this->priority;
     }
@@ -341,14 +350,14 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return AbstractEmailTemplateType
      */
-    public function setPriority($priority)
+    public function setPriority(?int $priority): self
     {
         $this->priority = $priority;
 
         return $this;
     }
 
-    public function setParameters($paramArray)
+    public function setParameters(?array $paramArray): self
     {
         if (!empty($paramArray)) {
             $accessor =
@@ -360,9 +369,11 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 $accessor->setValue($this, $key, $value);
             }
         }
+
+        return $this;
     }
 
-    public function send($paramArray = [], $sendParams = [], $locale = null)
+    public function send(array $paramArray = [], array $sendParams = [], ?string $locale = null): int|false
     {
         $this->setParameters($paramArray);
 
@@ -373,7 +384,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     {
     }
 
-    protected function getPropertyAnnotation(\ReflectionProperty $property, $name)
+    protected function getPropertyAnnotation(\ReflectionProperty $property, string $name): ?object
     {
         if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
             $reader = $this->annotationReader;
@@ -388,9 +399,11 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 }
             }
         }
+
+        return null;
     }
 
-    protected function getMethodAnnotation(\ReflectionMethod $method, $name)
+    protected function getMethodAnnotation(\ReflectionMethod $method, string $name): ?object
     {
         if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
             $reader = $this->annotationReader;
@@ -409,9 +422,11 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
                 }
             }
         }
+
+        return null;
     }
 
-    protected function getKey()
+    protected function getKey(): string
     {
         $fcqn = explode('\\', static::class);
         $class = array_pop($fcqn);
@@ -426,7 +441,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
      *
      * @return string
      */
-    protected function trans($id, $params = [], $domain = 'messages')
+    protected function trans($id, $params = [], $domain = 'messages'): string
     {
         return $this->translator->trans($id, $params, $domain, $this->locale);
     }

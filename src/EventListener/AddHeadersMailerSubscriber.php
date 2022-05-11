@@ -32,7 +32,7 @@ class AddHeadersMailerSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onMessage(MessageEvent $event)
+    public function onMessage(MessageEvent $event): void
     {
         if (empty($this->headersConfig)) {
             return;

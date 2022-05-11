@@ -9,7 +9,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class MailerSubscriber implements EventSubscriberInterface
 {
     /** @var EmailLogger */
-    protected $logger;
+    protected ?EmailLogger $logger = null;
+
+    protected ?string $strategy = null;
 
     /**
      * MailerSubscriber constructor.
@@ -28,12 +30,12 @@ class MailerSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onMailSent(MailerEvent $event)
+    public function onMailSent(MailerEvent $event): void
     {
         $this->logger->logMessage($event);
     }
 
-    public function onAddHeaders(MailerEvent $event)
+    public function onAddHeaders(MailerEvent $event): void
     {
         $event->setReturnValue($event->getParameter('configHeaders'));
     }
