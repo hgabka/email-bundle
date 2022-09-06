@@ -26,7 +26,7 @@ class TemplateRecipientFormType extends AbstractType
         }
     }
 
-    public function getParent(): string
+    public function getParent(): ?string
     {
         return FormType::class;
     }
