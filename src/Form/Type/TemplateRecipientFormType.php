@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TemplateRecipientFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['recipient_type']) {
             $builder->add('type', HiddenType::class);
@@ -26,12 +26,12 @@ class TemplateRecipientFormType extends AbstractType
         }
     }
 
-    public function getParent()
+    public function getParent(): string
     {
         return FormType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
@@ -44,7 +44,7 @@ class TemplateRecipientFormType extends AbstractType
         ;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['removable'] = $options['removable'];
         $view->vars['typeName'] = $options['recipient_type'] ? $options['recipient_type']->getName() : '';
