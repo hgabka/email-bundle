@@ -12,9 +12,10 @@ services:
         tags:
             - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\EmailTemplate, controller: Hgabka\EmailBundle\Controller\EmailTemplateAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-envelope"></i>', label: hg_email.admin.email_template.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
         calls:
-            - [setBuilder, ["@hg_email.mail_builder"]]
-            - [setTemplateTypeManager, ["@hg_email.template_type_manager"]]
-            - [setAuthChecker, ["@security.authorization_checker"]]
+            - [setUtils, ['@hgabka_utils.hgabka_utils']]
+            - [setBuilder, ['@hg_email.mail_builder']]
+            - [setTemplateTypeManager, ['@hg_email.template_type_manager']]
+            - [setAuthChecker, ['@security.authorization_checker']]
             - [ setTemplate, ['edit', '@@HgabkaEmail/Admin/EmailTemplate/edit.html.twig']]
 
     hg_email.admin.message:

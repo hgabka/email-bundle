@@ -52,7 +52,7 @@ class MessageListAdmin extends AbstractAdmin
         return $actions;
     }
 
-    protected function configureDefaultSortValues(array & $sortValues): void
+    protected function configureDefaultSortValues(array &$sortValues): void
     {
         $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
     }

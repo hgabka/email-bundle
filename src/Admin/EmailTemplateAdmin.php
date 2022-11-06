@@ -14,6 +14,7 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
@@ -40,9 +41,17 @@ class EmailTemplateAdmin extends AbstractAdmin
     /** @var TemplateTypeManager */
     private $templateTypeManager;
 
+    /** @var HgabkaUtils */
+    private $utils;
+
     public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
+    }
+
+    public function setUtils(HgabkaUtils $utils)
+    {
+        $this->utils = $utils;
     }
 
     public function setTemplateTypeManager(TemplateTypeManager $templateTypeManager)
@@ -178,13 +187,18 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ],
             ]);
         }
-
+        dump($this->utils->getDefaultLocale());
         $transFields = array_merge($transFields, [
             'subject' => [
                 'field_type' => TextType::class,
                 'label' => 'hg_email.label.subject',
-                'required' => true,
-                'constraints' => new NotBlank(),
+                'required' => false,
+                'locale_options' => [
+                    $this->utils->getDefaultLocale() => [
+                            'required' => true,
+                            'constraints' => new NotBlank(),
+                    ],
+                ],
             ],
             'contentText' => [
                 'field_type' => TextareaType::class,
@@ -216,6 +230,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         $options = [
             'label' => false,
             'fields' => $transFields,
+            'required' => false,
         ];
         if (!$type->isSenderEditable()) {
             $options['excluded_fields'] = ['fromName', 'fromEmail'];

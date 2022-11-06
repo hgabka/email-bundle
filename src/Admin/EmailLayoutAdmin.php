@@ -45,7 +45,7 @@ class EmailLayoutAdmin extends AbstractAdmin
         return $this->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);
     }
 
-    protected function configureDefaultSortValues(array & $sortValues): void
+    protected function configureDefaultSortValues(array &$sortValues): void
     {
         $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
     }
