@@ -187,7 +187,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ],
             ]);
         }
-        dump($this->utils->getDefaultLocale());
+        
         $transFields = array_merge($transFields, [
             'subject' => [
                 'field_type' => TextType::class,
