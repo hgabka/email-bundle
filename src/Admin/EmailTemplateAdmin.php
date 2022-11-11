@@ -30,8 +30,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmailTemplateAdmin extends AbstractAdmin
 {
-    protected $baseRoutePattern = 'email-template';
-
     /** @var MailBuilder */
     private $builder;
 
@@ -62,6 +60,11 @@ class EmailTemplateAdmin extends AbstractAdmin
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
+    }
+    
+    public function generateBaseRoutePattern(bool $isChildAdmin = false): string
+    {
+        return 'email-template';
     }
 
     public function prePersist(object $object): void
