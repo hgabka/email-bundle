@@ -27,8 +27,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageAdmin extends AbstractAdmin
 {
-    protected $baseRoutePattern = 'message';
-
     protected $accessMapping = [
         'prepare' => 'PREPARE',
     ];
@@ -55,6 +53,11 @@ class MessageAdmin extends AbstractAdmin
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
+    }
+    
+    public function generateBaseRoutePattern(bool $isChildAdmin = false): string
+    {
+        return 'message';
     }
 
     public function prePersist(object $object): void
