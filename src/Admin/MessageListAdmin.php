@@ -13,8 +13,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MessageListAdmin extends AbstractAdmin
 {
-    protected $baseRoutePattern = 'message-list';
-
     /** @var SubscriptionManager */
     protected $manager;
 
@@ -28,6 +26,11 @@ class MessageListAdmin extends AbstractAdmin
         $this->manager = $subscriptionManager;
 
         return $this;
+    }
+    
+    public function generateBaseRoutePattern(bool $isChildAdmin = false): string
+    {
+        return 'message-list';
     }
 
     public function toString(object $object): string
