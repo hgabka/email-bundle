@@ -21,21 +21,34 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class SubscriberAdmin extends AbstractAdmin
 {
+    /** @var SubscriptionManager */
+    protected $manager;
 
-    /**
-     * @param SubscriptionManager $manager
-     */
-    public function __construct(private readonly SubscriptionManager $manager, private readonly HgabkaUtils $utils) {}
+    /** @var HgabkaUtils */
+    protected $utils;
 
     public function getManager()
     {
         return $this->manager;
     }
 
+    public function setManager(SubscriptionManager $subscriptionManager)
+    {
+        $this->manager = $subscriptionManager;
+
+        return $this;
+    }
 
     public function generateBaseRoutePattern(bool $isChildAdmin = false): string
     {
         return 'subscriber';
+    }
+
+    public function setUtils(HgabkaUtils $hgabkaUtils)
+    {
+        $this->utils = $hgabkaUtils;
+
+        return $this;
     }
 
     public function toString(object $object): string
