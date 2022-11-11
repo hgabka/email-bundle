@@ -47,9 +47,6 @@ services:
         class: Hgabka\EmailBundle\Admin\SubscriberAdmin
         tags:
             - { name: sonata.admin, model_class: Hgabka\EmailBundle\Entity\MessageSubscriber, controller: Hgabka\EmailBundle\Controller\SubscriberAdminController, manager_type: orm, group: hg_email.group, icon: '<i class="fa fa-newspaper"></i>', label: hg_email.admin.subscriber.label, label_translator_strategy: 'sonata.admin.label.strategy.underscore', translation_domain: 'messages' }
-        calls:
-            - [setManager, ["@hg_email.subscription_manager"]]
-            - [setUtils, ["@hgabka_utils.hgabka_utils"]]
 
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true
@@ -390,3 +387,7 @@ services:
     Hgabka\EmailBundle\Helper\MailHelper:
         autowire: true
         autoconfigure: true
+        
+    Hgabka\EmailBundle\Helper\SubscriptionManager:
+        autowire: true
+        autocnfigure: true
