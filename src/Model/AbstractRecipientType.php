@@ -64,7 +64,6 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         $this->manager = $manager;
     }
 
-    #[Required]
     public function getRecipients()
     {
         if (null === $this->recipients) {
