@@ -3,38 +3,23 @@
 namespace Hgabka\EmailBundle\Command;
 
 use Hgabka\EmailBundle\Helper\MessageSender;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'hgabka:email:send-messages', description: 'Sends messages in queue', hidden: false)]
 class SendMessagesCommand extends Command
 {
-    protected static $defaultName = 'hgabka:email:send-messages';
-
-    /** @var MessageSender */
-    protected $messageSender;
-
-    /**
-     * SendMessagesCommand constructor.
-     */
-    public function __construct(MessageSender $messageSender)
+    public function __construct(protected readonly MessageSender $messageSender)
     {
         parent::__construct();
-        $this->messageSender = $messageSender;
     }
 
     protected function configure()
     {
         $this
-            // the name of the command (the part after "bin/console")
-            ->setName(static::$defaultName)
-
-            // the short description shown while running "php bin/console list"
-            ->setDescription('Sends messages in queue')
-
-            // the full command description shown when running the command with
-            // the "--help" option
             ->setHelp('Sends out messages from the queue')
             ->addOption(
                 'limit',

@@ -42,7 +42,7 @@ class EmailLayoutAdmin extends AbstractAdmin
     {
         return 'email-layout';
     }
-    
+
     public function toString(object $object): string
     {
         return $this->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);

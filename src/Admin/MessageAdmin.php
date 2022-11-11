@@ -54,7 +54,7 @@ class MessageAdmin extends AbstractAdmin
     {
         $this->authChecker = $authChecker;
     }
-    
+
     public function generateBaseRoutePattern(bool $isChildAdmin = false): string
     {
         return 'message';

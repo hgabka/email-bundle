@@ -27,7 +27,7 @@ class MessageListAdmin extends AbstractAdmin
 
         return $this;
     }
-    
+
     public function generateBaseRoutePattern(bool $isChildAdmin = false): string
     {
         return 'message-list';

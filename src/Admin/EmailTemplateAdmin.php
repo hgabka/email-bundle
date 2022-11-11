@@ -61,7 +61,7 @@ class EmailTemplateAdmin extends AbstractAdmin
     {
         $this->authChecker = $authChecker;
     }
-    
+
     public function generateBaseRoutePattern(bool $isChildAdmin = false): string
     {
         return 'email-template';
@@ -190,7 +190,7 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ],
             ]);
         }
-        
+
         $transFields = array_merge($transFields, [
             'subject' => [
                 'field_type' => TextType::class,
