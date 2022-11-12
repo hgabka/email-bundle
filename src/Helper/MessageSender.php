@@ -513,7 +513,6 @@ class MessageSender
      * @param null                              $locale
      * @param mixed                             $sendParams
      *
-     * @throws TransportExceptionInterface
      *
      * @return bool|int|mixed
      */
