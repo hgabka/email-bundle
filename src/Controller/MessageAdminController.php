@@ -29,13 +29,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class MessageAdminController extends CRUDController
 {
     /** @var ManagerRegistry */
-    protected $doctrine;
+    protected ManagerRegistry $doctrine;
 
     /** @var FormFactoryInterface */
-    protected $formFactory;
+    protected FormFactoryInterface $formFactory;
 
     /** @var TranslatorInterface */
-    protected $translator;
+    protected TranslatorInterface $translator;
 
     #[Required]
     public function setDoctrine(ManagerRegistry $doctrine): self
