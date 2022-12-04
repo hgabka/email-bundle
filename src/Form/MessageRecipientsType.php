@@ -14,18 +14,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MessageRecipientsType extends AbstractType
 {
-    /** @var RecipientManager */
-    protected $manager;
-
     /**
      * RecipientsType constructor.
      */
-    public function __construct(RecipientManager $manager)
-    {
-        $this->manager = $manager;
-    }
+    public function __construct(protected readonly RecipientManager $manager) {}
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -66,7 +60,7 @@ class MessageRecipientsType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
@@ -76,7 +70,7 @@ class MessageRecipientsType extends AbstractType
         ;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['admin'] = $options['admin'];
         $view->vars['recipientsType'] = $options['recipients_type'];
@@ -84,12 +78,12 @@ class MessageRecipientsType extends AbstractType
         $view->vars['dataType'] = 'message';
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'message_recipients';
     }
 
-    protected function addRecipientType($name, FormInterface $form, $type, $params = null)
+    protected function addRecipientType($name, FormInterface $form, $type, $params = null): void
     {
         /** @var MessageRecipientTypeInterface $recType */
         $recType = $this->manager->getMessageRecipientType($type);
