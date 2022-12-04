@@ -70,38 +70,38 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return [
             new TwigFunction(
                 'render_template_usable_vars',
-                [$this, 'renderTemplateUsableVars'],
+                $this->renderTemplateUsableVars(...),
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new TwigFunction(
                 'render_message_usable_vars',
-                [$this, 'renderMessageUsableVars'],
+                $this->renderMessageUsableVars(...),
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new TwigFunction(
                 'render_layout_usable_vars',
-                [$this, 'renderLayoutUsableVars'],
+                $this->renderLayoutUsableVars(...),
                 ['is_safe' => ['html'], 'needs_environment' => true]
             ),
             new TwigFunction(
                 'render_template_recipient_selector',
-                [$this, 'renderTemplateRecipientSelector'],
+                $this->renderTemplateRecipientSelector(...),
                 ['is_safe' => ['html']]
             ),
             new TwigFunction(
                 'render_message_recipient_selector',
-                [$this, 'renderMessageRecipientSelector'],
+                $this->renderMessageRecipientSelector(...),
                 ['is_safe' => ['html']]
             ),
             new TwigFunction(
                 'render_subscriber_lists',
-                [$this, 'renderSubscriberLists'],
+                $this->renderSubscriberLists(...),
                 ['is_safe' => ['html']]
             ),
         ];
     }
 
-    public function renderTemplateUsableVars(Environment $environment, EmailTemplate $template)
+    public function renderTemplateUsableVars(Environment $environment, EmailTemplate $template): string
     {
         $type = $this->templateTypeManager->getTemplateType($template->getType());
 
@@ -120,7 +120,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderMessageUsableVars(Environment $environment, Message $message = null)
+    public function renderMessageUsableVars(Environment $environment, Message $message = null): string
     {
         $vars = array_flip($this->mailBuilder->getMessageVars($message));
 
@@ -129,7 +129,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderLayoutUsableVars(Environment $environment)
+    public function renderLayoutUsableVars(Environment $environment): string
     {
         $vars = $this->layoutManager->getVariables();
 
@@ -138,7 +138,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/EmailLayout/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderTemplateRecipientSelector($id)
+    public function renderTemplateRecipientSelector($id): string
     {
         $choices = $this->recipientManager->getTemplateRecipientTypeChoices();
         $html = '<select id="rectype-select_' . $id . '">
@@ -152,7 +152,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $html;
     }
 
-    public function renderMessageRecipientSelector($id)
+    public function renderMessageRecipientSelector($id): string
     {
         $choices = $this->recipientManager->getMessageRecipientTypeChoices();
         $html = '<select id="rectype-select_' . $id . '">
@@ -166,7 +166,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $html;
     }
 
-    public function renderSubscriberLists(MessageSubscriber $subscriber)
+    public function renderSubscriberLists(MessageSubscriber $subscriber): string
     {
         $lists = $this->subscriptionManager->getListsForSubscriber($subscriber);
         $html = '<ul>';
