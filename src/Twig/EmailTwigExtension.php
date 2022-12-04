@@ -19,40 +19,18 @@ use Twig\TwigFunction;
 
 class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
 {
-    /** @var MailBuilder */
-    protected $mailBuilder;
-
-    /** @var ParamSubstituter */
-    protected $paramSubstituter;
-
-    /** @var TranslatorInterface */
-    protected $translator;
-
-    /** @var RecipientManager */
-    protected $recipientManager;
-
-    /** @var TemplateTypeManager */
-    protected $templateTypeManager;
-
-    /** @var SubscriptionManager */
-    protected $subscriptionManager;
-
-    /** @var LayoutManager */
-    protected $layoutManager;
-
     /**
      * PublicTwigExtension constructor.
      */
-    public function __construct(MailBuilder $mailBuilder, ParamSubstituter $paramSubstituter, TranslatorInterface $translator, RecipientManager $recipientManager, TemplateTypeManager $templateTypeManager, SubscriptionManager $subscriptionManager, LayoutManager $layoutManager)
-    {
-        $this->mailBuilder = $mailBuilder;
-        $this->paramSubstituter = $paramSubstituter;
-        $this->translator = $translator;
-        $this->recipientManager = $recipientManager;
-        $this->templateTypeManager = $templateTypeManager;
-        $this->subscriptionManager = $subscriptionManager;
-        $this->layoutManager = $layoutManager;
-    }
+    public function __construct(
+        private readonly MailBuilder $mailBuilder, 
+        private readonly ParamSubstituter $paramSubstituter, 
+        private readny TranslatorInterface $translator, 
+        private readonly RecipientManager $recipientManager, 
+        prvate readonly TemplateTypeManager $templateTypeManager, 
+        private readonly SubscriptionManager $subscriptionManager, 
+        private readonly LayoutManager $layoutManager
+    ) {}
 
     public function getGlobals(): array
     {
@@ -138,7 +116,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/EmailLayout/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderTemplateRecipientSelector($id): string
+    public function renderTemplateRecipientSelector(string $id): string
     {
         $choices = $this->recipientManager->getTemplateRecipientTypeChoices();
         $html = '<select id="rectype-select_' . $id . '">
@@ -152,7 +130,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $html;
     }
 
-    public function renderMessageRecipientSelector($id): string
+    public function renderMessageRecipientSelector(string $id): string
     {
         $choices = $this->recipientManager->getMessageRecipientTypeChoices();
         $html = '<select id="rectype-select_' . $id . '">
