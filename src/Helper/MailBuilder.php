@@ -652,7 +652,7 @@ class MailBuilder
 
     public function translateDefaultVariable($code)
     {
-        return $this->translator->trans($code, [], 'messages', 'en');
+        return $this->translator->trans($code, [], 'messages', $this->hgabkaUtils->getDefaultLocale());
     }
 
     public function getTemplatetypeEntity($typeOrClass)
