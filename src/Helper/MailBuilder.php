@@ -306,6 +306,7 @@ class MailBuilder
 
             $layoutParams = array_merge($params, [
                     'subject' => $subject,
+                    'send_params' => $sendParams,
             ]);
             $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams, $sendParams['layout_file'] ?? null);
 
