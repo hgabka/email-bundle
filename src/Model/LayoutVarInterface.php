@@ -2,6 +2,8 @@
 
 namespace Hgabka\EmailBundle\Model;
 
+use Symfony\Component\Mime\Email;
+
 interface LayoutVarInterface
 {
     public function getPlaceholder(): string;
