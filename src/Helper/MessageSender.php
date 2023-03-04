@@ -513,7 +513,6 @@ class MessageSender
      * @param null                              $locale
      * @param mixed                             $sendParams
      *
-     *
      * @return bool|int|mixed
      */
     public function sendTemplateMail($class, $params = [], $sendParams = [], $locale = null): int|false

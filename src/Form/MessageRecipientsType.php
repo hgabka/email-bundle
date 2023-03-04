@@ -17,7 +17,9 @@ class MessageRecipientsType extends AbstractType
     /**
      * RecipientsType constructor.
      */
-    public function __construct(protected readonly RecipientManager $manager) {}
+    public function __construct(protected readonly RecipientManager $manager)
+    {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

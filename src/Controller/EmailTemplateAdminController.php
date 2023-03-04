@@ -12,10 +12,8 @@ use Symfony\Contracts\Service\Attribute\Required;
 
 class EmailTemplateAdminController extends CRUDController
 {
-
     /** @var FormFactoryInterface */
     protected FormFactoryInterface $formFactory;
-
 
     #[Required]
     public function setFormFactory(FormFactoryInterface $formFactory): self
@@ -24,7 +22,7 @@ class EmailTemplateAdminController extends CRUDController
 
         return $this;
     }
-    
+
     public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
         if (!$request->isXmlHttpRequest()) {

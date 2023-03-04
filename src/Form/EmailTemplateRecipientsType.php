@@ -19,7 +19,9 @@ class EmailTemplateRecipientsType extends AbstractType
     /**
      * RecipientsType constructor.
      */
-    public function __construct(protected readonly RecipientManager $manager, protected readonly TemplateTypeManager $templateTypeManager) {}
+    public function __construct(protected readonly RecipientManager $manager, protected readonly TemplateTypeManager $templateTypeManager)
+    {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

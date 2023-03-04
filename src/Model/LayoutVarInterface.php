@@ -4,13 +4,29 @@ namespace Hgabka\EmailBundle\Model;
 
 interface LayoutVarInterface
 {
-    public function getPlaceholder();
+    public function getPlaceholder(): string;
 
-    public function getLabel();
+    public function getLabel(): ?string;
 
-    public function getValue($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion = false);
+    public function getValue(
+        ?string $layoutHtml,
+        ?string $bodyHtml,
+        ?Email $mail,
+        ?array $params,
+        ?string $locale,
+        bool $webversion = false,
+    );
 
-    public function setPriority($priority);
+    public function setPriority($priority): static;
 
-    public function getPriority();
+    public function getPriority(): ?int;
+
+    public function isEnabled(
+        ?string $layoutHtml,
+        ?string $bodyHtml,
+        ?Email $mail,
+        ?array $params,
+        ?string $locale,
+        bool $webversion = false,
+    ): bool;
 }

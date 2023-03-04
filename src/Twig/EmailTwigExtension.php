@@ -23,14 +23,15 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
      * PublicTwigExtension constructor.
      */
     public function __construct(
-        private readonly MailBuilder $mailBuilder, 
-        private readonly ParamSubstituter $paramSubstituter, 
-        private readonly TranslatorInterface $translator, 
-        private readonly RecipientManager $recipientManager, 
-        private readonly TemplateTypeManager $templateTypeManager, 
-        private readonly SubscriptionManager $subscriptionManager, 
+        private readonly MailBuilder $mailBuilder,
+        private readonly ParamSubstituter $paramSubstituter,
+        private readonly TranslatorInterface $translator,
+        private readonly RecipientManager $recipientManager,
+        private readonly TemplateTypeManager $templateTypeManager,
+        private readonly SubscriptionManager $subscriptionManager,
         private readonly LayoutManager $layoutManager
-    ) {}
+    ) {
+    }
 
     public function getGlobals(): array
     {
