@@ -17,7 +17,7 @@ interface LayoutVarInterface
         bool $webversion = false,
     );
 
-    public function setPriority($priority): self;
+    public function setPriority($priority): LayoutVarInterface;
 
     public function getPriority(): ?int;
 
