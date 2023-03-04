@@ -59,7 +59,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         return $this->priority;
     }
 
-    public function setPriority(?int $priority): self
+    public function setPriority(?int $priority): LayoutVarInterface
     {
         $this->priority = $priority;
 
