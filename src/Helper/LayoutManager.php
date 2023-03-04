@@ -21,10 +21,6 @@ class LayoutManager
         protected readonly Environment $environment,
         protected readonly ?string $layoutFile,
     ) {
-        $this->hgabkaUtils = $hgabkaUtils;
-        $this->paramSubstituter = $paramSubstituter;
-        $this->layoutFile = $layoutFile;
-        $this->environment = $environment;
     }
 
     public function addLayoutVar(LayoutVarInterface $layoutVar, ?int $priority = null)
