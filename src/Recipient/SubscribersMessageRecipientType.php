@@ -15,23 +15,16 @@ use Symfony\Component\Routing\RouterInterface;
 
 class SubscribersMessageRecipientType extends AbstractMessageRecipientType implements SubscriberRecipientTypeInterface
 {
-    /** @var SubscriptionManager */
-    protected $subscriptionManager;
-
-    /** @var HgabkaUtils */
-    protected $hgabkaUtils;
-
-    /** @var RouterInterface */
-    protected $router;
-
     /**
      * SubscribersMessageRecipientType constructor.
      */
-    public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils, RouterInterface $router)
+    public function __construct(
+        protected readonly SubscriptionManager $subscriptionManager,
+        protected readonly HgabkaUtils $hgabkaUtils,
+        protected readonly RouterInterface $router,
+        protected readonly bool $subscriptionEnabled,
+    )
     {
-        $this->subscriptionManager = $subscriptionManager;
-        $this->hgabkaUtils = $hgabkaUtils;
-        $this->router = $router;
     }
 
     public function getName()
@@ -78,7 +71,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType imple
 
     public function isPublic()
     {
-        return true;
+        return $this->subscriptionEnabled;
     }
 
     public function getParams()
