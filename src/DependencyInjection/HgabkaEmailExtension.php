@@ -100,6 +100,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         $layoutManagerDefinition->replaceArgument(2, $config['layout_file']);
 
         $container->setParameter('hg_email.editor_role', $config['editor_role']);
+        $container->setParameter('hg_email.subscription_enabled', $config['subscription_enabled']);
 
         $container
             ->registerForAutoconfiguration(EmailTemplateTypeInterface::class)
