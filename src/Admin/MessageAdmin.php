@@ -30,8 +30,8 @@ class MessageAdmin extends AbstractAdmin
 
     protected $datagridValues = [
         '_page' => 1,
-        '_sort_order' => 'ASC',
-        '_sort_by' => 'translations.name',
+        '_sort_order' => 'DESC',
+        '_sort_by' => 'createdAt',
     ];
 
     protected $accessMapping = [
@@ -141,6 +141,9 @@ class MessageAdmin extends AbstractAdmin
             ->add('status', null, [
                 'label' => 'hg_email.label.status',
                 'template' => '@HgabkaEmail/Admin/Message/list_status.html.twig',
+            ])
+            ->add('createdAt', null, [
+                'label' => 'Létrehozva',
             ])
             ->add('_action', null, [
                 'actions' => [
