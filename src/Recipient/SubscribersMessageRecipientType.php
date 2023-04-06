@@ -23,15 +23,18 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
     /** @var RouterInterface */
     protected $router;
+    
+    protected $subscriptionEnabled;
 
     /**
      * SubscribersMessageRecipientType constructor.
      */
-    public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils, RouterInterface $router)
+    public function __construct(SubscriptionManager $subscriptionManager, HgabkaUtils $hgabkaUtils, RouterInterface $router, bool $subscriptionEnabled)
     {
         $this->subscriptionManager = $subscriptionManager;
         $this->hgabkaUtils = $hgabkaUtils;
         $this->router = $router;
+        $this->subscriptionEnabled = $subscriptionEnabled;
     }
 
     public function getName()
@@ -78,7 +81,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType
 
     public function isPublic()
     {
-        return true;
+        return $this->subscriptionEnabled;
     }
 
     public function getParams()
