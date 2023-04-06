@@ -135,7 +135,7 @@ class MessageAdmin extends AbstractAdmin
         $listMapper
             ->add('translations.name', null, [
                 'label' => 'hg_email.label.name',
-                'sortable' => true,
+                'sortable' => false,
                 'template' => '@HgabkaEmail/Admin/Message/list_name.html.twig',
             ])
             ->add('status', null, [
