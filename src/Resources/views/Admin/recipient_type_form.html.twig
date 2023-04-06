@@ -20,6 +20,8 @@
                     {{ form_widget(child) }}
                 </div>
             </div>
+        {% else %}
+            {{ form_widget(child) }}
         {% endif %}
     </div>
 {% endblock %}
