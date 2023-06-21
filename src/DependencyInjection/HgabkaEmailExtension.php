@@ -25,7 +25,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration($container);
         $config = $this->processConfiguration($configuration, $configs);
@@ -117,14 +117,14 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
     /**
      * {@inheritdoc}
      */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         $configs = $container->getExtensionConfig($this->getAlias());
         $this->processConfiguration(new Configuration($container), $configs);
         $this->configureTwigBundle($container);
     }
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         // always first check if the primary service is defined
         if (!$container->has(TemplateTypeManager::class)) {
@@ -195,7 +195,7 @@ class HgabkaEmailExtension extends Extension implements PrependExtensionInterfac
         }
     }
 
-    protected function configureTwigBundle(ContainerBuilder $container)
+    protected function configureTwigBundle(ContainerBuilder $container): void
     {
         foreach (array_keys($container->getExtensions()) as $name) {
             switch ($name) {

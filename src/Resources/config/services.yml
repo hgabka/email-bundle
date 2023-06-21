@@ -126,7 +126,7 @@ services:
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'
-        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hg_email.mail_builder"]
+        arguments: ["@doctrine", "@mailer.mailer", "@hg_email.queue_manager", "@translator", "@hgabka_utils.hgabka_utils", "@hg_email.mail_builder", '@event_dispatcher']
 
     hg_email.message_logger:
         class: '%hg_email.message_logger.class%'
