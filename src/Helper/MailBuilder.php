@@ -298,7 +298,7 @@ class MailBuilder
                 $bodyHtml = $event->getBody();
             }
 
-            if ($this->config['auto_create_text_parts'] && !empty(trim($bodyHtml)) && empty(trim($bodyText))) {
+            if ($this->config['auto_create_text_parts'] && !empty(trim((string) $bodyHtml)) && empty(trim((string) $bodyText))) {
                 $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
             }
 
@@ -481,7 +481,7 @@ class MailBuilder
             $bodyHtml = $event->getBody();
         }
 
-        if ($this->config['auto_create_text_parts'] && !empty(trim($bodyHtml)) && empty(trim($bodyText))) {
+        if ($this->config['auto_create_text_parts'] && !empty(trim((string) $bodyHtml)) && empty(trim((string) $bodyText))) {
             $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
         }
 
