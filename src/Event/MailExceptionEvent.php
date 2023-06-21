@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Event;
 
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\EventDispatcher\Event;
 use Throwable;
 
@@ -14,6 +15,8 @@ class MailExceptionEvent extends Event
     private ?array $params = [];
 
     private ?array $sendParams = [];
+
+    private ?Email $email = null;
 
     public function getException(): ?Throwable
     {
@@ -72,4 +75,17 @@ class MailExceptionEvent extends Event
 
         return $this;
     }
+
+    public function getEmail(): ?Email
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?Email $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
 }

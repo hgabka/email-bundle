@@ -16,6 +16,7 @@ use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -542,7 +543,11 @@ class MessageSender
                 ++$count;
             } catch (TransportExceptionInterface $e) {
                 $event = new MailExceptionEvent();
-                $event->setException($e);
+                $event
+                    ->setException($e)
+                    ->setClass($class)
+                    ->setEmail(!empty($messageData['message']) && $messageData['message'] instanceof Email ? $messageData['message'] : null)
+                ;
 
                 $this->eventDispatcher->dispatch($event, MailSenderEvents::EXCEPTION);
             }
