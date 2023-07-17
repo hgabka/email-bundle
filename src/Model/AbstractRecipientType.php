@@ -64,27 +64,32 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         $this->manager = $manager;
     }
 
+    public function createRecipients()
+    {
+        $recipients = $this->computeRecipients();
+        if (!empty($recipients)) {
+            if (!\is_array($recipients) || !\is_int(key($recipients))) {
+                if (isset($recipients['to'])) {
+                    return [$recipients];
+                }
+
+                $recipients = [['to' => $recipients, 'locale' => null]];
+            }
+
+            foreach ($recipients as &$recipient) {
+                if (!\array_key_exists('to', $recipient)) {
+                    $recipient = ['to' => $recipient, 'locale' => null];
+                }
+            }
+        }
+
+        return $recipients;
+    }
+
     public function getRecipients()
     {
         if (null === $this->recipients) {
-            $recipients = $this->computeRecipients();
-            if (!empty($recipients)) {
-                if (!\is_array($recipients) || !\is_int(key($recipients))) {
-                    if (isset($recipients['to'])) {
-                        return [$recipients];
-                    }
-
-                    $recipients = [['to' => $recipients, 'locale' => null]];
-                }
-
-                foreach ($recipients as &$recipient) {
-                    if (!\array_key_exists('to', $recipient)) {
-                        $recipient = ['to' => $recipient, 'locale' => null];
-                    }
-                }
-            }
-
-            $this->recipients = $recipients;
+            $this->recipients = $this->createRecipients();
         }
 
         return $this->recipients;
