@@ -370,7 +370,7 @@ class RecipientManager
         }
 
         if ($toData instanceof RecipientTypeInterface) {
-            return $toData->getRecipients();
+            return $toData->createRecipients();
         }
 
         if (!\is_array($toData)) {
