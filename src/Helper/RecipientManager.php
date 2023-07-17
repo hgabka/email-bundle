@@ -370,7 +370,7 @@ class RecipientManager
         }
 
         if ($toData instanceof RecipientTypeInterface) {
-            return $toData->createRecipients();
+            return $toData->getRecipients();
         }
 
         if (!\is_array($toData)) {
@@ -394,7 +394,7 @@ class RecipientManager
 
             $type->setParams($toData);
 
-            return $type->createRecipients();
+            return $type->getRecipients();
         }
 
         if (is_string(current($toData))) {
