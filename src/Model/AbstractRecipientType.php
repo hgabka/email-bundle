@@ -43,6 +43,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     public function setParams(array $params)
     {
         $this->params = $params;
+        $this->recipients = null;
     }
 
     public function getBuilder(): MailBuilder
