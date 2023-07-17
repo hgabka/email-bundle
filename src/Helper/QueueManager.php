@@ -330,7 +330,7 @@ class QueueManager
             if (!$recType) {
                 continue;
             }
-            $recTypeRecipients = $recType->getRecipients();
+            $recTypeRecipients = $recType->createRecipients();
             if (!\is_array($recTypeRecipients)) {
                 $recTypeRecipients = [['to' => $recTypeRecipients, 'locale' => null]];
             } elseif (isset($recTypeRecipients['to'])) {
