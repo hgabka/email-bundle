@@ -394,7 +394,7 @@ class RecipientManager
 
             $type->setParams($toData);
 
-            return $type->getRecipients();
+            return $type->createRecipients();
         }
 
         if (is_string(current($toData))) {
