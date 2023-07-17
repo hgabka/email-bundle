@@ -136,6 +136,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     public function setStaticParams($staticParams)
     {
         $this->staticParams = $staticParams;
+        $this->recipients = null;
 
         return $this;
     }
