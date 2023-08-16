@@ -151,10 +151,10 @@ services:
     Hgabka\EmailBundle\Helper\ParamSubstituter:
         alias: hg_email.param_substituter
 
-    hg_email.email_subscriber:
-        class: Hgabka\EmailBundle\EventListener\EmailSubscriber
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
+    hg_email.email_listener:
+        class: Hgabka\EmailBundle\EventListener\EmailListener
+        autowire: true
+        autoconfigure: true
 
     hg_email.mailer_subscriber:
         class: Hgabka\EmailBundle\EventListener\MailerSubscriber
