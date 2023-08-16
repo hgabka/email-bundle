@@ -17,7 +17,7 @@ class SendEmailsCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Sends out emails from the queue')
@@ -47,7 +47,7 @@ class SendEmailsCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected function send($limit, OutputInterface $output)
+    protected function send($limit, OutputInterface $output): void
     {
         $output->writeln('Sending messages...');
 
