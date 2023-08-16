@@ -2,15 +2,20 @@
 
 namespace Hgabka\EmailBundle\EventListener;
 
-use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Events;
 use Hgabka\EmailBundle\Entity\EmailQueue;
 use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 
-class SubscriberSubscriber implements EventSubscriber
+#[AsDoctrineListener(event: Events::postUpdate)]
+#[AsDoctrineListener(event: Events::postPersist)]
+#[AsDoctrineListener(event: Events::preRemove)]
+class SubscriberListener
 {
     /** @var SubscriptionManager */
     protected SubscriptionManager $manager;
@@ -25,16 +30,7 @@ class SubscriberSubscriber implements EventSubscriber
         $this->manager = $manager;
     }
 
-    public function getSubscribedEvents(): array
-    {
-        return [
-            Events::postPersist,
-            Events::postUpdate,
-            Events::preRemove,
-        ];
-    }
-
-    public function postPersist(LifecycleEventArgs $args): void
+    public function postPersist(PostPersistEventArgs $args): void
     {
         $object = $args->getObject();
 
@@ -46,7 +42,7 @@ class SubscriberSubscriber implements EventSubscriber
         $args->getObjectManager()->flush();
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function postUpdate(PostUpdateEventArgs $args): void
     {
         $object = $args->getObject();
 
@@ -58,7 +54,7 @@ class SubscriberSubscriber implements EventSubscriber
         $args->getObjectManager()->flush();
     }
 
-    public function preRemove(LifecycleEventArgs $args): void
+    public function preRemove(PreRemoveEventArgs $args): void
     {
         $object = $args->getObject();
 
