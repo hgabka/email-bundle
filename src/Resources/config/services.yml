@@ -242,11 +242,11 @@ services:
         class: 'Hgabka\EmailBundle\Helper\SubscriptionManager'
         arguments: ["@doctrine", "@hgabka_utils.hgabka_utils", '', '']
 
-    hg_email.subscriber_subscriber:
-        class: Hgabka\EmailBundle\EventListener\SubscriberSubscriber
+    hg_email.subscriber_listener:
+        class: Hgabka\EmailBundle\EventListener\SubscriberListener
         arguments: ['@hg_email.subscription_manager']
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
+        autowire: true
+        autoconfigure: true
 
     Hgabka\EmailBundle\Admin\Menu\AdminMenuListener:
         autowire: true
