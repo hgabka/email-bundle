@@ -3,17 +3,17 @@
 namespace Hgabka\EmailBundle\EventListener;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Hgabka\EmailBundle\Entity\Attachment;
 use Hgabka\EmailBundle\Entity\EmailTemplateTranslation;
 use Hgabka\EmailBundle\Entity\MessageTranslation;
 
 class EntityLoadListener
 {
-    public function postLoad(LifecycleEventArgs $eventArgs)
+    public function postLoad(PostLoadEventArgs $eventArgs)
     {
-        $obj = $eventArgs->getEntity();
-        $em = $eventArgs->getEntityManager();
+        $obj = $eventArgs->getObject();
+        $em = $eventArgs->getObjectManager();
 
         if ($obj instanceof EmailTemplateTranslation) {
             $productReflProp = $em->getClassMetadata(\get_class($obj))->reflClass->getProperty('attachments');
