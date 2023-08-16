@@ -17,7 +17,7 @@ class SendMessagesCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setHelp('Sends out messages from the queue')
