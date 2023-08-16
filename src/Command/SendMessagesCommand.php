@@ -47,7 +47,7 @@ class SendMessagesCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected function send($limit, OutputInterface $output)
+    protected function send($limit, OutputInterface $output): void
     {
         $output->writeln('Sending messages...');
 
