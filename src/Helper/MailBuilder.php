@@ -354,25 +354,16 @@ class MailBuilder
                             if (!is_file($attachment)) {
                                 continue;
                             }
-                            $part = \Swift_Attachment::fromPath($attachment);
+                            $mail->attachFromPath($attachment);
                         } else {
                             $filename = $attachment['path'] ?? '';
                             if (!is_file($filename)) {
                                 continue;
                             }
-                            $part = \Swift_Attachment::fromPath($filename);
-                            if (isset($attachment['filename'])) {
-                                $part->setFilename($attachment['filename']);
-                            }
-                            if (isset($attachment['mime'])) {
-                                $part->setContentType($attachment['mime']);
-                            }
-                            if (isset($attachment['disposition'])) {
-                                $part->setDisposition($attachment['disposition']);
-                            }
+
+                            $mail->attachFromPath($filename, $attachment['filename'] ?? null, $attachment['mime'] ?? null);
                         }
 
-                        $mail->attach($part);
                     }
                 }
 
