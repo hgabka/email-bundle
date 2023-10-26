@@ -16,6 +16,7 @@ use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageVarInterface;
+use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
@@ -355,6 +356,17 @@ class MailBuilder
                                 continue;
                             }
                             $mail->attachFromPath($attachment);
+                        } elseif (isset($attachment['media']) || isset($attachment['media_id'])) {
+                            $media = isset($attachment['media']) && $attachment['media'] instanceof Media
+                                ? $attachment['media']
+                                : (!empty($attachment['media_id']) ? $this->doctrine->getRepository(Media::class)->find($attachment['media_id']) : null)
+                            ;
+                            if (!$media instanceof Media) {
+                                continue;
+                            }
+
+                            $mail->attachFromPath($this->mediaManager->getMediaPath($media), $attachment['filename'] ?? $media->getOriginalFilename(),
+                                $attachment['mime'] ?? $media->getContentType());
                         } else {
                             $filename = $attachment['path'] ?? '';
                             if (!is_file($filename)) {
