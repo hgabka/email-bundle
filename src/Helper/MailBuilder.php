@@ -365,8 +365,11 @@ class MailBuilder
                                 continue;
                             }
 
-                            $mail->attachFromPath($this->mediaManager->getMediaPath($media), $attachment['filename'] ?? $media->getOriginalFilename(),
-                                $attachment['mime'] ?? $media->getContentType());
+                            $mail->attachFromPath(
+                                $this->mediaManager->getMediaPath($media),
+                                $attachment['filename'] ?? $media->getOriginalFilename(),
+                                $attachment['mime'] ?? $media->getContentType()
+                            );
                         } else {
                             $filename = $attachment['path'] ?? '';
                             if (!is_file($filename)) {
@@ -375,7 +378,6 @@ class MailBuilder
 
                             $mail->attachFromPath($filename, $attachment['filename'] ?? null, $attachment['mime'] ?? null);
                         }
-
                     }
                 }
 

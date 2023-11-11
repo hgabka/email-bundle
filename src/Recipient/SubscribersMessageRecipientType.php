@@ -23,8 +23,7 @@ class SubscribersMessageRecipientType extends AbstractMessageRecipientType imple
         protected readonly HgabkaUtils $hgabkaUtils,
         protected readonly RouterInterface $router,
         protected readonly bool $subscriptionEnabled,
-    )
-    {
+    ) {
     }
 
     public function getName()

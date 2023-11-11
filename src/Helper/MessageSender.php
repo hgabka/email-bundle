@@ -14,11 +14,11 @@ use Hgabka\EmailBundle\Event\MailExceptionEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvents;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MessageSender
 {

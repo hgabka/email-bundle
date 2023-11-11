@@ -45,7 +45,7 @@ interface RecipientTypeInterface
      * @return mixed
      */
     public function setParams(array $params);
-   
+
     /**
      * @return mixed
      */

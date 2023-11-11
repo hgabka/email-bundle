@@ -31,7 +31,7 @@ class MailExceptionEvent extends Event
     }
 
     /**
-     * @return string|null
+     * @return null|string
      */
     public function getClass(): ?string
     {
@@ -39,7 +39,8 @@ class MailExceptionEvent extends Event
     }
 
     /**
-     * @param string|null $class
+     * @param null|string $class
+     *
      * @return MailExceptionEvent
      */
     public function setClass(?string $class): self
@@ -50,7 +51,7 @@ class MailExceptionEvent extends Event
     }
 
     /**
-     * @return array|null
+     * @return null|array
      */
     public function getParams(): ?array
     {
@@ -87,5 +88,4 @@ class MailExceptionEvent extends Event
 
         return $this;
     }
-
 }
