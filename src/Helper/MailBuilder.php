@@ -394,6 +394,9 @@ class MailBuilder
                     }
                 }
 
+                 if (isset($sendParams['reply_to'])) {
+                    $mail->replyTo($sendParams['reply_to']);
+                }
                 if (isset($sendParams['headers'])) {
                     $this->mailHelper->addHeadersFromArray($mail, $sendParams['headers']);
                 }
