@@ -14,11 +14,11 @@
         }
     ],
     "require": {
-        "php" : ">=8.0.2",
-        "hgabka/utils-bundle": "^6.0",
-        "hgabka/media-bundle": "^6.0",
+        "php" : ^8.2",
+        "hgabka/utils-bundle": "^7.0",
+        "hgabka/media-bundle": "^7.0",
         "a2lix/translation-form-bundle": "^3.2",
-        "symfony/framework-bundle": "^6.0",
+        "symfony/framework-bundle": "^7.0",
         "twig/cssinliner-extra": "^3.3"
     },
     "require-dev": {
