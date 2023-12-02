@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php" : ^8.2",
+        "php" : "^8.2",
         "hgabka/utils-bundle": "^7.0",
         "hgabka/media-bundle": "^7.0",
         "a2lix/translation-form-bundle": "^3.2",
