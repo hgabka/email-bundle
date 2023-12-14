@@ -23,7 +23,7 @@ class Attachment
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     protected ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, name: 'content_type', nullable: true)]
