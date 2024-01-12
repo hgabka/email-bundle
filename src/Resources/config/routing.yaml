@@ -1,4 +1,4 @@
 HgabkaEmailBundle_message_routes:
     resource: '@HgabkaEmailBundle/Controller/MessageController.php'
-    type:     annotation
+    type:     attribute
     prefix:   /messages

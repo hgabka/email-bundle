@@ -25,64 +25,29 @@ class MessageList implements TranslatableInterface
     use TimestampableEntity;
     use TranslatableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: 'integer')]
     protected ?int $id = null;
 
-    /**
-     * @Hgabka\Translations(targetEntity="Hgabka\EmailBundle\Entity\MessageListTranslation")
-     */
     #[Hgabka\Translations(targetEntity: MessageListTranslation::class)]
     protected Collection|array|null $translations = null;
 
-    /**
-     * @var ArrayCollection|MessageListSubscription[]
-     *
-     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageListSubscription", cascade={"all"}, mappedBy="list", orphanRemoval=true)
-     *
-     * @Assert\Valid()
-     */
     #[ORM\OneToMany(targetEntity: MessageListSubscription::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
     #[Assert\Valid]
     protected Collection|array|null $listSubscriptions = null;
 
-    /**
-     * @var ArrayCollection|MessageSendList[]
-     *
-     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\MessageSendList", cascade={"all"}, mappedBy="list", orphanRemoval=true)
-     *
-     * @Assert\Valid()
-     */
     #[ORM\OneToMany(targetEntity: MessageSendList::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
     #[Assert\Valid]
     protected Collection|array|null $sendLists = null;
 
-    /**
-     * @var ArrayCollection|EmailCampaign[]
-     *
-     * @ORM\OneToMany(targetEntity="Hgabka\EmailBundle\Entity\EmailCampaign", cascade={"all"}, mappedBy="list", orphanRemoval=true)
-     *
-     * @Assert\Valid()
-     */
     #[ORM\OneToMany(targetEntity: EmailCampaign::class, cascade: ['all'], mappedBy: 'list', orphanRemoval: true)]
     #[Assert\Valid]
     protected Collection|array|null $campaigns = null;
 
-    /**
-     * @ORM\Column(name="is_default", type="boolean")
-     */
     #[ORM\Column(name: 'is_default', type: 'boolean')]
     protected ?bool $isDefault = false;
 
-    /**
-     * @ORM\Column(name="is_public", type="boolean")
-     */
     #[ORM\Column(name: 'is_public', type: 'boolean')]
     protected ?bool $isPublic = true;
 
