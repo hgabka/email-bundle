@@ -104,7 +104,7 @@ class RecipientManager
     /**
      * @return null|EmailTemplateRecipientTypeInterface|mixed
      */
-    public function getTemplateRecipientType(string $type = null)
+    public function getTemplateRecipientType(?string $type = null)
     {
         return !empty($type) ? ($this->templateRecipientTypes[$type] ?? null) : null;
     }
@@ -112,7 +112,7 @@ class RecipientManager
     /**
      * @return null|MessageRecipientTypeInterface|mixed
      */
-    public function getMessageRecipientType(string $type = null)
+    public function getMessageRecipientType(?string $type = null)
     {
         return !empty($type) ? ($this->messageRecipientTypes[$type] ?? null) : null;
     }
