@@ -99,7 +99,7 @@ class EmailTwigExtension extends AbstractExtension implements GlobalsInterface
         return $environment->render('@HgabkaEmail/Admin/_usable_vars.html.twig', ['vars' => $vars]);
     }
 
-    public function renderMessageUsableVars(Environment $environment, Message $message = null): string
+    public function renderMessageUsableVars(Environment $environment, ?Message $message = null): string
     {
         $vars = array_flip($this->mailBuilder->getMessageVars($message));
 

@@ -585,7 +585,7 @@ class MailBuilder
         return $this->mediaManager->getMediaContent($media);
     }
 
-    public function getMessageVars(Message $message = null)
+    public function getMessageVars(?Message $message = null)
     {
         $vars = $this->getFromToParams();
 
@@ -712,7 +712,7 @@ class MailBuilder
         $mail->{$method}($this->translateEmailAddress($paramCc));
     }
 
-    protected function getFromFromTemplate(EmailTemplate $template = null, $locale = null)
+    protected function getFromFromTemplate(?EmailTemplate $template = null, $locale = null)
     {
         $defaultName = $this->getDefaultFromName();
         $defaultEmail = $this->getDefaultFromEmail();
