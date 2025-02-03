@@ -587,7 +587,7 @@ class QueueManager
         $this->doctrine->getRepository(MessageQueue::class)->deleteEmailFromQueue($email);
     }
 
-    public function deleteEmailFromEmailQueue($email, EmailCampaign $campaign = null, $withFlush = true)
+    public function deleteEmailFromEmailQueue($email, ?EmailCampaign $campaign = null, $withFlush = true)
     {
         $em = $this->doctrine->getManager();
 
