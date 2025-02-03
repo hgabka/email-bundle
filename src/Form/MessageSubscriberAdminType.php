@@ -34,7 +34,7 @@ class MessageSubscriberAdminType extends AbstractType
      *
      * @param null|EntityManager $manager
      */
-    public function __construct(EntityManager $manager, HgabkaUtils $hgabkaUtils, SubscriptionManager $subscriptionManager, AuthorizationChecker $authChecker = null)
+    public function __construct(EntityManager $manager, HgabkaUtils $hgabkaUtils, SubscriptionManager $subscriptionManager, ?AuthorizationChecker $authChecker = null)
     {
         $this->manager = $manager;
         $this->authChecker = $authChecker;
