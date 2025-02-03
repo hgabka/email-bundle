@@ -32,7 +32,7 @@ class MessageAdminType extends AbstractType
     /** @var MailBuilder */
     private $mailBulder;
 
-    public function __construct(EntityManager $manager = null, MailBuilder $mailBuilder, ?AuthorizationChecker $authChecker = null)
+    public function __construct(?EntityManager $manager = null, ?MailBuilder $mailBuilder = null, ?AuthorizationChecker $authChecker = null)
     {
         $this->manager = $manager;
         $this->authChecker = $authChecker;
