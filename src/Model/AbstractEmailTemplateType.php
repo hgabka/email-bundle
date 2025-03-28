@@ -2,7 +2,6 @@
 
 namespace Hgabka\EmailBundle\Model;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Driver\AttributeReader;
 use Hgabka\EmailBundle\Annotation\TemplateVar;
 use Hgabka\EmailBundle\Entity\EmailTemplate;
@@ -41,9 +40,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     /** @var TranslatorInterface */
     protected ?TranslatorInterface $translator = null;
 
-    /** @var Reader */
-    protected ?Reader $annotationReader = null;
-
     /** @var ParameterBagInterface */
     protected ?ParameterBagInterface $parameterBag = null;
 
@@ -69,14 +65,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
     public function setMessageSender(MessageSender $messageSender): self
     {
         $this->messageSender = $messageSender;
-
-        return $this;
-    }
-
-    #[Required]
-    public function setAnnotationReader(Reader $annotationReader): self
-    {
-        $this->annotationReader = $annotationReader;
 
         return $this;
     }
@@ -386,11 +374,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 
     protected function getPropertyAnnotation(\ReflectionProperty $property, string $name): ?object
     {
-        if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
-            $reader = $this->annotationReader;
-
-            return $reader->getPropertyAnnotation($property, $name);
-        }
         $attributes = $property->getAttributes($name);
         if (!empty($attributes)) {
             foreach ($attributes as $attribute) {
@@ -405,11 +388,6 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
 
     protected function getMethodAnnotation(\ReflectionMethod $method, string $name): ?object
     {
-        if ('annotation' === $this->parameterBag->get('hg_email.template_var_reader_type')) {
-            $reader = $this->annotationReader;
-
-            return $reader->getMethodAnnotation($method, $name);
-        }
         $reader = new AttributeReader();
         $annotations = $reader->getMethodAttributes($method);
 
