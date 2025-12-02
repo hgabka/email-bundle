@@ -62,7 +62,7 @@ class MailboxReader
 
     public function fetchHeader($message)
     {
-        return imap_fetchheader($this->handle, $message, \FT_PREFETCHTEXT);
+        return imap_fetchheader($this->handle, $message, FT_PREFETCHTEXT);
     }
 
     public function deleteMessage($message)

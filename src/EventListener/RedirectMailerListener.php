@@ -5,7 +5,6 @@ namespace Hgabka\EmailBundle\EventListener;
 use Hgabka\EmailBundle\Helper\MailHelper;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mailer\Event\MessageEvent;
 use Symfony\Component\Mime\Email;
 
@@ -16,7 +15,8 @@ readonly class RedirectMailerListener
         private HgabkaUtils $hgabkaUtils,
         private MailHelper $mailHelper,
         private array $redirectConfig,
-        private bool $debug)
+        private bool $debug
+    )
     {
     }
 
