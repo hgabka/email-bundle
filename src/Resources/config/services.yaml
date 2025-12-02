@@ -370,7 +370,7 @@ services:
         autoconfigure: true
         tags: ['controller.service_arguments']
 
-    Hgabka\EmailBundle\EventListener\RedirectMailerSubscriber:
+    Hgabka\EmailBundle\EventListener\RedirectMailerListener:
         autowire: true
         autoconfigure: true
         arguments:
