@@ -34,7 +34,7 @@ class EmailTemplateTranslation implements TranslationInterface
     #[ORM\Column(name: 'comment', type: 'text')]
     protected ?string $comment = null;
 
-    #[ORM\Column(name: 'subject', type: 'string', length: 255)]
+    #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
     protected ?string $subject = null;
 
     #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]

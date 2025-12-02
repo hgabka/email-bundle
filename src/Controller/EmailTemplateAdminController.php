@@ -5,11 +5,24 @@ namespace Hgabka\EmailBundle\Controller;
 use Hgabka\EmailBundle\Form\EmailTemplateRecipientsType;
 use Hgabka\EmailBundle\Helper\RecipientManager;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class EmailTemplateAdminController extends CRUDController
 {
+    /** @var FormFactoryInterface */
+    protected FormFactoryInterface $formFactory;
+
+    #[Required]
+    public function setFormFactory(FormFactoryInterface $formFactory): self
+    {
+        $this->formFactory = $formFactory;
+
+        return $this;
+    }
+
     public function addRecipientAction(Request $request, RecipientManager $recipientManager)
     {
         if (!$request->isXmlHttpRequest()) {
@@ -25,7 +38,7 @@ class EmailTemplateAdminController extends CRUDController
         $recType = $recipientManager->getTemplateRecipientType($type);
 
         $builder = $this
-            ->get('form.factory')
+            ->formFactory
             ->createNamedBuilder($request->get('name'))
             ->add($fieldName, EmailTemplateRecipientsType::class, [
                 'admin' => $this->admin,

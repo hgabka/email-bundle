@@ -2,6 +2,7 @@
 
 namespace Hgabka\EmailBundle\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Hgabka\EmailBundle\Repository\AttachmentRepository;
 use Hgabka\MediaBundle\Entity\Media;
@@ -22,16 +23,16 @@ class Attachment
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     protected ?int $id = null;
 
-    #[ORM\Column(type: 'string', name: 'content_type', nullable: true)]
+    #[ORM\Column(type: Types::STRING, name: 'content_type', nullable: true)]
     protected ?string $contentType = null;
 
-    #[ORM\Column(type: 'string', name: 'type', length: 255)]
+    #[ORM\Column(type: Types::STRING, name: 'type', length: 255)]
     protected ?string $type = null;
 
-    #[ORM\Column(type: 'bigint', name: 'owner_id', nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, name: 'owner_id', nullable: true)]
     protected ?int  $ownerId = null;
 
     #[ORM\ManyToOne(targetEntity: Media::class, cascade: ['persist'])]
@@ -47,10 +48,10 @@ class Attachment
     #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id')]
     protected ?MessageTranslation $message = null;
 
-    #[ORM\Column(name: 'locale', type: 'string', length: 2, nullable: true)]
+    #[ORM\Column(name: 'locale', type: Types::STRING, length: 2, nullable: true)]
     protected ?string $locale = null;
 
-    #[ORM\Column(name: 'filename', type: 'string', length: 512, nullable: true)]
+    #[ORM\Column(name: 'filename', type: Types::STRING, length: 512, nullable: true)]
     protected ?string $filename = null;
 
     #[ORM\Column(name: 'content', type: 'hg_utils_longblob', nullable: true)]

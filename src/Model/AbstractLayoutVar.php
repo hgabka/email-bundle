@@ -3,19 +3,19 @@
 namespace Hgabka\EmailBundle\Model;
 
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractLayoutVar implements LayoutVarInterface
 {
-    /** @var TranslatorInterface */
-    protected $translator;
+    protected ?TranslatorInterface $translator = null;
 
-    protected $placeholder;
+    protected ?string $placeholder = null;
 
-    protected $label;
+    protected ?string $label = null;
 
-    protected $priority;
+    protected ?int $priority = null;
 
     #[Required]
     public function setTranslator(TranslatorInterface $translator)
@@ -23,7 +23,7 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         $this->translator = $translator;
     }
 
-    public function getPlaceholder()
+    public function getPlaceholder(): string
     {
         $placeholder = $this->placeholder;
         if (empty($placeholder)) {
@@ -43,29 +43,38 @@ abstract class AbstractLayoutVar implements LayoutVarInterface
         return $this->translator->trans($label);
     }
 
-    public function getValue($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion = false)
-    {
+    public function getValue(
+        ?string $layoutHtml,
+        ?string $bodyHtml,
+        ?Email $mail,
+        ?array $params,
+        ?string $locale,
+        bool $webversion = false,
+    ): ?string {
         return $params[$this->getPlaceholder()];
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPriority()
+    public function getPriority(): ?int
     {
         return $this->priority;
     }
 
-    /**
-     * @param mixed $priority
-     *
-     * @return AbstractLayoutVar
-     */
-    public function setPriority($priority)
+    public function setPriority(?int $priority): self
     {
         $this->priority = $priority;
 
         return $this;
+    }
+
+    public function isEnabled(
+        ?string $layoutHtml,
+        ?string $bodyHtml,
+        ?Email $mail,
+        ?array $params,
+        ?string $locale,
+        bool $webversion = false,
+    ): bool {
+        return true;
     }
 
     protected function getKey(): string

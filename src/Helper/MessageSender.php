@@ -10,10 +10,14 @@ use Hgabka\EmailBundle\Entity\MessageQueue;
 use Hgabka\EmailBundle\Entity\MessageSendList;
 use Hgabka\EmailBundle\Enum\MessageStatusEnum;
 use Hgabka\EmailBundle\Enum\QueueStatusEnum;
+use Hgabka\EmailBundle\Event\MailExceptionEvent;
+use Hgabka\EmailBundle\Event\MailSenderEvents;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageSender
@@ -42,6 +46,9 @@ class MessageSender
     /** @var MailBuilder */
     protected $mailBuilder;
 
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
+
     /**
      * MailBuilder constructor.
      *
@@ -53,7 +60,8 @@ class MessageSender
         QueueManager $queueManager,
         TranslatorInterface $translator,
         HgabkaUtils $hgabkaUtils,
-        MailBuilder $mailBuilder
+        MailBuilder $mailBuilder,
+        EventDispatcherInterface $eventDispatcher,
     ) {
         $this->doctrine = $doctrine;
         $this->mailer = $mailer;
@@ -61,6 +69,7 @@ class MessageSender
         $this->queueManager = $queueManager;
         $this->hgabkaUtils = $hgabkaUtils;
         $this->mailBuilder = $mailBuilder;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function isForceLog(): bool
@@ -513,8 +522,6 @@ class MessageSender
      * @param null                              $locale
      * @param mixed                             $sendParams
      *
-     * @throws TransportExceptionInterface
-     *
      * @return bool|int|mixed
      */
     public function sendTemplateMail($class, $params = [], $sendParams = [], $locale = null): int|false
@@ -535,6 +542,14 @@ class MessageSender
                 $this->mailer->send($messageData['message']);
                 ++$count;
             } catch (TransportExceptionInterface $e) {
+                $event = new MailExceptionEvent();
+                $event
+                    ->setException($e)
+                    ->setClass($class)
+                    ->setEmail(!empty($messageData['message']) && $messageData['message'] instanceof Email ? $messageData['message'] : null)
+                ;
+
+                $this->eventDispatcher->dispatch($event, MailSenderEvents::EXCEPTION);
             }
         }
 

@@ -95,6 +95,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('email_return_path')->defaultNull()->end()
                 ->booleanNode('editable_lists')->defaultFalse()->end()
                 ->booleanNode('editable_layouts')->defaultFalse()->end()
+                ->booleanNode('subscription_enabled')->defaultTrue()->end()
                 ->booleanNode('auto_append_unsubscribe_link')->defaultFalse()->end()
                 ->scalarNode('return_path')->defaultValue('sfhungary@gmail.com')->end()
                 ->arrayNode('add_headers')

@@ -43,6 +43,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     public function setParams(array $params)
     {
         $this->params = $params;
+        $this->recipients = null;
     }
 
     public function getBuilder(): MailBuilder
@@ -64,28 +65,32 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
         $this->manager = $manager;
     }
 
-    #[Required]
+    public function createRecipients()
+    {
+        $recipients = $this->computeRecipients();
+        if (!empty($recipients)) {
+            if (!\is_array($recipients) || !\is_int(key($recipients))) {
+                if (isset($recipients['to'])) {
+                    return [$recipients];
+                }
+
+                $recipients = [['to' => $recipients, 'locale' => null]];
+            }
+
+            foreach ($recipients as &$recipient) {
+                if (!\array_key_exists('to', $recipient)) {
+                    $recipient = ['to' => $recipient, 'locale' => null];
+                }
+            }
+        }
+
+        return $recipients;
+    }
+
     public function getRecipients()
     {
         if (null === $this->recipients) {
-            $recipients = $this->computeRecipients();
-            if (!empty($recipients)) {
-                if (!\is_array($recipients) || !\is_int(key($recipients))) {
-                    if (isset($recipients['to'])) {
-                        return [$recipients];
-                    }
-
-                    $recipients = [['to' => $recipients, 'locale' => null]];
-                }
-
-                foreach ($recipients as &$recipient) {
-                    if (!\array_key_exists('to', $recipient)) {
-                        $recipient = ['to' => $recipient, 'locale' => null];
-                    }
-                }
-            }
-
-            $this->recipients = $recipients;
+            $this->recipients = $this->createRecipients();
         }
 
         return $this->recipients;
@@ -131,6 +136,7 @@ abstract class AbstractRecipientType implements RecipientTypeInterface
     public function setStaticParams($staticParams)
     {
         $this->staticParams = $staticParams;
+        $this->recipients = null;
 
         return $this;
     }

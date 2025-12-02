@@ -16,6 +16,7 @@ use Hgabka\EmailBundle\Event\MailRecipientEvent;
 use Hgabka\EmailBundle\Event\MailSenderEvent;
 use Hgabka\EmailBundle\Model\EmailTemplateTypeInterface;
 use Hgabka\EmailBundle\Model\MessageVarInterface;
+use Hgabka\MediaBundle\Entity\Media;
 use Hgabka\MediaBundle\Helper\MediaManager;
 use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use http\Exception\InvalidArgumentException;
@@ -298,7 +299,7 @@ class MailBuilder
                 $bodyHtml = $event->getBody();
             }
 
-            if ($this->config['auto_create_text_parts'] && !empty(trim($bodyHtml)) && empty(trim($bodyText))) {
+            if ($this->config['auto_create_text_parts'] && !empty(trim((string) $bodyHtml)) && empty(trim((string) $bodyText))) {
                 $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
             }
 
@@ -306,6 +307,7 @@ class MailBuilder
 
             $layoutParams = array_merge($params, [
                     'subject' => $subject,
+                    'send_params' => $sendParams,
             ]);
             $bodyHtml = $this->layoutManager->applyLayout($bodyHtml, $layout, $mail, $locale, $layoutParams, $sendParams['layout_file'] ?? null);
 
@@ -353,25 +355,29 @@ class MailBuilder
                             if (!is_file($attachment)) {
                                 continue;
                             }
-                            $part = \Swift_Attachment::fromPath($attachment);
+                            $mail->attachFromPath($attachment);
+                        } elseif (isset($attachment['media']) || isset($attachment['media_id'])) {
+                            $media = isset($attachment['media']) && $attachment['media'] instanceof Media
+                                ? $attachment['media']
+                                : (!empty($attachment['media_id']) ? $this->doctrine->getRepository(Media::class)->find($attachment['media_id']) : null)
+                            ;
+                            if (!$media instanceof Media) {
+                                continue;
+                            }
+
+                            $mail->attachFromPath(
+                                $this->mediaManager->getMediaPath($media),
+                                $attachment['filename'] ?? $media->getOriginalFilename(),
+                                $attachment['mime'] ?? $media->getContentType()
+                            );
                         } else {
                             $filename = $attachment['path'] ?? '';
                             if (!is_file($filename)) {
                                 continue;
                             }
-                            $part = \Swift_Attachment::fromPath($filename);
-                            if (isset($attachment['filename'])) {
-                                $part->setFilename($attachment['filename']);
-                            }
-                            if (isset($attachment['mime'])) {
-                                $part->setContentType($attachment['mime']);
-                            }
-                            if (isset($attachment['disposition'])) {
-                                $part->setDisposition($attachment['disposition']);
-                            }
-                        }
 
-                        $mail->attach($part);
+                            $mail->attachFromPath($filename, $attachment['filename'] ?? null, $attachment['mime'] ?? null);
+                        }
                     }
                 }
 
@@ -386,6 +392,10 @@ class MailBuilder
                     } elseif ($sendParams['return_path'] instanceof Address) {
                         $mail->returnPath($sendParams['return_path']);
                     }
+                }
+
+                if (isset($sendParams['reply_to'])) {
+                    $mail->replyTo($sendParams['reply_to']);
                 }
 
                 if (isset($sendParams['headers'])) {
@@ -480,7 +490,7 @@ class MailBuilder
             $bodyHtml = $event->getBody();
         }
 
-        if ($this->config['auto_create_text_parts'] && !empty(trim($bodyHtml)) && empty(trim($bodyText))) {
+        if ($this->config['auto_create_text_parts'] && !empty(trim((string) $bodyHtml)) && empty(trim((string) $bodyText))) {
             $bodyText = $this->hgabkaUtils->convertHtml($bodyHtml);
         }
 
@@ -652,7 +662,7 @@ class MailBuilder
 
     public function translateDefaultVariable($code)
     {
-        return $this->translator->trans($code, [], 'messages', 'en');
+        return $this->translator->trans($code, [], 'messages', $this->hgabkaUtils->getDefaultLocale());
     }
 
     public function getTemplatetypeEntity($typeOrClass)
@@ -720,7 +730,7 @@ class MailBuilder
         return empty($name) ? new Address($email) : new Address($email, $name);
     }
 
-    protected function addDefaultParams($paramFrom, $paramTo, & $params)
+    protected function addDefaultParams($paramFrom, $paramTo, &$params)
     {
         $to = $this->translateEmailAddress($paramTo);
         $from = $this->translateEmailAddress($paramFrom);

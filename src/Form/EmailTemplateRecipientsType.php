@@ -16,22 +16,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EmailTemplateRecipientsType extends AbstractType
 {
-    /** @var RecipientManager */
-    protected $manager;
-
-    /** @var TemplateTypeManager */
-    protected $templateTypeManager;
-
     /**
      * RecipientsType constructor.
      */
-    public function __construct(RecipientManager $manager, TemplateTypeManager $templateTypeManager)
+    public function __construct(protected readonly RecipientManager $manager, protected readonly TemplateTypeManager $templateTypeManager)
     {
-        $this->manager = $manager;
-        $this->templateTypeManager = $templateTypeManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
@@ -140,7 +132,7 @@ class EmailTemplateRecipientsType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
@@ -151,7 +143,7 @@ class EmailTemplateRecipientsType extends AbstractType
         ;
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['admin'] = $options['admin'];
         $view->vars['recipientsType'] = $options['recipients_type'];
@@ -164,12 +156,12 @@ class EmailTemplateRecipientsType extends AbstractType
         $view->vars['dataType'] = 'template';
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'template_recipients';
     }
 
-    protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true, $label = null)
+    protected function addRecipientType($name, FormInterface $form, $type, $params = null, $removable = true, $label = null): void
     {
         /** @var EmailTemplateRecipientTypeInterface $recType */
         $recType = $this->manager->getTemplateRecipientType($type);

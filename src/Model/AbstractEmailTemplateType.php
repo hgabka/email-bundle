@@ -411,7 +411,7 @@ class AbstractEmailTemplateType implements EmailTemplateTypeInterface
             return $reader->getMethodAnnotation($method, $name);
         }
         $reader = new AttributeReader();
-        $annotations = $reader->getMethodAnnotations($method);
+        $annotations = $reader->getMethodAttributes($method);
 
         $attributes = $method->getAttributes($name);
 

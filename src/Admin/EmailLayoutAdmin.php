@@ -15,8 +15,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmailLayoutAdmin extends AbstractAdmin
 {
-    protected $baseRoutePattern = 'email-layout';
-
     /** @var MailBuilder */
     protected $mailBuilder;
 
@@ -40,12 +38,17 @@ class EmailLayoutAdmin extends AbstractAdmin
         return $this;
     }
 
+    public function generateBaseRoutePattern(bool $isChildAdmin = false): string
+    {
+        return 'email-layout';
+    }
+
     public function toString(object $object): string
     {
         return $this->trans('hg_email.label.message_list', ['%name%' => (string) $object->getName()]);
     }
 
-    protected function configureDefaultSortValues(array & $sortValues): void
+    protected function configureDefaultSortValues(array &$sortValues): void
     {
         $sortValues[DatagridInterface::SORT_BY] = 'translations.name';
     }

@@ -53,7 +53,7 @@ class MessageSubscriberAdminType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $subscriptionManager = $this->subscriptionManager;
         $hgabkaUtils = $this->hgabkaUtils;
@@ -84,7 +84,7 @@ class MessageSubscriberAdminType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'hg_email_message_subscriber_type';
     }

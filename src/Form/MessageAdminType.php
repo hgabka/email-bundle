@@ -50,7 +50,7 @@ class MessageAdminType extends AbstractType
      * @param FormBuilderInterface $builder The form builder
      * @param array                $options The options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $mailBuilder = $this->mailBulder;
         $builder
@@ -139,7 +139,7 @@ class MessageAdminType extends AbstractType
      *
      * @return string The name of this type
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'hg_email_message_type';
     }

@@ -14,6 +14,7 @@ use Hgabka\EmailBundle\Helper\RecipientManager;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
+use Hgabka\UtilsBundle\Helper\HgabkaUtils;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\ProxyQueryInterface;
@@ -29,8 +30,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EmailTemplateAdmin extends AbstractAdmin
 {
-    protected $baseRoutePattern = 'email-template';
-
     /** @var MailBuilder */
     private $builder;
 
@@ -40,9 +39,17 @@ class EmailTemplateAdmin extends AbstractAdmin
     /** @var TemplateTypeManager */
     private $templateTypeManager;
 
+    /** @var HgabkaUtils */
+    private $utils;
+
     public function setBuilder(MailBuilder $builder)
     {
         $this->builder = $builder;
+    }
+
+    public function setUtils(HgabkaUtils $utils)
+    {
+        $this->utils = $utils;
     }
 
     public function setTemplateTypeManager(TemplateTypeManager $templateTypeManager)
@@ -53,6 +60,11 @@ class EmailTemplateAdmin extends AbstractAdmin
     public function setAuthChecker(AuthorizationCheckerInterface $authChecker)
     {
         $this->authChecker = $authChecker;
+    }
+
+    public function generateBaseRoutePattern(bool $isChildAdmin = false): string
+    {
+        return 'email-template';
     }
 
     public function prePersist(object $object): void
@@ -183,8 +195,13 @@ class EmailTemplateAdmin extends AbstractAdmin
             'subject' => [
                 'field_type' => TextType::class,
                 'label' => 'hg_email.label.subject',
-                'required' => true,
-                'constraints' => new NotBlank(),
+                'required' => false,
+                'locale_options' => [
+                    $this->utils->getDefaultLocale() => [
+                            'required' => true,
+                            'constraints' => new NotBlank(),
+                    ],
+                ],
             ],
             'contentText' => [
                 'field_type' => TextareaType::class,
@@ -216,6 +233,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         $options = [
             'label' => false,
             'fields' => $transFields,
+            'required' => false,
         ];
         if (!$type->isSenderEditable()) {
             $options['excluded_fields'] = ['fromName', 'fromEmail'];
