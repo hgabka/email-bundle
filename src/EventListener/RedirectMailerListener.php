@@ -62,6 +62,10 @@ readonly class RedirectMailerListener
 
     protected function checkHost(): bool
     {
+        if ($this->debug) {
+            return true;
+        }
+        
         $redirectConfig = $this->redirectConfig;
         $hosts = isset($redirectConfig['hosts']) ? (!\is_array($redirectConfig['hosts']) ? [$redirectConfig['hosts']] : $redirectConfig['hosts']) : [];
 
@@ -76,7 +80,7 @@ readonly class RedirectMailerListener
             }
         }
 
-        return $this->debug || $hostEnabled;
+        return $hostEnabled;
     }
 
     protected function isEnabled(): bool
