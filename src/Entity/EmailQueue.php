@@ -30,10 +30,10 @@ class EmailQueue extends AbstractQueue
     #[ORM\Column(name: 'subject', type: 'string', length: 255, nullable: true)]
     protected ?string $subject = null;
 
-    #[ORM\Column(name: 'message_embeds', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'message_embeds', type: 'json', nullable: true)]
     protected ?array $embeds = null;
 
-    #[ORM\Column(name: 'mail_headers', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'mail_headers', type: 'json', nullable: true)]
     protected ?array $headers = null;
 
     #[ORM\Column(name: 'content_text', type: 'text', nullable: true)]
