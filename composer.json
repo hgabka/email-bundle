@@ -15,8 +15,8 @@
     ],
     "require": {
         "php" : "^8.2",
-        "hgabka/utils-bundle": "^7.0",
-        "hgabka/media-bundle": "^7.0",
+        "hgabka/utils-bundle": "^7.1",
+        "hgabka/media-bundle": "^7.1",
         "a2lix/translation-form-bundle": "^3.2",
         "symfony/framework-bundle": "^7.0",
         "twig/cssinliner-extra": "^3.3"
