@@ -36,13 +36,13 @@ class EmailTemplate implements TranslatableInterface
     #[ORM\JoinColumn(name: 'email_layout_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?EmailLayout $layout = null;
 
-    #[ORM\Column(name: 'to_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'to_data', type: 'json', nullable: true)]
     protected ?array $toData = null;
 
-    #[ORM\Column(name: 'cc_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'cc_data', type: 'json', nullable: true)]
     protected ?array $ccData = null;
 
-    #[ORM\Column(name: 'bcc_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'bcc_data', type: 'json', nullable: true)]
     protected ?array $bccData = null;
 
     /**
