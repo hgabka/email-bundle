@@ -35,13 +35,13 @@ class Message implements TranslatableInterface
     #[Assert\Valid]
     protected Collection|array|null $sendLists = null;
 
-    #[ORM\Column(name: 'to_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'to_data', type: 'json', nullable: true)]
     protected ?array $toData = null;
 
-    #[ORM\Column(name: 'cc_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'cc_data', type: 'json', nullable: true)]
     protected ?array $ccData = null;
 
-    #[ORM\Column(name: 'bcc_data', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'bcc_data', type: 'json', nullable: true)]
     protected ?array $bccData = null;
 
     #[ORM\Column(name: 'send_at', type: 'datetime', nullable: true)]
