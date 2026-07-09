@@ -2,7 +2,7 @@
 
 namespace Hgabka\EmailBundle\Admin\Menu;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Sonata\AdminBundle\Admin\Pool;
