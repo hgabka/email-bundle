@@ -23,10 +23,8 @@ class EmailQueueRepository extends EntityRepository
             ->andWhere('c.id IS NULL OR c.isActive = 1')
             ->andWhere('q.sendAt IS NULL OR q.sendAt <= :now')
             ->orderBy('q.createdAt', 'DESC')
-            ->setParameters([
-                'now' => new \DateTime(),
-                'status' => $status,
-            ])
+            ->setParameter('now', new \DateTime())
+            ->setParameter('status', $status)
         ;
 
         if (!empty($limit)) {

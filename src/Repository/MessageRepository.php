@@ -31,7 +31,8 @@ class MessageRepository extends EntityRepository
             ->createQueryBuilder('n')
             ->where('n.status = :status')
             ->andWhere('n.sendAt IS NULL OR n.sendAt <= :date')
-            ->setParameters(['date' => new \DateTime(), 'status' => MessageStatusEnum::STATUS_KULDENDO])
+            ->setParameter('date', new \DateTime())
+            ->setParameter('status', MessageStatusEnum::STATUS_KULDENDO)
             ->getQuery()
             ->getResult()
             ;

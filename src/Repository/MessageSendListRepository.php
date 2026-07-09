@@ -26,10 +26,8 @@ class MessageSendListRepository extends EntityRepository
             ->createQueryBuilder('l')
             ->where('l.list = :list')
             ->andWhere('l.message = :message')
-            ->setParameters([
-                'list' => $list,
-                'message' => $message,
-            ])
+            ->setParameter('list', $list)
+            ->setParameter('message', $message)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()

@@ -127,10 +127,8 @@ class MessageQueueRepository extends EntityRepository
                 ->createQueryBuilder('q')
                 ->where('q.message = :msg')
                 ->andWhere('q.toEmail = :email')
-                ->setParameters([
-                    'msg' => $message,
-                    'email' => $email,
-                ])
+                ->setParameter('msg', $message)
+                ->setParameter('email', $email)
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getOneOrNullResult()

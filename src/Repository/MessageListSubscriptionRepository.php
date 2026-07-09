@@ -18,10 +18,8 @@ class MessageListSubscriptionRepository extends EntityRepository
             ->createQueryBuilder('l')
             ->where('l.subscriber = :subscr')
             ->andWhere('l.list = :list')
-            ->setParameters([
-                'subscr' => $subscriber,
-                'list' => $list,
-            ])
+            ->setParameter('subscr', $subscriber)
+            ->setParameter('list', $list)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()

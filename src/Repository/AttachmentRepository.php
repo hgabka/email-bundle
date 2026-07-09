@@ -15,12 +15,8 @@ class AttachmentRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where('a.type = :type')
             ->andWhere('a.ownerId = :queueId')
-            ->setParameters(
-                [
-                    'type' => \get_class($queue),
-                    'queueId' => $queue->getId(),
-                ]
-            )
+            ->setParameter('type', \get_class($queue))
+            ->setParameter('queueId', $queue->getId())
             ->getQuery()
             ->getResult()
         ;
@@ -62,7 +58,8 @@ class AttachmentRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where('a.type = :type')
             ->andWhere('a.ownerId = :typeid')
-            ->setParameters(['type' => $type, 'typeid' => $id])
+            ->setParameter('type', $type)
+            ->setParameter('typeid', $id)
         ;
 
         if (!empty($locale)) {
