@@ -66,17 +66,17 @@ class MessageAdminController extends CRUDController
         if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException();
         }
-        $fieldName = $request->get('fieldType') . 'Data';
+        $fieldName = \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'fieldType') . 'Data';
 
-        $type = $request->get('type');
+        $type = \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'type');
         $recType = $recipientManager->getMessageRecipientType($type);
 
         $builder = $this
             ->formFactory
-            ->createNamedBuilder($request->get('name'))
+            ->createNamedBuilder(\Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'name'))
             ->add($fieldName, MessageRecipientsType::class, [
                 'admin' => $this->admin,
-                'recipients_type' => $request->get('fieldtype'),
+                'recipients_type' => \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'fieldtype'),
             ])
         ;
 
@@ -346,7 +346,7 @@ class MessageAdminController extends CRUDController
      */
     protected function redirectTo(Request $request, object $object): RedirectResponse
     {
-        if (null !== $request->get('btn_update_and_prepare')) {
+        if (null !== \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'btn_update_and_prepare')) {
             return $this->redirect($this->admin->generateObjectUrl('prepare', $object));
         }
 

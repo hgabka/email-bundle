@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Admin;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
+use Hgabka\EmailBundle\Entity\EmailLayout;
 use Hgabka\EmailBundle\Helper\MailBuilder;
 use Hgabka\UtilsBundle\Form\Type\StaticControlType;
 use Hgabka\UtilsBundle\Form\WysiwygType;
@@ -105,13 +106,15 @@ class EmailLayoutAdmin extends AbstractAdmin
             ->with('hg_email.block.layout.general')
                 ->add('translations', TranslationsType::class, [
                     'label' => false,
-                    'fields' => [
+                    'translatable_class' => EmailLayout::class,
+                    'children_excluded' => '*',
+                    'children' => [
                         'name' => [
                             'label' => 'hg_email.label.name',
                             'constraints' => new NotBlank(),
                         ],
                         'contentHtml' => [
-                            'field_type' => WysiwygType::class,
+                            'child_type' => WysiwygType::class,
                             'label' => 'hg_email.label.content_html',
                             'constraints' => new NotBlank(),
                             'config' => [

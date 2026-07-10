@@ -66,22 +66,24 @@ class MessageAdminType extends AbstractType
         $builder
             ->add('translations', TranslationsType::class, [
                 'label' => false,
-                'fields' => [
+                'translatable_class' => Message::class,
+                'children_excluded' => '*',
+                'children' => [
                     'subject' => [
-                        'field_type' => TextType::class,
+                        'child_type' => TextType::class,
                         'label' => 'hgabka_kuma_email.labels.subject',
                         'required' => true,
                     ],
                     'contentText' => [
-                        'field_type' => TextareaType::class,
+                        'child_type' => TextareaType::class,
                         'label' => 'hgabka_kuma_email.labels.content_text',
                     ],
                     'contentHtml' => [
-                        'field_type' => WysiwygType::class,
+                        'child_type' => WysiwygType::class,
                         'label' => 'hgabka_kuma_email.labels.content_html',
                     ],
                     'attachments' => [
-                        'field_type' => CollectionType::class,
+                        'child_type' => CollectionType::class,
                         'label' => 'hgabka_kuma_email.labels.attachments',
                         'entry_type' => AttachmentType::class,
                         'allow_add' => true,

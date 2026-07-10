@@ -3,6 +3,7 @@
 namespace Hgabka\EmailBundle\Admin;
 
 use A2lix\TranslationFormBundle\Form\Type\TranslationsType;
+use Hgabka\EmailBundle\Entity\MessageList;
 use Hgabka\EmailBundle\Helper\SubscriptionManager;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridInterface;
@@ -91,7 +92,9 @@ class MessageListAdmin extends AbstractAdmin
         $form
             ->add('translations', TranslationsType::class, [
                 'label' => false,
-                'fields' => [
+                'translatable_class' => MessageList::class,
+                'children_excluded' => '*',
+                'children' => [
                     'name' => [
                         'label' => 'hg_email.label.name',
                         'constraints' => new NotBlank(),

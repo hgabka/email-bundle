@@ -166,7 +166,7 @@ class EmailTemplateAdmin extends AbstractAdmin
         $type = $this->templateTypeManager->getTemplateType($this->getSubject()->getType());
         $transFields = [
             'comment' => [
-                'field_type' => TextType::class,
+                'child_type' => TextType::class,
                 'label' => 'hg_email.label.comment',
                 'required' => true,
                 'constraints' => new NotBlank(),
@@ -176,13 +176,13 @@ class EmailTemplateAdmin extends AbstractAdmin
         if ($type->isSenderEditable()) {
             $transFields = array_merge($transFields, [
                 'fromName' => [
-                    'field_type' => TextType::class,
+                    'child_type' => TextType::class,
                     'label' => 'hg_email.label.from_name',
                     'help' => $this->getTranslator()->trans('hg_email.help.from_name', ['%current%' => $this->builder->getDefaultFromName()]),
                     'required' => false,
                 ],
                 'fromEmail' => [
-                    'field_type' => TextType::class,
+                    'child_type' => TextType::class,
                     'label' => 'hg_email.label.from_email',
                     'help' => $this->getTranslator()->trans('hg_email.help.from_email', ['%current%' => $this->builder->getDefaultFromEmail()]),
                     'required' => false,
@@ -193,18 +193,12 @@ class EmailTemplateAdmin extends AbstractAdmin
 
         $transFields = array_merge($transFields, [
             'subject' => [
-                'field_type' => TextType::class,
+                'child_type' => TextType::class,
                 'label' => 'hg_email.label.subject',
                 'required' => false,
-                'locale_options' => [
-                    $this->utils->getDefaultLocale() => [
-                            'required' => true,
-                            'constraints' => new NotBlank(),
-                    ],
-                ],
             ],
             'contentText' => [
-                'field_type' => TextareaType::class,
+                'child_type' => TextareaType::class,
                 'label' => 'hg_email.label.content_text',
                 'required' => false,
                 'attr' => [
@@ -212,12 +206,12 @@ class EmailTemplateAdmin extends AbstractAdmin
                 ],
             ],
             'contentHtml' => [
-                'field_type' => WysiwygType::class,
+                'child_type' => WysiwygType::class,
                 'label' => 'hg_email.label.content_html',
                 'required' => false,
             ],
             'attachments' => [
-                'field_type' => CollectionType::class,
+                'child_type' => CollectionType::class,
                 'label' => false,
                 'entry_type' => AttachmentType::class,
                 'allow_add' => true,
@@ -232,12 +226,11 @@ class EmailTemplateAdmin extends AbstractAdmin
         ]);
         $options = [
             'label' => false,
-            'fields' => $transFields,
+            'translatable_class' => EmailTemplate::class,
+            'children_excluded' => '*',
+            'children' => $transFields,
             'required' => false,
         ];
-        if (!$type->isSenderEditable()) {
-            $options['excluded_fields'] = ['fromName', 'fromEmail'];
-        }
 
         $form
             ->tab('hg_email.tab.general')

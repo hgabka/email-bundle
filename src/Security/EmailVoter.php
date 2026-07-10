@@ -9,6 +9,7 @@ use Hgabka\EmailBundle\Entity\MessageSubscriber;
 use Hgabka\EmailBundle\Helper\TemplateTypeManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EmailVoter extends Voter
@@ -49,14 +50,14 @@ class EmailVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();
 
         switch ($attribute) {
             case self::EDIT:
                 if ($subject instanceof EmailTemplate) {
-                    $type = $this->templateTypeManager->getTemplateType($object->getType());
+                    $type = $this->templateTypeManager->getTemplateType($subject->getType());
                     if ($type && !$type->isPublic()) {
                         return false;
                     }

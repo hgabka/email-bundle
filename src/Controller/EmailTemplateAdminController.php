@@ -32,18 +32,18 @@ class EmailTemplateAdminController extends CRUDController
         $existingObject = $this->admin->getObject($id);
 
         $this->admin->setSubject($existingObject);
-        $fieldName = $request->get('fieldType') . 'Data';
+        $fieldName = \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'fieldType') . 'Data';
 
-        $type = $request->get('type');
+        $type = \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'type');
         $recType = $recipientManager->getTemplateRecipientType($type);
 
         $builder = $this
             ->formFactory
-            ->createNamedBuilder($request->get('name'))
+            ->createNamedBuilder(\Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'name'))
             ->add($fieldName, EmailTemplateRecipientsType::class, [
                 'admin' => $this->admin,
                 'template_type' => $this->admin->getSubject()->getType(),
-                'recipients_type' => $request->get('fieldtype'),
+                'recipients_type' => \Hgabka\UtilsBundle\Helper\RequestHelper::get($request, 'fieldtype'),
             ])
         ;
 
