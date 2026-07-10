@@ -398,7 +398,6 @@ class QueueManager
         $queue->setReturnPath(empty($returnPath) ? null : serialize($returnPath));
 
         $r = new \ReflectionProperty(Email::class, 'attachments');
-        $r->setAccessible(true);
         $atts = $r->getValue($message);
         $queueAtts = [];
         if (!empty($atts)) {
