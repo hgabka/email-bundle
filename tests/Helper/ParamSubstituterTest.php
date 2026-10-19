@@ -112,6 +112,30 @@ class ParamSubstituterTest extends TestCase
         $this->assertSame('', $normalized['empty']);
     }
 
+    public function testObjectParamsDoNotBreakSubstitution(): void
+    {
+        $user = new class() {
+            public string $Email = 'a@example.com';
+
+            public function getName(): string
+            {
+                return 'Ann';
+            }
+        };
+
+        $text = $this->substituter()->substituteParams('%%user.getName%% <%%user.email%%> %%user%%', ['user' => $user]);
+
+        $this->assertSame('Ann <a@example.com> %%user%%', $text);
+    }
+
+    public function testRemoteImageUrlsAreNotTreatedAsLocalFiles(): void
+    {
+        $html = $this->substituter()->setAbsoluteImageUrls('<img src="//cdn.test/a.png"><img src="img/logo.png">');
+
+        $this->assertStringContainsString('src="//cdn.test/a.png"', $html);
+        $this->assertStringContainsString('src="https://example.testimg/logo.png"', $html);
+    }
+
     public function testBlockParamsWrapTheirParagraphInADiv(): void
     {
         $text = $this->substituter()->substituteParams('<p>Before</p><p>%%box%%</p>', ['box' => ['type' => 'block', 'value' => '<ul><li>x</li></ul>']]);

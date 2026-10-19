@@ -6,7 +6,6 @@ use function is_array;
 use function is_string;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Mime\Exception\InvalidArgumentException;
 use Symfony\Component\Mime\Header\Headers;
 
 class MailHelper
@@ -36,7 +35,7 @@ class MailHelper
         foreach ($addresses as $address) {
             try {
                 $address = Address::create($address);
-            } catch (InvalidArgumentException $e) {
+            } catch (\InvalidArgumentException $e) {
                 continue;
             }
 

@@ -14,9 +14,17 @@ class EmailParserTest extends TestCase
         $parser = new EmailParser(self::RAW);
 
         $this->assertSame('Sender <sender@example.com>', $parser->getHeader('From'));
+        $this->assertSame(['a@example.com', 'b@example.com'], $parser->getTo());
         $this->assertSame('Sender <sender@example.com>', $parser->getHeader('from'));
         $this->assertSame('', $parser->getHeader('X-Missing'));
         $this->assertSame(['c@example.com'], $parser->getCc());
+    }
+
+    public function testMissingRecipientsAreReported(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("Couldn't find the recipients");
+        (new EmailParser("Subject: x\r\n\r\nbody"))->getTo();
     }
 
     public function testMissingCcIsAnEmptyList(): void

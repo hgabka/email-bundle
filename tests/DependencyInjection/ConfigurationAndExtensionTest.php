@@ -62,6 +62,13 @@ class ConfigurationAndExtensionTest extends TestCase
         $this->assertSame('mailBoxList', $config['add_headers']['Sender']['type']);
     }
 
+    public function testHeaderNamesKeepTheirDashes(): void
+    {
+        $config = $this->process(['add_headers' => ['X-Mailer' => ['value' => 'hgabka'], 'List-Unsubscribe' => ['value' => '<mailto:u@example.com>']]]);
+
+        $this->assertSame(['X-Mailer', 'List-Unsubscribe'], array_keys($config['add_headers']));
+    }
+
     public function testInvalidValuesAreRejected(): void
     {
         $this->expectException(InvalidConfigurationException::class);

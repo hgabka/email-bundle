@@ -49,7 +49,7 @@ class EmailParser
     public function getSubject()
     {
         if (!isset($this->rawFields['subject'])) {
-            throw new Exception("Couldn't find the subject of the email");
+            throw new \Exception("Couldn't find the subject of the email");
         }
 
         $ret = '';
@@ -85,8 +85,8 @@ class EmailParser
      */
     public function getTo()
     {
-        if ((!isset($this->rawFields['to'])) || (!\count($this->rawFields['to']))) {
-            throw new Exception("Couldn't find the recipients of the email");
+        if (empty($this->rawFields['to'])) {
+            throw new \Exception("Couldn't find the recipients of the email");
         }
 
         return explode(',', $this->rawFields['to']);

@@ -59,7 +59,7 @@ class ParamSubstituter
             if (\is_string($param)) {
                 $text = strtr($text, [$key => $param]);
             } else {
-                if (!isset($param['value']) || !\is_string($param['value'])) {
+                if (!\is_array($param) || !isset($param['value']) || !\is_string($param['value'])) {
                     continue;
                 }
 
@@ -253,7 +253,7 @@ class ParamSubstituter
      */
     protected function embedImage($url, $email)
     {
-        if (0 !== strpos('http://', $url) && 0 !== strpos('https://', $url)) {
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
             $file = $this->projectDir . '/web/' . $url;
             if (!is_file($file)) {
                 $file = $this->projectDir . '/public/' . $url;
@@ -269,7 +269,7 @@ class ParamSubstituter
             }
             $p = pathinfo($url);
 
-            $dir = $this->cacheDir . '/mailimages/' . $email->getHeaders('Message-ID');
+            $dir = $this->cacheDir . '/mailimages/' . md5($url);
             if (!file_exists($dir)) {
                 mkdir($dir, 0777, true);
             }
@@ -292,7 +292,7 @@ class ParamSubstituter
      */
     protected function addHost($url)
     {
-        if (0 === strpos('http://', $url) || 0 === strpos('https://', $url) || 0 === strpos('//', $url)) {
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://') || str_starts_with($url, '//')) {
             return $url;
         }
 

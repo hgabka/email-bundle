@@ -27,6 +27,11 @@ class MailHelperTest extends TestCase
         $this->assertSame('"Ann" <a@example.com>', $this->helper->displayAddresses('Ann <a@example.com>'));
     }
 
+    public function testInvalidAddressesInAListAreSkipped(): void
+    {
+        $this->assertSame('a@example.com', $this->helper->displayAddresses(['a@example.com', 'not an address']));
+    }
+
     public function testEmbedIdsAreUniqueContentIds(): void
     {
         $first = $this->helper->generateEmbedId();

@@ -100,6 +100,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('return_path')->defaultValue('sfhungary@gmail.com')->end()
                 ->arrayNode('add_headers')
                     ->useAttributeAsKey('name')
+                    ->normalizeKeys(false)
                     ->prototype('array')
                         ->children()
                             ->scalarNode('type')->defaultValue('text')->end()
