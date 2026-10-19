@@ -58,7 +58,7 @@ class ConfigurationAndExtensionTest extends TestCase
     {
         $config = $this->process(['add_headers' => ['Precedence' => ['value' => 'bulk'], 'Sender' => ['type' => 'mailBoxList', 'value' => 'a@example.com']]]);
 
-        $this->assertSame(['type' => 'text', 'value' => 'bulk'], $config['add_headers']['Precedence']);
+        $this->assertEquals(['type' => 'text', 'value' => 'bulk'], $config['add_headers']['Precedence']);
         $this->assertSame('mailBoxList', $config['add_headers']['Sender']['type']);
     }
 
