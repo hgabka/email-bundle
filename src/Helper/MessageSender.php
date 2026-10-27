@@ -490,7 +490,7 @@ class MessageSender
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $params
-     * @param null                              $locale
+     * @param null|string                       $locale
      * @param null                              $sendAt
      * @param bool                              $campaign
      * @param mixed                             $sendParams
@@ -519,7 +519,7 @@ class MessageSender
     /**
      * @param EmailTemplateTypeInterface|string $class
      * @param array                             $params
-     * @param null                              $locale
+     * @param null|string                       $locale
      * @param mixed                             $sendParams
      *
      * @return bool|int|mixed
