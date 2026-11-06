@@ -72,6 +72,9 @@ class MailBuilder
 
     protected $messageVars = [];
 
+    /** @var iterable<MessageVarInterface>|null tagged (hg_email.message_var) services, ordered by tag priority */
+    private ?iterable $pendingMessageVars;
+
     /**
      * MailBuilder constructor.
      */
@@ -87,8 +90,10 @@ class MailBuilder
         EventDispatcherInterface $eventDispatcher,
         TemplateTypeManager $templateTypeManager,
         LayoutManager $layoutManager,
-        MailHelper $mailHelper
+        MailHelper $mailHelper,
+        iterable $messageVars = []
     ) {
+        $this->pendingMessageVars = $messageVars;
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
         $this->paramSubstituter = $paramSubstituter;
@@ -103,8 +108,26 @@ class MailBuilder
         $this->mailHelper = $mailHelper;
     }
 
+    private function loadMessageVars(): void
+    {
+        if (null === $this->pendingMessageVars) {
+            return;
+        }
+
+        $pending = $this->pendingMessageVars;
+        $this->pendingMessageVars = null;
+
+        // the iterator already yields the services in tag priority order
+        $loaded = [];
+        foreach ($pending as $messageVar) {
+            $loaded[\get_class($messageVar)] = $messageVar;
+        }
+        $this->messageVars = $loaded + $this->messageVars;
+    }
+
     public function addMessageVar(MessageVarInterface $messageVar, $priority = null)
     {
+        $this->loadMessageVars();
         $alias = \get_class($messageVar);
 
         if (null !== $priority) {
@@ -457,6 +480,7 @@ class MailBuilder
             $params[$key] = $value;
         }
 
+        $this->loadMessageVars();
         foreach ($this->messageVars as $messageVar) {
             $value = $messageVar->getValue($message, $paramFrom, $to, $locale, $queue);
 
@@ -589,6 +613,7 @@ class MailBuilder
     {
         $vars = $this->getFromToParams();
 
+        $this->loadMessageVars();
         foreach ($this->messageVars as $messageVar) {
             $enabled = $messageVar->isEnabled($message);
             if ($enabled) {

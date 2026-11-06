@@ -53,14 +53,14 @@ services:
 
     Hgabka\EmailBundle\Helper\RecipientManager:
         public: true
-        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager", '@Hgabka\EmailBundle\Helper\MailHelper', '']
+        arguments: ["@doctrine", "@translator", "@form.factory", "@hg_email.template_type_manager", '@Hgabka\EmailBundle\Helper\MailHelper', '', !tagged_iterator hg_email.email_template_recipient_type, !tagged_iterator hg_email.message_recipient_type]
 
     hg_email.recipient_manager:
         alias: Hgabka\EmailBundle\Helper\RecipientManager
 
     hg_email.template_type_manager:
         class: '%hg_email.template_type_manager.class%'
-        arguments: ["@doctrine", "@translator", "@hgabka_utils.hgabka_utils"]
+        arguments: ["@doctrine", "@translator", "@hgabka_utils.hgabka_utils", !tagged_iterator hg_email.email_template_type]
 
     hg_email.email_template_recipient_type.default:
         class:  Hgabka\EmailBundle\Recipient\DefaultEmailTemplateRecipientType
@@ -118,11 +118,11 @@ services:
 
     hg_email.layout_manager:
         class: Hgabka\EmailBundle\Helper\LayoutManager
-        arguments: ['@hgabka_utils.hgabka_utils', '@hg_email.param_substituter', '@twig', '']
+        arguments: ['@hgabka_utils.hgabka_utils', '@hg_email.param_substituter', '@twig', '', !tagged_iterator hg_email.layout_var]
 
     hg_email.mail_builder:
         class: '%hg_email.mail_builder.class%'
-        arguments: ['@doctrine', '@request_stack', '@hg_email.param_substituter', '@translator', '@hgabka_utils.hgabka_utils', '@router', '@hgabka_media.media_manager', '@hg_email.recipient_manager', '@event_dispatcher', '@hg_email.template_type_manager', '@hg_email.layout_manager', '@Hgabka\EmailBundle\Helper\MailHelper']
+        arguments: ['@doctrine', '@request_stack', '@hg_email.param_substituter', '@translator', '@hgabka_utils.hgabka_utils', '@router', '@hgabka_media.media_manager', '@hg_email.recipient_manager', '@event_dispatcher', '@hg_email.template_type_manager', '@hg_email.layout_manager', '@Hgabka\EmailBundle\Helper\MailHelper', !tagged_iterator hg_email.message_var]
 
     hg_email.message_sender:
         class: '%hg_email.message_sender.class%'

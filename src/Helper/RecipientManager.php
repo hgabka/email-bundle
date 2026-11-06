@@ -31,10 +31,14 @@ class RecipientManager
     protected $formFactory;
 
     /** @var array|EmailTemplateRecipientTypeInterface[] */
-    protected $templateRecipientTypes;
+    protected $templateRecipientTypes = [];
 
     /** @var array|MessageRecipientTypeInterface[] */
-    protected $messageRecipientTypes;
+    protected $messageRecipientTypes = [];
+
+    private ?iterable $pendingTemplateRecipientTypes;
+
+    private ?iterable $pendingMessageRecipientTypes;
 
     /** @var TemplateTypeManager */
     protected $templateTypeManager;
@@ -50,8 +54,10 @@ class RecipientManager
      *
      * @param mixed $excludedRecipientClasses
      */
-    public function __construct(Registry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, MailHelper $mailHelper, $excludedRecipientClasses)
+    public function __construct(Registry $doctrine, TranslatorInterface $translator, FormFactoryInterface $formFactory, TemplateTypeManager $templateTypeManager, MailHelper $mailHelper, $excludedRecipientClasses, iterable $templateRecipientTypes = [], iterable $messageRecipientTypes = [])
     {
+        $this->pendingTemplateRecipientTypes = $templateRecipientTypes;
+        $this->pendingMessageRecipientTypes = $messageRecipientTypes;
         $this->doctrine = $doctrine;
         $this->translator = $translator;
         $this->formFactory = $formFactory;
@@ -60,44 +66,48 @@ class RecipientManager
         $this->mailHelper = $mailHelper;
     }
 
-    /**
-     * @param       $alias
-     * @param mixed $priority
-     */
     public function addTemplateRecipientType(EmailTemplateRecipientTypeInterface $type, $priority = null)
     {
-        $alias = \get_class($type);
-        if (null !== $type->getPriority()) {
-            $type->setPriority($priority);
-        }
-
-        $this->templateRecipientTypes[$alias] = $type;
-        uasort($this->templateRecipientTypes, function ($type1, $type2) {
-            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
-            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
-
-            return $p2 <=> $p1;
-        });
+        $this->loadTypes();
+        $this->registerType($this->templateRecipientTypes, $type, $priority);
     }
 
-    /**
-     * @param       $alias
-     * @param mixed $priority
-     */
     public function addMessageRecipientType(MessageRecipientTypeInterface $type, $priority = null)
     {
-        $alias = \get_class($type);
+        $this->loadTypes();
+        $this->registerType($this->messageRecipientTypes, $type, $priority);
+    }
 
-        if (null !== $type->getPriority()) {
+    private function loadTypes(): void
+    {
+        if (null !== $this->pendingTemplateRecipientTypes) {
+            $pending = $this->pendingTemplateRecipientTypes;
+            $this->pendingTemplateRecipientTypes = null;
+            foreach ($pending as $type) {
+                $this->registerType($this->templateRecipientTypes, $type);
+            }
+        }
+
+        if (null !== $this->pendingMessageRecipientTypes) {
+            $pending = $this->pendingMessageRecipientTypes;
+            $this->pendingMessageRecipientTypes = null;
+            foreach ($pending as $type) {
+                $this->registerType($this->messageRecipientTypes, $type);
+            }
+        }
+    }
+
+    private function registerType(array &$types, $type, $priority = null): void
+    {
+        if (null === $type->getPriority() && null !== $priority) {
             $type->setPriority($priority);
         }
 
-        $this->messageRecipientTypes[$alias] = $type;
-        uasort($this->messageRecipientTypes, function ($type1, $type2) {
-            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
-            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
+        $types[\get_class($type)] = $type;
 
-            return $p2 <=> $p1;
+        // uasort is stable (PHP 8), so equal priorities keep the tag priority order
+        uasort($types, static function ($type1, $type2) {
+            return ($type2->getPriority() ?? 0) <=> ($type1->getPriority() ?? 0);
         });
     }
 
@@ -106,6 +116,8 @@ class RecipientManager
      */
     public function getTemplateRecipientType(?string $type = null)
     {
+        $this->loadTypes();
+
         return !empty($type) ? ($this->templateRecipientTypes[$type] ?? null) : null;
     }
 
@@ -114,6 +126,8 @@ class RecipientManager
      */
     public function getMessageRecipientType(?string $type = null)
     {
+        $this->loadTypes();
+
         return !empty($type) ? ($this->messageRecipientTypes[$type] ?? null) : null;
     }
 
@@ -171,6 +185,8 @@ class RecipientManager
      */
     public function getTemplateRecipientTypeChoices()
     {
+        $this->loadTypes();
+
         $choices = [];
         foreach ($this->templateRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
@@ -189,6 +205,8 @@ class RecipientManager
      */
     public function getMessageRecipientTypeChoices()
     {
+        $this->loadTypes();
+
         $choices = [];
         foreach ($this->messageRecipientTypes as $class => $type) {
             if ($type->isPublic()) {
@@ -408,11 +426,15 @@ class RecipientManager
 
     protected function hasTemplateRecipientType($type)
     {
+        $this->loadTypes();
+
         return \array_key_exists($type, $this->templateRecipientTypes);
     }
 
     protected function hasMessageRecipientType($type)
     {
+        $this->loadTypes();
+
         return \array_key_exists($type, $this->messageRecipientTypes);
     }
 

@@ -22,39 +22,37 @@ class TemplateTypeManager
     /** @var array|EmailTemplateTypeInterface[] */
     protected $templateTypes = [];
 
+    /** @var iterable<EmailTemplateTypeInterface>|null */
+    private ?iterable $pendingTypes;
+
     /**
-     * TemplateTypeManager constructor.
+     * @param iterable<EmailTemplateTypeInterface> $templateTypes tagged (hg_email.email_template_type) services, ordered by tag priority
      */
-    public function __construct(Registry $doctrine, TranslatorInterface $translator, HgabkaUtils $hgabkaUtils)
+    public function __construct(Registry $doctrine, TranslatorInterface $translator, HgabkaUtils $hgabkaUtils, iterable $templateTypes = [])
     {
         $this->doctrine = $doctrine;
         $this->translator = $translator;
         $this->hgabkaUtils = $hgabkaUtils;
+        $this->pendingTypes = $templateTypes;
     }
 
     public function addTemplateType(EmailTemplateTypeInterface $templateType, $priority = null)
     {
-        $alias = \get_class($templateType);
-        if (null !== $templateType->getPriority()) {
-            $templateType->setPriority($priority);
-        }
-
-        $this->templateTypes[$alias] = $templateType;
-        uasort($this->templateTypes, function ($type1, $type2) {
-            $p1 = (null === $type1->getPriority() ? 0 : $type1->getPriority());
-            $p2 = (null === $type2->getPriority() ? 0 : $type2->getPriority());
-
-            return $p2 <=> $p1;
-        });
+        $this->load();
+        $this->register($templateType, $priority);
+        $this->sort();
     }
 
     public function getTemplateType($class)
     {
+        $this->load();
+
         return $this->templateTypes[$class] ?? null;
     }
 
     public function getTemplateTypeEntities($onlyPublic = false)
     {
+        $this->load();
         $res = [];
         foreach ($this->templateTypes as $class => $type) {
             $res[] = $this->getTemplateEntity($type);
@@ -70,6 +68,8 @@ class TemplateTypeManager
      */
     public function getTemplateTypes($onlyPublic = false)
     {
+        $this->load();
+
         if (!$onlyPublic) {
             return $this->templateTypes;
         }
@@ -129,5 +129,37 @@ class TemplateTypeManager
         }
 
         return $templateType->getEntity();
+    }
+
+    private function load(): void
+    {
+        if (null === $this->pendingTypes) {
+            return;
+        }
+
+        $pending = $this->pendingTypes;
+        $this->pendingTypes = null;
+
+        foreach ($pending as $type) {
+            $this->register($type);
+        }
+        $this->sort();
+    }
+
+    private function register(EmailTemplateTypeInterface $templateType, $priority = null): void
+    {
+        if (null === $templateType->getPriority() && null !== $priority) {
+            $templateType->setPriority($priority);
+        }
+
+        $this->templateTypes[\get_class($templateType)] = $templateType;
+    }
+
+    private function sort(): void
+    {
+        // uasort is stable (PHP 8), so equal priorities keep the tag priority order
+        uasort($this->templateTypes, static function ($type1, $type2) {
+            return ($type2->getPriority() ?? 0) <=> ($type1->getPriority() ?? 0);
+        });
     }
 }

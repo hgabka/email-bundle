@@ -15,16 +15,22 @@ class LayoutManager
     /** @var LayoutVarInterface[] */
     protected array $layoutVars = [];
 
+    /** @var iterable<LayoutVarInterface>|null tagged (hg_email.layout_var) services, ordered by tag priority */
+    private ?iterable $pendingLayoutVars;
+
     public function __construct(
         protected readonly HgabkaUtils $hgabkaUtils,
         protected readonly ParamSubstituter $paramSubstituter,
         protected readonly Environment $environment,
         protected readonly ?string $layoutFile,
+        iterable $layoutVars = [],
     ) {
+        $this->pendingLayoutVars = $layoutVars;
     }
 
     public function addLayoutVar(LayoutVarInterface $layoutVar, ?int $priority = null)
     {
+        $this->loadLayoutVars();
         $alias = $layoutVar::class;
 
         if (null !== $priority) {
@@ -38,6 +44,23 @@ class LayoutManager
 
             return $p2 <=> $p1;
         });
+    }
+
+    private function loadLayoutVars(): void
+    {
+        if (null === $this->pendingLayoutVars) {
+            return;
+        }
+
+        $pending = $this->pendingLayoutVars;
+        $this->pendingLayoutVars = null;
+
+        // the iterator already yields the services in tag priority order
+        $loaded = [];
+        foreach ($pending as $layoutVar) {
+            $loaded[$layoutVar::class] = $layoutVar;
+        }
+        $this->layoutVars = $loaded + $this->layoutVars;
     }
 
     public function getDefaultLayoutPath(): array|string
@@ -92,6 +115,7 @@ class LayoutManager
 
     public function getVariables(): array
     {
+        $this->loadLayoutVars();
         $result = [];
         foreach ($this->layoutVars as $layoutVar) {
             $result[$layoutVar->getPlaceholder()] = $layoutVar->getLabel();
@@ -108,6 +132,7 @@ class LayoutManager
         ?string $locale,
         ?bool $webversion,
     ): array {
+        $this->loadLayoutVars();
         foreach ($this->layoutVars as $layoutVar) {
             if ($layoutVar->isEnabled($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion)) {
                 $params[$layoutVar->getPlaceholder()] = $layoutVar->getValue($layoutHtml, $bodyHtml, $mail, $params, $locale, $webversion);
