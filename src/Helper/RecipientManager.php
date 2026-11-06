@@ -227,29 +227,53 @@ class RecipientManager
      */
     public function getToDataByTemplate(EmailTemplate $template)
     {
-        $toData = [];
         $templateType = $this->templateTypeManager->getTemplateType($template->getType());
-        if (!empty($templateType->getDefaultRecipients())) {
-            $defRec = $templateType->getDefaultRecipients();
-            if (isset($defRec['type'])) {
-                $defRec = [$defRec];
-            }
+        $defRec = $templateType->getDefaultRecipients();
+
+        if (empty($defRec)) {
+            return $template->getToData();
+        }
+
+        if (isset($defRec['type'])) {
+            $defRec = [$defRec];
+        }
+
+        $storedData = $template->getToData();
+
+        // Nothing stored for the template: the recipients are the type's defaults.
+        if (empty($storedData)) {
+            $toData = [];
             foreach ($defRec as $defRecData) {
-                $defRecType = $this->getTemplateRecipientType($defRecData['type']);
+                $defRecType = clone $this->getTemplateRecipientType($defRecData['type']);
                 $params = $defRecData['params'] ?? [];
-                if (!empty($template->getToData())) {
-                    foreach ($template->getToData() as $td) {
-                        if ($td['type'] === $defRecType) {
-                            $params = array_merge($params, $td);
-                        }
-                    }
-                }
                 unset($params['type']);
                 $defRecType->setParams($params);
                 $toData[] = $defRecType;
             }
-        } else {
-            $toData = $template->getToData();
+
+            return $toData;
+        }
+
+        // The stored recipients win. The type's default params are the base of the stored entry of
+        // the same type, so params known only at send time (e.g. the sender of a form) are kept.
+        $defaultParams = [];
+        foreach ($defRec as $defRecData) {
+            $defaultParams[$defRecData['type']] = array_merge($defaultParams[$defRecData['type']] ?? [], $defRecData['params'] ?? []);
+        }
+
+        $toData = [];
+        foreach ($storedData as $td) {
+            $storedType = $td['type'] ?? null;
+            $recipientType = $this->getTemplateRecipientType($storedType);
+            if (!$recipientType) {
+                continue;
+            }
+
+            $params = array_merge($defaultParams[$storedType] ?? [], $td);
+            unset($params['type']);
+            $recipientType = clone $recipientType;
+            $recipientType->setParams($params);
+            $toData[] = $recipientType;
         }
 
         return $toData;
