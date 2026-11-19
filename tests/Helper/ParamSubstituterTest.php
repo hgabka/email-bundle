@@ -182,6 +182,61 @@ class ParamSubstituterTest extends TestCase
         $this->assertCount(1, $email->getAttachments());
     }
 
+    public function testEmbeddedPartKeepsTheOriginalFileNameAndHasAStableContentId(): void
+    {
+        $email = new Email();
+        $html = $this->substituter()->embedImages('<img src="img/logo.png">', $email);
+
+        $part = $email->getAttachments()[0];
+        $this->assertSame('logo.png', $part->getFilename());
+        $this->assertSame('inline', $part->getDisposition());
+        $this->assertSame('cid:' . $part->getContentId(), substr($html, 10, -2));
+        $this->assertSame(md5_file($this->projectDir . '/public/img/logo.png') . '@hg_email', $part->getContentId());
+    }
+
+    public function testTheSameImageIsEmbeddedOnlyOncePerEmail(): void
+    {
+        $email = new Email();
+        $html = $this->substituter()->embedImages('<img src="img/logo.png"><img src="/img/logo.png">', $email);
+
+        $this->assertCount(1, $email->getAttachments());
+        $this->assertSame(2, substr_count($html, 'cid:' . $email->getAttachments()[0]->getContentId()));
+    }
+
+    public function testEmbeddedImageSurvivesSymfonyMimeRendering(): void
+    {
+        $email = (new Email())->from('a@example.com')->to('b@example.com');
+        $email->html($this->substituter()->embedImages('<img src="img/logo.png">', $email));
+
+        $message = $email->toString();
+
+        $this->assertStringContainsString('multipart/related', $message);
+        $this->assertStringContainsString('Content-Disposition: inline', $message);
+        $this->assertStringContainsString('filename=logo.png', $message);
+        $this->assertStringNotContainsString('@hg_email"', substr($message, (int) strpos($message, 'filename=')));
+    }
+
+    public function testCssUrlsBecomeAbsoluteUrlsInsteadOfDataUris(): void
+    {
+        $html = $this->substituter()->embedImages(
+            '<td style="background: url(\'/img/logo.png\')"></td><td style="background:url(img/none.png)"></td><td style="background:url(data:image/png;base64,AAAA)"></td>',
+            new Email()
+        );
+
+        $this->assertStringContainsString("url('https://example.test/img/logo.png')", $html);
+        $this->assertStringContainsString('url(img/none.png)', $html, 'missing files must be left untouched, not removed');
+        $this->assertStringContainsString('url(data:image/png;base64,AAAA)', $html);
+        $this->assertStringNotContainsString('base64,iVBOR', $html);
+    }
+
+    public function testCssUrlsDoNotCreateAttachments(): void
+    {
+        $email = new Email();
+        $this->substituter()->embedImages('<div style="background:url(/img/logo.png)"></div>', $email);
+
+        $this->assertCount(0, $email->getAttachments());
+    }
+
     public function testPrepareHtmlSubstitutesEmbedsAndFixesLinks(): void
     {
         $email = new Email();
