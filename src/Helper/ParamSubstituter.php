@@ -57,7 +57,7 @@ class ParamSubstituter
             if (\is_string($param)) {
                 $text = strtr($text, [$key => $param]);
             } else {
-                if (!isset($param['value']) || !\is_string($param['value'])) {
+                if (!\is_array($param) || !isset($param['value']) || !\is_string($param['value'])) {
                     continue;
                 }
 
