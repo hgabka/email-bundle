@@ -4,6 +4,8 @@ namespace Hgabka\EmailBundle\Helper;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\File;
 use Symfony\Component\Routing\RouterInterface;
 
 class ParamSubstituter
@@ -112,31 +114,16 @@ class ParamSubstituter
             return $matches[1] . $this->embedImage($matches[2], $email);
         }, $html);
 
-        $pattern = '/(url\s*\()([^\)]+)/i';
-
-        $encodedHtml = preg_replace_callback($pattern, function ($matches) {
-            $imagePath = trim($matches[2], " '\"");
-            $file = $this->projectDir . '/web/' . $imagePath;
-            if (!is_file($file)) {
-                $file = $this->projectDir . '/public/' . $imagePath;
-            }
-
-            $res = $this->convertToBase64($file);
-            if (false !== $res) {
-                return $matches[1] . $res;
-            }
-
-            return false;
-        }, $html);
-
-        if (false !== $encodedHtml) {
-            return $encodedHtml;
-        }
+        $pattern = '/(url\s*\(\s*)([\'"]?)([^\'")]+)\2/i';
 
         return preg_replace_callback($pattern, function ($matches) {
-            $imagePath = trim($matches[2], " '\"");
+            $path = trim($matches[3]);
 
-            return $matches[1] . $this->addHost($imagePath);
+            if (1 === preg_match('#^(data:|cid:|\#)#i', $path)) {
+                return $matches[0];
+            }
+
+            return $matches[1] . $matches[2] . $this->addHost($path) . $matches[2];
         }, $html);
     }
 
@@ -230,17 +217,11 @@ class ParamSubstituter
         return $res;
     }
 
-    protected function convertToBase64($file)
-    {
-        if (is_file($file) && \function_exists('mime_content_type') && (false !== ($mime = @mime_content_type($file))) && false !== ($contents = file_get_contents($file))) {
-            return 'data:' . $mime . ';base64,' . base64_encode($contents);
-        }
-
-        return false;
-    }
-
     /**
      * Embeddel egy képet és visszaadja a cid-et.
+     *
+     * A Content-ID a fájl tartalmának hash-e, ezért ugyanaz a kép egy levélben csak egyszer kerül be,
+     * a csatolt rész neve pedig az eredeti fájlnév (nem a Content-ID), így a levelező értelmes nevet lát.
      *
      * @param string $url
      * @param Email  $email
@@ -249,7 +230,7 @@ class ParamSubstituter
      */
     protected function embedImage($url, $email)
     {
-        if (0 !== strpos('http://', $url) && 0 !== strpos('https://', $url)) {
+        if (0 !== strpos($url, 'http://') && 0 !== strpos($url, 'https://')) {
             $file = $this->projectDir . '/web/' . $url;
             if (!is_file($file)) {
                 $file = $this->projectDir . '/public/' . $url;
@@ -259,24 +240,56 @@ class ParamSubstituter
                 }
             }
         } else {
-            $content = @file_get_contents($url);
-            if (false === $content) {
+            $file = $this->downloadRemoteImage($url);
+            if (null === $file) {
                 return $url;
             }
-            $p = pathinfo($url);
-
-            $dir = $this->cacheDir . '/mailimages/' . $email->getHeaders('Message-ID');
-            if (!file_exists($dir)) {
-                mkdir($dir, 0777, true);
-            }
-            $file = $dir . '/' . $p['basename'];
-            file_put_contents($file, $content);
         }
 
-        $embedId = $this->mailHelper->generateEmbedId();
-        $email->embedFromPath($file, $embedId);
+        $contentId = md5_file($file) . '@hg_email';
 
-        return 'cid:' . $embedId;
+        foreach ($email->getAttachments() as $part) {
+            if ($part->hasContentId() && $part->getContentId() === $contentId) {
+                return 'cid:' . $contentId;
+            }
+        }
+
+        $part = (new DataPart(new File($file), basename($file)))->asInline();
+        $part->setContentId($contentId);
+        $email->addPart($part);
+
+        return 'cid:' . $contentId;
+    }
+
+    /**
+     * Letölt egy távoli képet a cache-be (a már letöltöttet egy napig újra felhasználja).
+     */
+    protected function downloadRemoteImage(string $url): ?string
+    {
+        $name = basename((string) parse_url($url, \PHP_URL_PATH));
+        if ('' === $name || '.' === $name) {
+            $name = 'image';
+        }
+
+        $dir = $this->cacheDir . '/mailimages/' . md5($url);
+        $file = $dir . '/' . $name;
+
+        if (is_file($file) && filemtime($file) > time() - 86400) {
+            return $file;
+        }
+
+        $content = @file_get_contents($url, false, stream_context_create(['http' => ['timeout' => 5]]));
+        if (false === $content) {
+            return is_file($file) ? $file : null;
+        }
+
+        if (!is_dir($dir) && !@mkdir($dir, 0777, true) && !is_dir($dir)) {
+            return null;
+        }
+
+        file_put_contents($file, $content);
+
+        return $file;
     }
 
     /**
