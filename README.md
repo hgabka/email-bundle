@@ -26,6 +26,22 @@ hgabka_email:
 
 Függőségek: `hgabka/utils-bundle`, `hgabka/media-bundle` (csatolmányok, képek), `a2lix/translation-form-bundle`, `twig/cssinliner-extra`, Symfony Mailer. A táblák `hg_email_*` előtaggal jönnek létre (migrációval): `email_template`, `email_layout`, `message`, `message_list`, `message_subscriber`, `message_queue`, `email_queue`, `email_log`, `email_campaign`, `attachment`, stb.
 
+### Repók
+
+A hgabka csomagok nem szerepelnek a Packagiten, ezért a projekt `composer.json`-jában fel kell venni a repóikat (a függőségek saját `repositories` mezőjét a Composer nem olvassa). A repók nyilvánosak, az `https` url-ekhez nem kell SSH kulcs. Aki GitHub SSH kulccsal dolgozik, használhatja a `git@github.com:hgabka/<név>.git` url-eket is. Kulcs nélkül az anonim GitHub API kérés-limit (60/óra) miatt a Composer előbb-utóbb tokent kérhet.
+
+```json
+"repositories": [
+    {"type": "vcs", "url": "https://github.com/hgabka/utils-bundle.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/doctrine-translatable.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/doctrine-translatable-bundle.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/acl-bundle.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/security-acl.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/media-bundle.git"},
+    {"type": "vcs", "url": "https://github.com/hgabka/email-bundle.git"}
+]
+```
+
 ## Konfiguráció (`hgabka_email`)
 
 ```yaml
@@ -158,3 +174,16 @@ Naplózás: `Logger\EmailLogger` (adatbázis, `EmailLog`) és `Logger\MessageLog
 ## Twig
 
 Az `EmailTwigExtension` az admin űrlapokhoz ad függvényeket: `render_template_usable_vars`, `render_message_usable_vars`, `render_layout_usable_vars` (beszúrható változók listája), `render_template_recipient_selector`, `render_message_recipient_selector`, `render_subscriber_lists`.
+
+## Tesztek
+
+A `require-dev` tartalmazza a szükséges csomagokat, a hgabka bundle-ök repóit a `composer.json` `repositories` szekciója adja, így a bundle önmagában is telepíthető és tesztelhető (a `git@github.com:...` url-ekhez SSH kulcs kell, kulcs nélkül cseréld őket `https://github.com/...`-ra):
+
+```bash
+composer install
+vendor/bin/phpunit
+```
+
+## Licenc
+
+MIT, lásd: [LICENSE](LICENSE).
